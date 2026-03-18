@@ -83,7 +83,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Git Contract + TUI Shell | 0/? | Not started | - |
+| 1. Git Contract + TUI Shell | 1/3 | In Progress|  |
 | 2. Text Editing + Comment Handling | 0/? | Not started | - |
 | 3. Commit Message Intelligence | 0/? | Not started | - |
 | 4. Rebase + Squash Modes | 0/? | Not started | - |

@@ -7,7 +7,7 @@
 
 ### File I/O & Terminal
 
-- [ ] **IO-01**: Editor reads file from first command-line argument
+- [x] **IO-01**: Editor reads file from first command-line argument
 - [ ] **IO-02**: Editor writes edited content back to the same file on save
 - [ ] **IO-03**: Terminal is safely restored to normal mode even if editor panics
 - [ ] **IO-04**: Editor exits with code 0 on successful save
@@ -16,8 +16,8 @@
 
 ### Context Detection
 
-- [ ] **CTX-01**: Editor detects file type from path argument (COMMIT_EDITMSG, MERGE_MSG, git-rebase-todo, SQUASH_MSG)
-- [ ] **CTX-02**: Detected context determines UI mode (text editor vs structured rebase mode)
+- [x] **CTX-01**: Editor detects file type from path argument (COMMIT_EDITMSG, MERGE_MSG, git-rebase-todo, SQUASH_MSG)
+- [x] **CTX-02**: Detected context determines UI mode (text editor vs structured rebase mode)
 - [ ] **CTX-03**: Editor reads `core.commentChar` config at startup (default: #)
 - [ ] **CTX-04**: Comment lines are parsed and stored separately from editable content
 - [ ] **CTX-05**: Comment lines are displayed but not editable
@@ -73,7 +73,7 @@
 
 ### Performance
 
-- [ ] **PERF-01**: Editor starts in <100ms on typical hardware
+- [x] **PERF-01**: Editor starts in <100ms on typical hardware
 - [ ] **PERF-02**: Rendering updates happen at 30+ FPS when typing
 - [ ] **PERF-03**: No noticeable lag on large files (>10KB commit messages)
 
@@ -123,15 +123,15 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| IO-01 | Phase 1 | Pending |
+| IO-01 | Phase 1 | Complete |
 | IO-02 | Phase 1 | Pending |
 | IO-03 | Phase 1 | Pending |
 | IO-04 | Phase 1 | Pending |
 | IO-05 | Phase 1 | Pending |
 | IO-06 | Phase 1 | Pending |
-| CTX-01 | Phase 1 | Pending |
-| CTX-02 | Phase 1 | Pending |
-| PERF-01 | Phase 1 | Pending |
+| CTX-01 | Phase 1 | Complete |
+| CTX-02 | Phase 1 | Complete |
+| PERF-01 | Phase 1 | Complete |
 | CTX-03 | Phase 2 | Pending |
 | CTX-04 | Phase 2 | Pending |
 | CTX-05 | Phase 2 | Pending |
