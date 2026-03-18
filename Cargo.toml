@@ -1,0 +1,17 @@
+[package]
+name = "gitmedit"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ratatui = "0.30"
+ratatui-textarea = { version = "0.8", features = ["crossterm"] }
+crossterm = "0.29"
+anyhow = "1.0"
+thiserror = "2.0"
+clap = { version = "4.6", features = ["derive"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
