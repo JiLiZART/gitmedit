@@ -12,7 +12,16 @@ Provide a fast, distraction-free git editor that feels like nano's simplicity bu
 
 ### Validated
 
-(None yet — ship to validate)
+**Phase 01 (git-contract-tui-shell):**
+- ✓ User can set gitmedit as global git editor
+- ✓ User sees TUI window with editable message area
+- ✓ User can commit with Ctrl+S save (exit 0)
+- ✓ User can cancel with Esc (exit 1)
+- ✓ Editor handles commit message files (COMMIT_EDITMSG)
+- ✓ Exit status codes match git expectations
+- ✓ Editor detects git context (commit, merge, rebase, squash, tag)
+- ✓ Startup < 100ms (17ms on developer hardware)
+- ✓ Terminal output preserved (no screen wipe)
 
 ### Active
 
@@ -65,4 +74,4 @@ Provide a fast, distraction-free git editor that feels like nano's simplicity bu
 | Minimal status bar (no visible hotkey help initially) | Matches minimal UI philosophy; hotkeys shown on demand | — Pending |
 
 ---
-*Last updated: 2026-03-18 after initialization*
+*Last updated: 2026-03-18 after Phase 01 completion*
