@@ -3,13 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-03-18T22:01:54.829Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-03-18T22:06:47.526Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
+  percent: 33
 ---
 
 # Project State
@@ -47,6 +48,7 @@ Progress: [███░░░░░░░] 33% (1/3 plans)
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01-git-contract-tui-shell P02 | 30 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -60,6 +62,9 @@ Recent decisions affecting current work:
 - [Pre-planning]: Phase 4 depends on Phase 2 (not Phase 3) — rebase/squash require working editor, not commit intelligence
 - [Phase 01-01]: Single-crate package not workspace - Phase 5 adds workspace split per plan
 - [Phase 01-01]: detect_context uses Path::file_name() only - no content inspection; TAG_EDITMSG maps to Commit variant
+- [Phase 01-02]: Construct ratatui Terminal manually via CrosstermBackend+Terminal::new — ratatui::init() enters alternate screen, violating IO-06
+- [Phase 01-02]: Dual-path panic safety: both Drop and panic hook independently call disable_raw_mode() — ensures restoration if one path is skipped
+- [Phase 01-02]: install_panic_hook() uses take_hook() to chain original hook — preserves default backtrace output after terminal restoration
 
 ### Pending Todos
 
@@ -72,6 +77,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T22:01:54.796Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-03-18T22:06:47.494Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
