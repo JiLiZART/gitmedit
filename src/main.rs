@@ -2,8 +2,10 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
+mod app;
 mod context;
 mod terminal;
+mod writer;
 
 #[derive(Parser, Debug)]
 #[command(name = "gitmedit", about = "Fast, distraction-free git editor")]
