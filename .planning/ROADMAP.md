@@ -12,7 +12,7 @@ gitmedit ships as a single Rust binary that git invokes as a blocking subprocess
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Git Contract + TUI Shell** - Binary opens a file, renders it in TUI, saves or cancels with correct exit codes, and never corrupts the terminal
+- [x] **Phase 1: Git Contract + TUI Shell** - Binary opens a file, renders it in TUI, saves or cancels with correct exit codes, and never corrupts the terminal (completed 2026-03-18)
 - [ ] **Phase 2: Text Editing + Comment Handling** - Full text editing for COMMIT_EDITMSG and MERGE_MSG with comment preservation, cursor movement, multiline, and merge conflict styling
 - [ ] **Phase 3: Commit Message Intelligence** - Subject line counter with 50/72 color coding, blank line enforcement, and context-aware hotkey help overlay
 - [ ] **Phase 4: Rebase + Squash Modes** - Structured rebase-todo display with action cycling, squash context rendering with protected commit log
@@ -83,7 +83,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Git Contract + TUI Shell | 1/3 | In Progress|  |
+| 1. Git Contract + TUI Shell | 3/3 | Complete   | 2026-03-18 |
 | 2. Text Editing + Comment Handling | 0/? | Not started | - |
 | 3. Commit Message Intelligence | 0/? | Not started | - |
 | 4. Rebase + Squash Modes | 0/? | Not started | - |

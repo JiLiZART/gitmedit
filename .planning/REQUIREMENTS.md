@@ -8,10 +8,10 @@
 ### File I/O & Terminal
 
 - [x] **IO-01**: Editor reads file from first command-line argument
-- [ ] **IO-02**: Editor writes edited content back to the same file on save
+- [x] **IO-02**: Editor writes edited content back to the same file on save
 - [x] **IO-03**: Terminal is safely restored to normal mode even if editor panics
-- [ ] **IO-04**: Editor exits with code 0 on successful save
-- [ ] **IO-05**: Editor exits with code 1 on cancel or error
+- [x] **IO-04**: Editor exits with code 0 on successful save
+- [x] **IO-05**: Editor exits with code 1 on cancel or error
 - [x] **IO-06**: Editor does NOT use alternate screen (matches nano behavior)
 
 ### Context Detection
@@ -124,10 +124,10 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | IO-01 | Phase 1 | Complete |
-| IO-02 | Phase 1 | Pending |
+| IO-02 | Phase 1 | Complete |
 | IO-03 | Phase 1 | Complete |
-| IO-04 | Phase 1 | Pending |
-| IO-05 | Phase 1 | Pending |
+| IO-04 | Phase 1 | Complete |
+| IO-05 | Phase 1 | Complete |
 | IO-06 | Phase 1 | Complete |
 | CTX-01 | Phase 1 | Complete |
 | CTX-02 | Phase 1 | Complete |
