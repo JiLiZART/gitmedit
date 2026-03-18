@@ -121,8 +121,6 @@
 
 ## Traceability
 
-(To be populated during roadmap creation)
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | IO-01 | Phase 1 | Pending |
@@ -133,6 +131,7 @@
 | IO-06 | Phase 1 | Pending |
 | CTX-01 | Phase 1 | Pending |
 | CTX-02 | Phase 1 | Pending |
+| PERF-01 | Phase 1 | Pending |
 | CTX-03 | Phase 2 | Pending |
 | CTX-04 | Phase 2 | Pending |
 | CTX-05 | Phase 2 | Pending |
@@ -144,15 +143,21 @@
 | EDIT-05 | Phase 2 | Pending |
 | EDIT-06 | Phase 2 | Pending |
 | EDIT-07 | Phase 2 | Pending |
-| COMMIT-01 | Phase 3 | Pending |
-| COMMIT-02 | Phase 3 | Pending |
-| COMMIT-03 | Phase 3 | Pending |
 | COMMIT-04 | Phase 2 | Pending |
 | COMMIT-05 | Phase 2 | Pending |
-| COMMIT-06 | Phase 3 | Pending |
 | MERGE-01 | Phase 2 | Pending |
 | MERGE-02 | Phase 2 | Pending |
 | MERGE-03 | Phase 2 | Pending |
+| PERF-02 | Phase 2 | Pending |
+| PERF-03 | Phase 2 | Pending |
+| COMMIT-01 | Phase 3 | Pending |
+| COMMIT-02 | Phase 3 | Pending |
+| COMMIT-03 | Phase 3 | Pending |
+| COMMIT-06 | Phase 3 | Pending |
+| HELP-01 | Phase 3 | Pending |
+| HELP-02 | Phase 3 | Pending |
+| HELP-03 | Phase 3 | Pending |
+| HELP-04 | Phase 3 | Pending |
 | REBASE-01 | Phase 4 | Pending |
 | REBASE-02 | Phase 4 | Pending |
 | REBASE-03 | Phase 4 | Pending |
@@ -163,13 +168,6 @@
 | SQUASH-02 | Phase 4 | Pending |
 | SQUASH-03 | Phase 4 | Pending |
 | SQUASH-04 | Phase 4 | Pending |
-| HELP-01 | Phase 3 | Pending |
-| HELP-02 | Phase 3 | Pending |
-| HELP-03 | Phase 3 | Pending |
-| HELP-04 | Phase 3 | Pending |
-| PERF-01 | Phase 1 | Pending |
-| PERF-02 | Phase 2 | Pending |
-| PERF-03 | Phase 2 | Pending |
 | INSTALL-01 | Phase 5 | Pending |
 | INSTALL-02 | Phase 5 | Pending |
 | INSTALL-03 | Phase 5 | Pending |
@@ -177,10 +175,10 @@
 | INSTALL-05 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 44 total
-- Mapped to phases: (to be determined by roadmap)
-- Unmapped: (to be checked)
+- v1 requirements: 50 total
+- Mapped to phases: 50/50
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 after research-driven scoping*
+*Last updated: 2026-03-18 — traceability populated after roadmap creation*
