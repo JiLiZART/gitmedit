@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use clap::Parser;
 
 mod context;
+mod terminal;
 
 #[derive(Parser, Debug)]
 #[command(name = "gitmedit", about = "Fast, distraction-free git editor")]
@@ -11,8 +12,15 @@ struct Cli {
     path: PathBuf,
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
+    terminal::install_panic_hook();
+
     let cli = Cli::parse();
-    let ctx = context::detect_context(&cli.path);
-    println!("context: {:?}", ctx);
+    let _ctx = context::detect_context(&cli.path);
+
+    // Acquire raw-mode terminal guard — dropped immediately (zero-length stub session).
+    // This exercises the cleanup path before rendering is added in later plans.
+    let _guard = terminal::TerminalGuard::new()?;
+
+    Ok(())
 }
