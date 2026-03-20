@@ -4,7 +4,7 @@ use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span, Text};
-use ratatui::widgets::{Paragraph, Wrap};
+use ratatui::widgets::Paragraph;
 
 /// Stateless renderer with per-line styling for Content, Comment, and ConflictMarker lines.
 pub struct Renderer;
@@ -33,10 +33,22 @@ impl Renderer {
             usize::MAX // no editable lines — no cursor
         };
 
-        // Compute scroll offset: keep cursor visible in the content area.
+        // Full terminal width — the content area spans the entire frame width.
+        let visible_width = area.width as usize;
+
+        // Compute vertical scroll offset: keep cursor visible in the content area.
         let visible_height = area.height as usize;
         let scroll_top = if cursor_full_row != usize::MAX && cursor_full_row >= visible_height {
             cursor_full_row - visible_height + 1
+        } else {
+            0
+        };
+
+        // Compute horizontal scroll offset: keep cursor visible within full terminal width.
+        // scroll_left is the number of columns scrolled off the left edge.
+        let scroll_left = if visible_width > 0 && cursor_col >= visible_width {
+            // Keep cursor at the rightmost column of the visible area.
+            cursor_col - visible_width + 1
         } else {
             0
         };
@@ -59,54 +71,73 @@ impl Renderer {
 
             match line {
                 ContentLine::Content(_) => {
-                    let text = if editable_idx < textarea_lines.len() {
+                    let raw_text = if editable_idx < textarea_lines.len() {
                         textarea_lines[editable_idx].as_str()
                     } else {
                         ""
                     };
+                    // Apply horizontal scroll: skip `scroll_left` chars, then take `visible_width`.
+                    let text = Self::scroll_line(raw_text, scroll_left, visible_width);
                     let is_cursor_line = full_idx == cursor_full_row;
 
                     if is_cursor_line {
                         // Highlight the cursor line with an underline modifier.
                         let style = Style::default().add_modifier(Modifier::UNDERLINED);
-                        styled_lines.push(Line::styled(text.to_string(), style));
+                        styled_lines.push(Line::styled(text, style));
                     } else {
-                        styled_lines.push(Line::raw(text.to_string()));
+                        styled_lines.push(Line::raw(text));
                     }
                     editable_idx += 1;
                 }
                 ContentLine::Comment(s) => {
+                    let text = Self::scroll_line(s, scroll_left, visible_width);
                     styled_lines.push(Line::from(Span::styled(
-                        s.clone(),
+                        text,
                         Style::default().fg(Color::DarkGray),
                     )));
                 }
                 ContentLine::ConflictMarker(s) => {
+                    let text = Self::scroll_line(s, scroll_left, visible_width);
                     styled_lines.push(Line::from(Span::styled(
-                        s.clone(),
+                        text,
                         Style::default().bg(Color::Red).fg(Color::White),
                     )));
                 }
             }
         }
 
-        let content_widget = Paragraph::new(Text::from(styled_lines))
-            .wrap(Wrap { trim: false });
+        // No wrapping: lines are explicitly truncated to visible_width above.
+        let content_widget = Paragraph::new(Text::from(styled_lines));
         frame.render_widget(content_widget, area);
 
         // Position the blinking terminal cursor at the correct cell.
+        // The visual column is cursor_col offset by scroll_left, clamped to visible_width.
         if app.document().editable_count() > 0
             && cursor_full_row != usize::MAX
             && cursor_full_row >= scroll_top
         {
             let visual_row = cursor_full_row - scroll_top;
-            if visual_row < visible_height {
+            let visual_col = cursor_col.saturating_sub(scroll_left);
+            if visual_row < visible_height && visual_col < visible_width {
                 frame.set_cursor_position((
-                    area.x + cursor_col as u16,
+                    area.x + visual_col as u16,
                     area.y + visual_row as u16,
                 ));
             }
         }
+    }
+
+    /// Scroll a line horizontally: skip `offset` chars then take up to `width` chars.
+    /// Returns a String that fits within `width` columns.
+    fn scroll_line(s: &str, offset: usize, width: usize) -> String {
+        if width == 0 {
+            return String::new();
+        }
+        // Use char indices to handle multi-byte characters correctly.
+        let chars: Vec<char> = s.chars().collect();
+        let start = offset.min(chars.len());
+        let end = (start + width).min(chars.len());
+        chars[start..end].iter().collect()
     }
 
     fn render_status_bar(frame: &mut Frame, app: &App, area: Rect) {
