@@ -6,6 +6,7 @@ use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 
 mod app;
 mod context;
+mod document;
 mod renderer;
 mod terminal;
 mod writer;
