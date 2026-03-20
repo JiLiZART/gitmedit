@@ -3,6 +3,7 @@ use std::process;
 
 use clap::Parser;
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
+use ratatui_textarea::CursorMove;
 
 mod app;
 mod context;
@@ -54,40 +55,87 @@ fn main() -> anyhow::Result<()> {
 
         let event = crossterm::event::read()?;
         match &event {
-            Event::Key(KeyEvent {
-                code: KeyCode::Char('s'),
-                modifiers: KeyModifiers::CONTROL,
-                kind: KeyEventKind::Press,
-                ..
-            }) => match app.apply(Action::Save) {
-                Outcome::Save => {
-                    // Restore raw mode BEFORE file write — prevents garbled
-                    // output if the write fails.
-                    drop(guard);
-                    writer::FileWriter::write_atomic(&app.serialized_content(), &path)?;
-                    process::exit(0);
+            Event::Key(KeyEvent { code, modifiers, kind: KeyEventKind::Press, .. }) => {
+                match (*code, *modifiers) {
+                    // Ctrl+S — Save and exit.
+                    (KeyCode::Char('s'), KeyModifiers::CONTROL) => {
+                        match app.apply(Action::Save) {
+                            Outcome::Save => {
+                                // Restore raw mode BEFORE file write — prevents garbled
+                                // output if the write fails.
+                                drop(guard);
+                                writer::FileWriter::write_atomic(&app.serialized_content(), &path)?;
+                                process::exit(0);
+                            }
+                            _ => {}
+                        }
+                    }
+                    // Esc — Cancel without saving. Use `(KeyCode::Esc, _)` to accept any
+                    // modifier combination, since some terminals send modifiers with Esc.
+                    (KeyCode::Esc, _) => {
+                        match app.apply(Action::Cancel) {
+                            Outcome::Cancel => {
+                                drop(guard);
+                                process::exit(1);
+                            }
+                            _ => {}
+                        }
+                    }
+                    // Ctrl+U — Delete entire current line (nano-style; NOT undo).
+                    // Moves cursor to line head then deletes to end of line.
+                    (KeyCode::Char('u'), KeyModifiers::CONTROL) => {
+                        app.textarea_mut().move_cursor(CursorMove::Head);
+                        app.textarea_mut().delete_line_by_end();
+                    }
+                    // Ctrl+Z — Undo last edit.
+                    (KeyCode::Char('z'), KeyModifiers::CONTROL) => {
+                        app.textarea_mut().undo();
+                    }
+                    // Ctrl+Y — Redo last undone edit.
+                    (KeyCode::Char('y'), KeyModifiers::CONTROL) => {
+                        app.textarea_mut().redo();
+                    }
+                    // Ctrl+W — Delete previous word.
+                    (KeyCode::Char('w'), KeyModifiers::CONTROL) => {
+                        app.textarea_mut().delete_word();
+                    }
+                    // Ctrl+D — Delete next word.
+                    (KeyCode::Char('d'), KeyModifiers::CONTROL) => {
+                        app.textarea_mut().delete_next_word();
+                    }
+                    // Ctrl+C — Copy selection to system clipboard.
+                    // Uses textarea internal copy to populate yank buffer, then bridges
+                    // to system clipboard via arboard. Silent no-op if clipboard unavailable
+                    // (SSH, headless environments).
+                    (KeyCode::Char('c'), KeyModifiers::CONTROL) => {
+                        app.textarea_mut().copy();
+                        if let Ok(mut clip) = arboard::Clipboard::new() {
+                            let _ = clip.set_text(app.textarea().yank_text().to_string());
+                        }
+                    }
+                    // Ctrl+X — Cut selection to system clipboard.
+                    (KeyCode::Char('x'), KeyModifiers::CONTROL) => {
+                        app.textarea_mut().cut();
+                        if let Ok(mut clip) = arboard::Clipboard::new() {
+                            let _ = clip.set_text(app.textarea().yank_text().to_string());
+                        }
+                    }
+                    // Ctrl+V — Paste from system clipboard.
+                    // If clipboard is unavailable, falls through silently (no paste).
+                    (KeyCode::Char('v'), KeyModifiers::CONTROL) => {
+                        if let Ok(mut clip) = arboard::Clipboard::new() {
+                            if let Ok(text) = clip.get_text() {
+                                app.textarea_mut().insert_str(text);
+                            }
+                        }
+                    }
+                    // All other key presses are delegated to TextArea.
+                    // This covers: arrow keys, character insertion, backspace,
+                    // delete, Home/End, Enter — giving full editing capability.
+                    _ => {
+                        app.textarea_mut().input(event.clone());
+                    }
                 }
-                _ => {}
-            },
-            Event::Key(KeyEvent {
-                code: KeyCode::Esc,
-                kind: KeyEventKind::Press,
-                ..
-            }) => match app.apply(Action::Cancel) {
-                Outcome::Cancel => {
-                    drop(guard);
-                    process::exit(1);
-                }
-                _ => {}
-            },
-            Event::Key(KeyEvent {
-                kind: KeyEventKind::Press,
-                ..
-            }) => {
-                // All other key presses are delegated to TextArea.
-                // This covers: arrow keys, character insertion, backspace,
-                // delete, Home/End, Enter — giving full editing capability.
-                app.textarea_mut().input(event.clone());
             }
             Event::Resize(_, _) => {
                 // Terminal resize: just continue the loop — ratatui's
