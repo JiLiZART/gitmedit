@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-20T12:36:25.209Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-20T12:44:51.146Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -49,6 +49,7 @@ Plan: 2 of 3
 | Phase 01-git-contract-tui-shell P02 | 30 | 1 tasks | 2 files |
 | Phase 01-git-contract-tui-shell P03 | 35 | 3 tasks | 6 files |
 | Phase 02-text-editing-comment-handling P01 | 5 | 2 tasks | 3 files |
+| Phase 02-text-editing-comment-handling P02 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,9 @@ Recent decisions affecting current work:
 - [Phase 02-01]: parse() drops the phantom empty token from split('\n') after a trailing newline; serialize() re-emits '\n' after every stored line — correct round-trip invariant
 - [Phase 02-01]: 6-char conflict marker prefix matching catches both 6-char and 7-char git variants
 - [Phase 02-01]: editable_index maps TextArea row N to lines[N] keeping non-editable lines transparent to the editor
+- [Phase Phase 02-02]: Renderer does NOT use frame.render_widget(&textarea) — builds custom Line spans for per-line ContentLine styling
+- [Phase Phase 02-02]: Event::Resize handled as explicit no-op — ratatui terminal.draw() calls autoresize() automatically
+- [Phase Phase 02-02]: usize::MAX sentinel for no-cursor state in renderer when no editable lines exist
 
 ### Pending Todos
 
@@ -87,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T12:34:37Z
-Stopped at: Completed 02-01-PLAN.md
-Resume file: .planning/phases/02-text-editing-comment-handling/02-02-PLAN.md
+Last session: 2026-03-20T12:44:51.116Z
+Stopped at: Completed 02-02-PLAN.md
+Resume file: None

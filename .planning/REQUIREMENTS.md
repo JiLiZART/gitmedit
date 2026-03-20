@@ -20,17 +20,17 @@
 - [x] **CTX-02**: Detected context determines UI mode (text editor vs structured rebase mode)
 - [x] **CTX-03**: Editor reads `core.commentChar` config at startup (default: #)
 - [x] **CTX-04**: Comment lines are parsed and stored separately from editable content
-- [ ] **CTX-05**: Comment lines are displayed but not editable
+- [x] **CTX-05**: Comment lines are displayed but not editable
 - [x] **CTX-06**: Comment lines are preserved byte-for-byte on file write
 
 ### Text Editing (Commit Mode)
 
-- [ ] **EDIT-01**: User can insert/delete characters anywhere in the message
-- [ ] **EDIT-02**: User can move cursor with arrow keys
+- [x] **EDIT-01**: User can insert/delete characters anywhere in the message
+- [x] **EDIT-02**: User can move cursor with arrow keys
 - [ ] **EDIT-03**: User can delete line with Ctrl+U
-- [ ] **EDIT-04**: User can move to start/end of line (Home/End)
-- [ ] **EDIT-05**: User can create new lines (multiline messages supported)
-- [ ] **EDIT-06**: Text wraps at terminal width (no horizontal scroll needed)
+- [x] **EDIT-04**: User can move to start/end of line (Home/End)
+- [x] **EDIT-05**: User can create new lines (multiline messages supported)
+- [x] **EDIT-06**: Text wraps at terminal width (no horizontal scroll needed)
 - [ ] **EDIT-07**: Undo/redo work for text edits
 
 ### Commit Message Features
@@ -38,15 +38,15 @@
 - [ ] **COMMIT-01**: Subject line character counter displays (real-time)
 - [ ] **COMMIT-02**: Subject line shows green if ≤50 chars, yellow if 50-72, red if >72
 - [ ] **COMMIT-03**: Blank line between subject and body is enforced/suggested
-- [ ] **COMMIT-04**: User can save with Ctrl+S
-- [ ] **COMMIT-05**: User can cancel with Esc
+- [x] **COMMIT-04**: User can save with Ctrl+S
+- [x] **COMMIT-05**: User can cancel with Esc
 - [ ] **COMMIT-06**: Hotkey help shows on Ctrl+H (or similar)
 
 ### Merge Conflict Handling
 
 - [x] **MERGE-01**: Conflict markers (<<<<<<, ======, >>>>>>) are detected and styled
-- [ ] **MERGE-02**: Conflict markers are not editable (treated as comments)
-- [ ] **MERGE-03**: User can edit the resolved message between markers
+- [x] **MERGE-02**: Conflict markers are not editable (treated as comments)
+- [x] **MERGE-03**: User can edit the resolved message between markers
 
 ### Rebase Todo Mode
 
@@ -134,20 +134,20 @@
 | PERF-01 | Phase 1 | Complete |
 | CTX-03 | Phase 2 | Complete |
 | CTX-04 | Phase 2 | Complete |
-| CTX-05 | Phase 2 | Pending |
+| CTX-05 | Phase 2 | Complete |
 | CTX-06 | Phase 2 | Complete |
-| EDIT-01 | Phase 2 | Pending |
-| EDIT-02 | Phase 2 | Pending |
+| EDIT-01 | Phase 2 | Complete |
+| EDIT-02 | Phase 2 | Complete |
 | EDIT-03 | Phase 2 | Pending |
-| EDIT-04 | Phase 2 | Pending |
-| EDIT-05 | Phase 2 | Pending |
-| EDIT-06 | Phase 2 | Pending |
+| EDIT-04 | Phase 2 | Complete |
+| EDIT-05 | Phase 2 | Complete |
+| EDIT-06 | Phase 2 | Complete |
 | EDIT-07 | Phase 2 | Pending |
-| COMMIT-04 | Phase 2 | Pending |
-| COMMIT-05 | Phase 2 | Pending |
+| COMMIT-04 | Phase 2 | Complete |
+| COMMIT-05 | Phase 2 | Complete |
 | MERGE-01 | Phase 2 | Complete |
-| MERGE-02 | Phase 2 | Pending |
-| MERGE-03 | Phase 2 | Pending |
+| MERGE-02 | Phase 2 | Complete |
+| MERGE-03 | Phase 2 | Complete |
 | PERF-02 | Phase 2 | Pending |
 | PERF-03 | Phase 2 | Pending |
 | COMMIT-01 | Phase 3 | Pending |
