@@ -30,7 +30,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Cancelling (Esc) exits with code 1; git aborts the operation
   4. If the process panics mid-session, the terminal is restored to normal mode (no stuck raw mode)
   5. The binary starts in under 100ms on typical hardware
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [x] 01-01-PLAN.md — Project scaffold, context detection, terminal safety
+- [x] 01-02-PLAN.md — TUI rendering with ratatui, status bar
+- [x] 01-03-PLAN.md — Event loop, file writer, exit code wiring
 
 ### Phase 2: Text Editing + Comment Handling
 **Goal**: Users can fully edit commit messages and merge messages, with comment lines visually distinct and preserved verbatim, conflict markers styled, and save/cancel hotkeys functional
@@ -42,7 +47,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. On save, comment lines are written back byte-for-byte; the file is not corrupted
   4. Conflict markers (<<<<<<, ======, >>>>>>) in MERGE_MSG are styled and not editable; the resolved message between them is editable
   5. Ctrl+S saves and exits; Esc cancels and exits; rendering updates at 30+ FPS while typing
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Document model, ContentLine enum, comment/marker parsing, serialization
+- [ ] 02-02-PLAN.md — App refactor (Document + TextArea), per-line styled renderer, writer update
+- [ ] 02-03-PLAN.md — Keyboard shortcuts (Ctrl+U/Z/Y/W/D), system clipboard (Ctrl+C/X/V), verification
 
 ### Phase 3: Commit Message Intelligence
 **Goal**: The editor actively guides users toward well-formed commit messages via a real-time subject line counter, blank line enforcement, and an accessible hotkey help overlay
@@ -84,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Git Contract + TUI Shell | 3/3 | Complete   | 2026-03-18 |
-| 2. Text Editing + Comment Handling | 0/? | Not started | - |
+| 2. Text Editing + Comment Handling | 0/3 | Not started | - |
 | 3. Commit Message Intelligence | 0/? | Not started | - |
 | 4. Rebase + Squash Modes | 0/? | Not started | - |
 | 5. Installation + Distribution | 0/? | Not started | - |
