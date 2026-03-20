@@ -3,14 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 2 context gathered
-last_updated: "2026-03-19T14:01:34.871Z"
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-20T12:36:25.209Z"
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
+  total_plans: 6
+  completed_plans: 4
 ---
 
 # Project State
@@ -20,13 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Fast, distraction-free git editor with nano's simplicity that understands git's context (commits, merges, rebases, squashes) without bloat
-**Current focus:** Phase 01 — git-contract-tui-shell
+**Current focus:** Phase 02 — text-editing-comment-handling
 
 ## Current Position
 
-Phase: 01 (git-contract-tui-shell) — COMPLETE
-Plan: 3 of 3 (all plans complete)
-Progress: [██████████] 100% (3/3 plans)
+Phase: 02 (text-editing-comment-handling) — EXECUTING
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -50,6 +48,7 @@ Progress: [██████████] 100% (3/3 plans)
 *Updated after each plan completion*
 | Phase 01-git-contract-tui-shell P02 | 30 | 1 tasks | 2 files |
 | Phase 01-git-contract-tui-shell P03 | 35 | 3 tasks | 6 files |
+| Phase 02-text-editing-comment-handling P01 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -73,6 +72,9 @@ Recent decisions affecting current work:
 - [Phase 01-03]: App::apply() returns Outcome enum not bool — extensible for future editor modes without changing call sites
 - [Phase 01-03]: write_atomic uses path.with_extension(tmp) — same directory guarantees fs::rename is atomic (same filesystem)
 - [Phase 01-03]: drop(terminal_guard) before process::exit() — process::exit() bypasses Rust drop glue; explicit drop is the only safe cleanup path
+- [Phase 02-01]: parse() drops the phantom empty token from split('\n') after a trailing newline; serialize() re-emits '\n' after every stored line — correct round-trip invariant
+- [Phase 02-01]: 6-char conflict marker prefix matching catches both 6-char and 7-char git variants
+- [Phase 02-01]: editable_index maps TextArea row N to lines[N] keeping non-editable lines transparent to the editor
 
 ### Pending Todos
 
@@ -85,6 +87,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T14:01:34.826Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-text-editing-comment-handling/02-CONTEXT.md
+Last session: 2026-03-20T12:34:37Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: .planning/phases/02-text-editing-comment-handling/02-02-PLAN.md
