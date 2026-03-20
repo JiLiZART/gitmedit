@@ -1,5 +1,6 @@
 use crate::context::GitContext;
 use crate::document::{Document, read_comment_char};
+use ratatui::widgets::{Block, Borders};
 use ratatui_textarea::TextArea;
 
 /// Actions that can be applied to the App state machine.
@@ -32,6 +33,8 @@ impl App {
         let editable = document.editable_lines();
         let mut textarea = TextArea::new(editable);
         textarea.set_cursor_line_style(ratatui::style::Style::default());
+        textarea.set_block(Block::default().borders(Borders::ALL));
+
         Self { document, textarea, context }
     }
 
