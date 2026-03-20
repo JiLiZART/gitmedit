@@ -35,13 +35,13 @@ fn main() -> anyhow::Result<()> {
     }
 
     // 4. Read file content.
-    let content = std::fs::read_to_string(&path)?;
+    let raw_content = std::fs::read_to_string(&path)?;
 
     // 5. Detect git context.
     let ctx = context::detect_context(&path);
 
-    // 6. Construct app state.
-    let mut app = App::new(content, ctx);
+    // 6. Construct app state (parses Document + initialises TextArea).
+    let mut app = App::new(&raw_content, ctx);
 
     // 7. Acquire raw-mode terminal guard.
     let mut guard = terminal::TerminalGuard::new()?;
@@ -52,7 +52,8 @@ fn main() -> anyhow::Result<()> {
             .terminal()
             .draw(|f| renderer::Renderer::render(f, &app))?;
 
-        match crossterm::event::read()? {
+        let event = crossterm::event::read()?;
+        match &event {
             Event::Key(KeyEvent {
                 code: KeyCode::Char('s'),
                 modifiers: KeyModifiers::CONTROL,
@@ -63,7 +64,7 @@ fn main() -> anyhow::Result<()> {
                     // Restore raw mode BEFORE file write — prevents garbled
                     // output if the write fails.
                     drop(guard);
-                    writer::FileWriter::write_atomic(app.content(), &path)?;
+                    writer::FileWriter::write_atomic(&app.serialized_content(), &path)?;
                     process::exit(0);
                 }
                 _ => {}
@@ -79,9 +80,20 @@ fn main() -> anyhow::Result<()> {
                 }
                 _ => {}
             },
-            _ => {
-                app.apply(Action::Noop);
+            Event::Key(KeyEvent {
+                kind: KeyEventKind::Press,
+                ..
+            }) => {
+                // All other key presses are delegated to TextArea.
+                // This covers: arrow keys, character insertion, backspace,
+                // delete, Home/End, Enter — giving full editing capability.
+                app.textarea_mut().input(event.clone());
             }
+            Event::Resize(_, _) => {
+                // Terminal resize: just continue the loop — ratatui's
+                // terminal.draw() calls autoresize() automatically.
+            }
+            _ => {}
         }
     }
 }

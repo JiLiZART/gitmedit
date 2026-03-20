@@ -1,4 +1,6 @@
 use crate::context::GitContext;
+use crate::document::{Document, read_comment_char};
+use ratatui_textarea::TextArea;
 
 /// Actions that can be applied to the App state machine.
 #[derive(Debug)]
@@ -16,15 +18,21 @@ pub enum Outcome {
     Continue,
 }
 
-/// Application state: holds file content and detected git context.
+/// Application state: holds parsed Document, TextArea for editing, and detected git context.
 pub struct App {
-    content: String,
+    document: Document,
+    textarea: TextArea<'static>,
     context: GitContext,
 }
 
 impl App {
-    pub fn new(content: String, context: GitContext) -> Self {
-        Self { content, context }
+    pub fn new(raw_content: &str, context: GitContext) -> Self {
+        let comment_char = read_comment_char();
+        let document = Document::parse(raw_content, comment_char);
+        let editable = document.editable_lines();
+        let mut textarea = TextArea::new(editable);
+        textarea.set_cursor_line_style(ratatui::style::Style::default());
+        Self { document, textarea, context }
     }
 
     /// Apply an action and return the resulting outcome.
@@ -36,14 +44,29 @@ impl App {
         }
     }
 
-    /// Return the current text content.
-    pub fn content(&self) -> &str {
-        self.content.as_str()
+    /// Return the parsed Document.
+    pub fn document(&self) -> &Document {
+        &self.document
+    }
+
+    /// Return an immutable reference to the TextArea.
+    pub fn textarea(&self) -> &TextArea {
+        &self.textarea
+    }
+
+    /// Return a mutable reference to the TextArea (for passing key events).
+    pub fn textarea_mut(&mut self) -> &mut TextArea<'static> {
+        &mut self.textarea
     }
 
     /// Return the detected git context.
     pub fn context(&self) -> &GitContext {
         &self.context
+    }
+
+    /// Get serialized content for saving: merges textarea edits back into Document.
+    pub fn serialized_content(&self) -> String {
+        self.document.serialize(self.textarea.lines())
     }
 }
 
@@ -52,7 +75,7 @@ mod tests {
     use super::*;
 
     fn make_app() -> App {
-        App::new("hello\n".to_string(), GitContext::Commit)
+        App::new("hello\n", GitContext::Commit)
     }
 
     #[test]
@@ -74,9 +97,9 @@ mod tests {
     }
 
     #[test]
-    fn content_returns_initial_content() {
+    fn serialized_content_returns_initial_content() {
         let app = make_app();
-        assert_eq!(app.content(), "hello\n");
+        assert_eq!(app.serialized_content(), "hello\n");
     }
 
     #[test]
