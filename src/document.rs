@@ -162,6 +162,28 @@ impl Document {
         let full_idx = self.editable_index[editable_row];
         self.lines[full_idx] = ContentLine::Content(new_content);
     }
+
+    /// Return the first editable (Content) line as a String.
+    /// Returns an empty string if no editable lines exist.
+    pub fn first_line(&self) -> String {
+        self.editable_lines().first().cloned().unwrap_or_default()
+    }
+
+    /// Detect whether a blank line exists between the subject line and the body.
+    ///
+    /// Returns `true` if:
+    /// - fewer than 2 editable lines exist (single-line messages don't require a separator), or
+    /// - the second editable line is blank (trims to empty string).
+    ///
+    /// Returns `false` when two or more editable lines exist and the second
+    /// line has visible content (i.e. no blank separator).
+    pub fn has_blank_line_after_subject(&self) -> bool {
+        let editable = self.editable_lines();
+        if editable.len() < 2 {
+            return true;
+        }
+        editable[1].trim().is_empty()
+    }
 }
 
 #[cfg(test)]
@@ -366,5 +388,43 @@ mod tests {
         let doc = Document::parse(input, '#');
         // Lines: Comment, Comment (trailing '\n' consumed) — no editable lines
         assert_eq!(doc.editable_lines().len(), 0);
+    }
+
+    // -------------------------------------------------------------------------
+    // first_line
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_first_line_returns_subject() {
+        let doc = Document::parse("Subject\n\nBody\n", '#');
+        assert_eq!(doc.first_line(), "Subject");
+    }
+
+    #[test]
+    fn test_first_line_empty_when_no_editable() {
+        let doc = Document::parse("# only comment\n", '#');
+        assert_eq!(doc.first_line(), "");
+    }
+
+    // -------------------------------------------------------------------------
+    // has_blank_line_after_subject
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_has_blank_line_true_when_blank_present() {
+        let doc = Document::parse("Subject\n\nBody\n", '#');
+        assert!(doc.has_blank_line_after_subject());
+    }
+
+    #[test]
+    fn test_has_blank_line_false_when_missing() {
+        let doc = Document::parse("Subject\nBody\n", '#');
+        assert!(!doc.has_blank_line_after_subject());
+    }
+
+    #[test]
+    fn test_has_blank_line_true_single_line() {
+        let doc = Document::parse("Subject\n", '#');
+        assert!(doc.has_blank_line_after_subject());
     }
 }
