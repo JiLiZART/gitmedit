@@ -4,7 +4,9 @@ use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span, Text};
-use ratatui::widgets::Paragraph;
+use ratatui::widgets::{Block, Borders, Paragraph};
+use ratatui::layout::Alignment;
+use crate::context::GitContext;
 
 /// Stateless renderer with per-line styling for Content, Comment, and ConflictMarker lines.
 pub struct Renderer;
@@ -19,6 +21,11 @@ impl Renderer {
 
         Self::render_content(frame, app, chunks[0]);
         Self::render_status_bar(frame, app, chunks[1]);
+
+        // Render help overlay on top if visible.
+        if app.is_help_visible() {
+            Self::render_help_overlay(frame, app);
+        }
     }
 
     fn render_content(frame: &mut Frame, app: &App, area: Rect) {
@@ -138,6 +145,80 @@ impl Renderer {
         let start = offset.min(chars.len());
         let end = (start + width).min(chars.len());
         chars[start..end].iter().collect()
+    }
+
+    /// Compute a centered rectangle of (percent_x% wide, percent_y% tall) within r.
+    fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+        let popup_layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Percentage((100 - percent_y) / 2),
+                Constraint::Percentage(percent_y),
+                Constraint::Percentage((100 - percent_y) / 2),
+            ])
+            .split(r);
+
+        let horizontal = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([
+                Constraint::Percentage((100 - percent_x) / 2),
+                Constraint::Percentage(percent_x),
+                Constraint::Percentage((100 - percent_x) / 2),
+            ])
+            .split(popup_layout[1]);
+
+        horizontal[1]
+    }
+
+    /// Return mode-aware help lines for the current git context.
+    fn help_text_for_context(context: &GitContext) -> Vec<Line<'static>> {
+        let base_actions = vec![
+            "Ctrl+S  Save message",
+            "Esc     Cancel (discard)",
+            "",
+            "Ctrl+C  Copy selection",
+            "Ctrl+X  Cut selection",
+            "Ctrl+V  Paste",
+            "",
+            "Ctrl+U  Delete line",
+            "Ctrl+Z  Undo",
+            "Ctrl+Y  Redo",
+            "Ctrl+W  Delete word",
+            "Ctrl+D  Delete next word",
+        ];
+
+        let mut lines: Vec<Line<'static>> = base_actions
+            .iter()
+            .map(|s| Line::raw(*s))
+            .collect();
+
+        match context {
+            GitContext::Merge => {
+                lines.push(Line::raw(""));
+                lines.push(Line::raw("NOTE: Conflict markers (<<<, ===, >>>) are read-only."));
+            }
+            _ => {}
+        }
+
+        lines
+    }
+
+    /// Render a centered help overlay modal on top of the existing content.
+    fn render_help_overlay(frame: &mut Frame, app: &App) {
+        let popup_area = Self::centered_rect(60, 70, frame.area());
+
+        let help_text = Self::help_text_for_context(app.context());
+
+        let help_widget = Paragraph::new(help_text)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title(" Help (Esc to close) ")
+            )
+            .style(Style::default().bg(Color::DarkGray).fg(Color::White))
+            .alignment(Alignment::Left);
+
+        frame.render_widget(help_widget, popup_area);
     }
 
     fn render_status_bar(frame: &mut Frame, app: &App, area: Rect) {
