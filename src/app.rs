@@ -10,6 +10,8 @@ pub enum Action {
     Save,
     Cancel,
     Noop,
+    Help,         // triggered by Ctrl+H
+    DismissHelp,  // triggered by Esc while help visible
 }
 
 /// Outcomes returned by `App::apply()`.
@@ -25,6 +27,7 @@ pub struct App {
     document: Document,
     textarea: TextArea<'static>,
     context: GitContext,
+    show_help: bool,  // tracks if help overlay is visible
 }
 
 impl App {
@@ -38,7 +41,7 @@ impl App {
         textarea.set_line_number_style(Style::default().fg(Color::DarkGray));
         textarea.set_block(Block::default().borders(Borders::ALL));
 
-        Self { document, textarea, context }
+        Self { document, textarea, context, show_help: false }
     }
 
     /// Apply an action and return the resulting outcome.
@@ -47,7 +50,20 @@ impl App {
             Action::Save => Outcome::Save,
             Action::Cancel => Outcome::Cancel,
             Action::Noop => Outcome::Continue,
+            Action::Help => {
+                self.show_help = true;
+                Outcome::Continue
+            }
+            Action::DismissHelp => {
+                self.show_help = false;
+                Outcome::Continue
+            }
         }
+    }
+
+    /// Return whether the help overlay is currently visible.
+    pub fn is_help_visible(&self) -> bool {
+        self.show_help
     }
 
     /// Return the parsed Document.
