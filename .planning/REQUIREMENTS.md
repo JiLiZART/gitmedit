@@ -35,12 +35,12 @@
 
 ### Commit Message Features
 
-- [ ] **COMMIT-01**: Subject line character counter displays (real-time)
-- [ ] **COMMIT-02**: Subject line shows green if ≤50 chars, yellow if 50-72, red if >72
-- [ ] **COMMIT-03**: Blank line between subject and body is enforced/suggested
+- [x] **COMMIT-01**: Subject line character counter displays (real-time)
+- [x] **COMMIT-02**: Subject line shows green if ≤50 chars, yellow if 50-72, red if >72
+- [x] **COMMIT-03**: Blank line between subject and body is enforced/suggested
 - [x] **COMMIT-04**: User can save with Ctrl+S
 - [x] **COMMIT-05**: User can cancel with Esc
-- [ ] **COMMIT-06**: Hotkey help shows on Ctrl+H (or similar)
+- [x] **COMMIT-06**: Hotkey help shows on Ctrl+H (or similar)
 
 ### Merge Conflict Handling
 
@@ -66,10 +66,10 @@
 
 ### Hotkey Help & Display
 
-- [ ] **HELP-01**: Hotkey reference is available (Ctrl+H or similar)
-- [ ] **HELP-02**: Hotkey reference shows only relevant actions for current mode
-- [ ] **HELP-03**: Hotkey reference does not interfere with message editing
-- [ ] **HELP-04**: Help can be dismissed and editing resumes
+- [x] **HELP-01**: Hotkey reference is available (Ctrl+H or similar)
+- [x] **HELP-02**: Hotkey reference shows only relevant actions for current mode
+- [x] **HELP-03**: Hotkey reference does not interfere with message editing
+- [x] **HELP-04**: Help can be dismissed and editing resumes
 
 ### Performance
 
@@ -150,14 +150,14 @@
 | MERGE-03 | Phase 2 | Complete |
 | PERF-02 | Phase 2 | Pending |
 | PERF-03 | Phase 2 | Pending |
-| COMMIT-01 | Phase 3 | Pending |
-| COMMIT-02 | Phase 3 | Pending |
-| COMMIT-03 | Phase 3 | Pending |
-| COMMIT-06 | Phase 3 | Pending |
-| HELP-01 | Phase 3 | Pending |
-| HELP-02 | Phase 3 | Pending |
-| HELP-03 | Phase 3 | Pending |
-| HELP-04 | Phase 3 | Pending |
+| COMMIT-01 | Phase 3 | Complete |
+| COMMIT-02 | Phase 3 | Complete |
+| COMMIT-03 | Phase 3 | Complete |
+| COMMIT-06 | Phase 3 | Complete |
+| HELP-01 | Phase 3 | Complete |
+| HELP-02 | Phase 3 | Complete |
+| HELP-03 | Phase 3 | Complete |
+| HELP-04 | Phase 3 | Complete |
 | REBASE-01 | Phase 4 | Pending |
 | REBASE-02 | Phase 4 | Pending |
 | REBASE-03 | Phase 4 | Pending |

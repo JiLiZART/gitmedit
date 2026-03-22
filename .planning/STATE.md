@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-22T15:22:14.124Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-22T15:35:03.811Z"
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  completed_phases: 3
+  total_plans: 8
+  completed_plans: 8
 ---
 
 # Project State
@@ -51,6 +51,8 @@ Plan: 2 of 3
 | Phase 02-text-editing-comment-handling P01 | 5 | 2 tasks | 3 files |
 | Phase 02-text-editing-comment-handling P02 | 5 | 2 tasks | 3 files |
 | Phase 02-text-editing-comment-handling P03 | 10 | 3 tasks | 2 files |
+| Phase 03-commit-message-intelligence P01 | 3 | 3 tasks | 2 files |
+| Phase 03-commit-message-intelligence P02 | 3 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -83,6 +85,10 @@ Recent decisions affecting current work:
 - [Phase 02-03]: Ctrl+C/X/V construct arboard::Clipboard::new() per keypress only — avoids clipboard handle caching pitfall
 - [Phase 02-03]: Clipboard unavailability handled as silent no-op via if let Ok — no error propagation
 - [Phase 02-03]: Ctrl+U remapped to move_cursor(Head)+delete_line_by_end() — nano convention, not undo
+- [Phase 03-01]: Extract counter_color_for() and blank_warning_span() as pub(crate) helpers for testability — avoids full frame rendering in tests
+- [Phase 03-01]: has_blank_line_after_subject() returns true for single-line messages — no blank separator required for single-line commits
+- [Phase 03-02]: Both Esc and Ctrl+H dismiss help overlay — toggle behavior for user convenience
+- [Phase 03-02]: Input gating checks app.is_help_visible() before main match block — clean separation with no interleaving
 
 ### Pending Todos
 
@@ -95,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T15:22:14.091Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-commit-message-intelligence/03-CONTEXT.md
+Last session: 2026-03-22T15:35:03.778Z
+Stopped at: Completed 03-02-PLAN.md
+Resume file: None
