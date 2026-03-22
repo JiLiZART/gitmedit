@@ -1,5 +1,6 @@
 use crate::context::GitContext;
 use crate::document::{Document, read_comment_char};
+use ratatui::style::{Color, Style};
 use ratatui::widgets::{Block, Borders};
 use ratatui_textarea::TextArea;
 
@@ -32,7 +33,9 @@ impl App {
         let document = Document::parse(raw_content, comment_char);
         let editable = document.editable_lines();
         let mut textarea = TextArea::new(editable);
-        textarea.set_cursor_line_style(ratatui::style::Style::default());
+
+        textarea.set_cursor_line_style(Style::default());
+        textarea.set_line_number_style(Style::default().fg(Color::DarkGray));
         textarea.set_block(Block::default().borders(Borders::ALL));
 
         Self { document, textarea, context }

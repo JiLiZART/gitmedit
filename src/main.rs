@@ -5,14 +5,14 @@ use clap::Parser;
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui_textarea::CursorMove;
 
+use app::{Action, App, Outcome};
+
 mod app;
 mod context;
 mod document;
 mod renderer;
 mod terminal;
 mod writer;
-
-use app::{Action, App, Outcome};
 
 #[derive(Parser, Debug)]
 #[command(name = "gitmedit", about = "Fast, distraction-free git editor")]
@@ -54,6 +54,7 @@ fn main() -> anyhow::Result<()> {
             .draw(|f| renderer::Renderer::render(f, &app))?;
 
         let event = crossterm::event::read()?;
+
         match &event {
             Event::Key(KeyEvent { code, modifiers, kind: KeyEventKind::Press, .. }) => {
                 match (*code, *modifiers) {
@@ -109,6 +110,7 @@ fn main() -> anyhow::Result<()> {
                     // (SSH, headless environments).
                     (KeyCode::Char('c'), KeyModifiers::CONTROL) => {
                         app.textarea_mut().copy();
+
                         if let Ok(mut clip) = arboard::Clipboard::new() {
                             let _ = clip.set_text(app.textarea().yank_text().to_string());
                         }
@@ -116,6 +118,7 @@ fn main() -> anyhow::Result<()> {
                     // Ctrl+X — Cut selection to system clipboard.
                     (KeyCode::Char('x'), KeyModifiers::CONTROL) => {
                         app.textarea_mut().cut();
+
                         if let Ok(mut clip) = arboard::Clipboard::new() {
                             let _ = clip.set_text(app.textarea().yank_text().to_string());
                         }

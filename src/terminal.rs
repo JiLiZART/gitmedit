@@ -1,5 +1,9 @@
 use anyhow::Result;
 use crossterm::terminal;
+use crossterm::terminal::{
+    EnterAlternateScreen, LeaveAlternateScreen,
+};
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use ratatui::Terminal;
 use ratatui::backend::CrosstermBackend;
 use std::io::Stdout;
@@ -33,9 +37,14 @@ impl TerminalGuard {
     /// Note: we construct the backend manually rather than calling `ratatui::init()`
     /// because that helper enters alternate screen, which violates IO-06.
     pub fn new() -> Result<Self> {
+        let mut stdout = std::io::stdout();
+
         terminal::enable_raw_mode()?;
-        let backend = CrosstermBackend::new(std::io::stdout());
+        crossterm::execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+
+        let backend = CrosstermBackend::new(stdout);
         let term = Terminal::new(backend)?;
+
         Ok(Self { terminal: term })
     }
 
@@ -49,6 +58,13 @@ impl Drop for TerminalGuard {
     fn drop(&mut self) {
         // Suppress errors — Drop must not panic.
         let _ = terminal::disable_raw_mode();
+
+        crossterm::execute!(
+            self.terminal().backend_mut(),
+            LeaveAlternateScreen,
+            DisableMouseCapture
+        )
+            .unwrap();
     }
 }
 

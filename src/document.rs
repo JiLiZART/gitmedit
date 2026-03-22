@@ -123,7 +123,7 @@ impl Document {
     }
 
     /// All lines in original order.
-    pub fn lines(&self) -> &[ContentLine] {
+    pub fn lines(&self) -> &Vec<ContentLine> {
         &self.lines
     }
 
