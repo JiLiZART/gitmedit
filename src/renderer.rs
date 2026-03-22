@@ -222,8 +222,32 @@ impl Renderer {
     }
 
     fn render_status_bar(frame: &mut Frame, app: &App, area: Rect) {
-        let status_text = format!("^S Save  Esc Cancel  [{:?}]", app.context());
-        let status_widget = Paragraph::new(status_text)
+        let first_line = app.document().first_line();
+        let char_count = first_line.chars().count();
+        let counter_color = if char_count <= 50 {
+            Color::Green
+        } else if char_count <= 72 {
+            Color::Yellow
+        } else {
+            Color::Red
+        };
+        let counter_text = format!("Chars: {}", char_count);
+        let counter_span = Span::styled(
+            counter_text,
+            Style::default().fg(counter_color).add_modifier(Modifier::BOLD),
+        );
+
+        let has_blank = app.document().has_blank_line_after_subject();
+        let blank_warning = if !has_blank {
+            Span::styled(" [No blank line]", Style::default().fg(Color::Yellow))
+        } else {
+            Span::raw("")
+        };
+
+        let actions_span = Span::raw("  |  ^S Save  Esc Cancel  ^H Help");
+
+        let status_line = Line::from(vec![counter_span, blank_warning, actions_span]);
+        let status_widget = Paragraph::new(status_line)
             .style(Style::default().fg(Color::White).bg(Color::DarkGray));
         frame.render_widget(status_widget, area);
     }
