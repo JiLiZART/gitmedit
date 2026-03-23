@@ -1,3 +1,154 @@
+/// Actions available for a rebase todo entry.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum RebaseAction {
+    Pick,
+    Squash,
+    Fixup,
+    Drop,
+    Exec,
+}
+
+impl RebaseAction {
+    /// Cycle to the next action in the rotation: Pick->Squash->Fixup->Drop->Pick.
+    /// Exec does not cycle (returns itself).
+    pub fn cycle(&self) -> Self {
+        match self {
+            RebaseAction::Pick => RebaseAction::Squash,
+            RebaseAction::Squash => RebaseAction::Fixup,
+            RebaseAction::Fixup => RebaseAction::Drop,
+            RebaseAction::Drop => RebaseAction::Pick,
+            RebaseAction::Exec => RebaseAction::Exec,
+        }
+    }
+
+    /// Return the canonical long-form string representation.
+    pub fn as_str(&self) -> &str {
+        match self {
+            RebaseAction::Pick => "pick",
+            RebaseAction::Squash => "squash",
+            RebaseAction::Fixup => "fixup",
+            RebaseAction::Drop => "drop",
+            RebaseAction::Exec => "exec",
+        }
+    }
+}
+
+/// Typed representation of a single line in a git-rebase-todo file.
+#[derive(Debug, Clone, PartialEq)]
+pub enum RebaseLine {
+    Action {
+        action: RebaseAction,
+        hash: String,
+        subject: String,
+    },
+    Comment(String),
+}
+
+/// Parse a rebase action keyword (long or short form) into a RebaseAction.
+pub fn parse_action(s: &str) -> Option<RebaseAction> {
+    match s {
+        "pick" | "p" => Some(RebaseAction::Pick),
+        "squash" | "s" => Some(RebaseAction::Squash),
+        "fixup" | "f" => Some(RebaseAction::Fixup),
+        "drop" | "d" => Some(RebaseAction::Drop),
+        "exec" | "x" => Some(RebaseAction::Exec),
+        _ => None,
+    }
+}
+
+/// Classify a single raw line from a git-rebase-todo file.
+///
+/// Lines starting with comment_char are Comments. Lines that start with a
+/// recognized action keyword are parsed into Action variants. Exec lines use
+/// the remainder of the line as subject with an empty hash. Malformed lines
+/// fall back to Comment.
+pub fn classify_rebase_line(line: &str, comment_char: char) -> RebaseLine {
+    if line.starts_with(comment_char) {
+        return RebaseLine::Comment(line.to_string());
+    }
+
+    let parts: Vec<&str> = line.splitn(3, ' ').collect();
+    if parts.is_empty() {
+        return RebaseLine::Comment(line.to_string());
+    }
+
+    match parse_action(parts[0]) {
+        None => RebaseLine::Comment(line.to_string()),
+        Some(RebaseAction::Exec) => {
+            // exec format: "exec {command}" — no hash, rest of line is subject
+            let subject = if parts.len() >= 2 {
+                parts[1..].join(" ")
+            } else {
+                String::new()
+            };
+            RebaseLine::Action {
+                action: RebaseAction::Exec,
+                hash: String::new(),
+                subject,
+            }
+        }
+        Some(action) => {
+            if parts.len() < 2 {
+                return RebaseLine::Comment(line.to_string());
+            }
+            let hash = parts[1].to_string();
+            let subject = if parts.len() >= 3 {
+                parts[2].to_string()
+            } else {
+                String::new()
+            };
+            RebaseLine::Action { action, hash, subject }
+        }
+    }
+}
+
+/// Parse a full git-rebase-todo string into a Vec of RebaseLine.
+///
+/// Trailing empty token from a trailing newline is skipped, same as Document::parse.
+pub fn parse_rebase_todo(raw: &str, comment_char: char) -> Vec<RebaseLine> {
+    if raw.is_empty() {
+        return Vec::new();
+    }
+
+    let raw_lines: Vec<&str> = raw.split('\n').collect();
+    let slice = if raw.ends_with('\n') && raw_lines.len() > 1 {
+        &raw_lines[..raw_lines.len() - 1]
+    } else {
+        &raw_lines[..]
+    };
+
+    slice.iter().map(|line| classify_rebase_line(line, comment_char)).collect()
+}
+
+/// Serialize a Vec of RebaseLine back to a git-rebase-todo string.
+///
+/// Action lines are always emitted with long-form action names.
+/// Each line is followed by '\n'.
+pub fn serialize_rebase_todo(lines: &[RebaseLine]) -> String {
+    let mut output = String::new();
+    for line in lines {
+        match line {
+            RebaseLine::Action { action, hash, subject } => {
+                if *action == RebaseAction::Exec {
+                    output.push_str("exec ");
+                    output.push_str(subject);
+                } else {
+                    output.push_str(action.as_str());
+                    output.push(' ');
+                    output.push_str(hash);
+                    output.push(' ');
+                    output.push_str(subject);
+                }
+            }
+            RebaseLine::Comment(text) => {
+                output.push_str(text);
+            }
+        }
+        output.push('\n');
+    }
+    output
+}
+
 /// Typed representation of a single line in the file being edited.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ContentLine {
@@ -189,6 +340,200 @@ impl Document {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // -------------------------------------------------------------------------
+    // RebaseAction and RebaseLine tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_parse_action_long_forms() {
+        assert_eq!(parse_action("pick"), Some(RebaseAction::Pick));
+        assert_eq!(parse_action("squash"), Some(RebaseAction::Squash));
+        assert_eq!(parse_action("fixup"), Some(RebaseAction::Fixup));
+        assert_eq!(parse_action("drop"), Some(RebaseAction::Drop));
+        assert_eq!(parse_action("exec"), Some(RebaseAction::Exec));
+    }
+
+    #[test]
+    fn test_parse_action_short_forms() {
+        assert_eq!(parse_action("p"), Some(RebaseAction::Pick));
+        assert_eq!(parse_action("s"), Some(RebaseAction::Squash));
+        assert_eq!(parse_action("f"), Some(RebaseAction::Fixup));
+        assert_eq!(parse_action("d"), Some(RebaseAction::Drop));
+        assert_eq!(parse_action("x"), Some(RebaseAction::Exec));
+    }
+
+    #[test]
+    fn test_parse_action_invalid() {
+        assert_eq!(parse_action("invalid"), None);
+        assert_eq!(parse_action(""), None);
+    }
+
+    #[test]
+    fn test_classify_rebase_content_line() {
+        let result = classify_rebase_line("pick abc1234 Fix bug", '#');
+        assert_eq!(
+            result,
+            RebaseLine::Action {
+                action: RebaseAction::Pick,
+                hash: "abc1234".to_string(),
+                subject: "Fix bug".to_string(),
+            }
+        );
+    }
+
+    #[test]
+    fn test_classify_rebase_comment() {
+        let result = classify_rebase_line("# Rebase abc..def onto ghi", '#');
+        assert_eq!(
+            result,
+            RebaseLine::Comment("# Rebase abc..def onto ghi".to_string())
+        );
+    }
+
+    #[test]
+    fn test_classify_rebase_abbreviated() {
+        let result = classify_rebase_line("p abc1234 Fix bug", '#');
+        assert_eq!(
+            result,
+            RebaseLine::Action {
+                action: RebaseAction::Pick,
+                hash: "abc1234".to_string(),
+                subject: "Fix bug".to_string(),
+            }
+        );
+    }
+
+    #[test]
+    fn test_classify_rebase_malformed() {
+        let result = classify_rebase_line("garbage line", '#');
+        assert_eq!(result, RebaseLine::Comment("garbage line".to_string()));
+    }
+
+    #[test]
+    fn test_classify_rebase_subject_with_spaces() {
+        let result = classify_rebase_line("pick abc1234 Fix the authentication bug", '#');
+        assert_eq!(
+            result,
+            RebaseLine::Action {
+                action: RebaseAction::Pick,
+                hash: "abc1234".to_string(),
+                subject: "Fix the authentication bug".to_string(),
+            }
+        );
+    }
+
+    #[test]
+    fn test_action_cycle_pick() {
+        assert_eq!(RebaseAction::Pick.cycle(), RebaseAction::Squash);
+    }
+
+    #[test]
+    fn test_action_cycle_squash() {
+        assert_eq!(RebaseAction::Squash.cycle(), RebaseAction::Fixup);
+    }
+
+    #[test]
+    fn test_action_cycle_fixup() {
+        assert_eq!(RebaseAction::Fixup.cycle(), RebaseAction::Drop);
+    }
+
+    #[test]
+    fn test_action_cycle_drop() {
+        assert_eq!(RebaseAction::Drop.cycle(), RebaseAction::Pick);
+    }
+
+    #[test]
+    fn test_action_cycle_exec() {
+        assert_eq!(RebaseAction::Exec.cycle(), RebaseAction::Exec);
+    }
+
+    #[test]
+    fn test_action_as_str() {
+        assert_eq!(RebaseAction::Pick.as_str(), "pick");
+        assert_eq!(RebaseAction::Squash.as_str(), "squash");
+        assert_eq!(RebaseAction::Fixup.as_str(), "fixup");
+        assert_eq!(RebaseAction::Drop.as_str(), "drop");
+        assert_eq!(RebaseAction::Exec.as_str(), "exec");
+    }
+
+    #[test]
+    fn test_parse_rebase_todo() {
+        let input = "pick abc1234 Fix bug\nsquash def5678 Add test\n# comment\n";
+        let lines = parse_rebase_todo(input, '#');
+        assert_eq!(lines.len(), 3);
+        assert_eq!(
+            lines[0],
+            RebaseLine::Action {
+                action: RebaseAction::Pick,
+                hash: "abc1234".to_string(),
+                subject: "Fix bug".to_string(),
+            }
+        );
+        assert_eq!(
+            lines[1],
+            RebaseLine::Action {
+                action: RebaseAction::Squash,
+                hash: "def5678".to_string(),
+                subject: "Add test".to_string(),
+            }
+        );
+        assert_eq!(lines[2], RebaseLine::Comment("# comment".to_string()));
+    }
+
+    #[test]
+    fn test_serialize_rebase_todo() {
+        let lines = vec![
+            RebaseLine::Action {
+                action: RebaseAction::Pick,
+                hash: "abc1234".to_string(),
+                subject: "Fix bug".to_string(),
+            },
+            RebaseLine::Action {
+                action: RebaseAction::Squash,
+                hash: "def5678".to_string(),
+                subject: "Add test".to_string(),
+            },
+            RebaseLine::Comment("# comment".to_string()),
+        ];
+        let result = serialize_rebase_todo(&lines);
+        assert_eq!(result, "pick abc1234 Fix bug\nsquash def5678 Add test\n# comment\n");
+    }
+
+    #[test]
+    fn test_roundtrip_rebase_todo() {
+        let input = "pick abc1234 Fix bug\nsquash def5678 Add test\n# comment\n";
+        let lines = parse_rebase_todo(input, '#');
+        let output = serialize_rebase_todo(&lines);
+        assert_eq!(input, output);
+    }
+
+    #[test]
+    fn test_roundtrip_with_abbreviated_actions() {
+        let input = "p abc1234 Fix bug\n";
+        let lines = parse_rebase_todo(input, '#');
+        let output = serialize_rebase_todo(&lines);
+        assert_eq!(output, "pick abc1234 Fix bug\n");
+    }
+
+    #[test]
+    fn test_empty_rebase_todo() {
+        let lines = parse_rebase_todo("", '#');
+        assert!(lines.is_empty());
+    }
+
+    #[test]
+    fn test_exec_line_parsing() {
+        let result = classify_rebase_line("exec make test", '#');
+        assert_eq!(
+            result,
+            RebaseLine::Action {
+                action: RebaseAction::Exec,
+                hash: "".to_string(),
+                subject: "make test".to_string(),
+            }
+        );
+    }
 
     // -------------------------------------------------------------------------
     // read_comment_char
