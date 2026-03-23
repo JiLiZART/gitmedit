@@ -51,7 +51,7 @@
 ### Rebase Todo Mode
 
 - [x] **REBASE-01**: Rebase todo file is parsed into lines with actions (pick, squash, fixup, drop, etc.)
-- [ ] **REBASE-02**: Rebase mode displays lines in a structured table (not free-form text)
+- [x] **REBASE-02**: Rebase mode displays lines in a structured table (not free-form text)
 - [x] **REBASE-03**: User can cycle through action types with hotkey (e.g., p→s→f→d→p)
 - [x] **REBASE-04**: Non-comment lines can have their action changed
 - [x] **REBASE-05**: Comment lines and order are preserved on save
@@ -159,7 +159,7 @@
 | HELP-03 | Phase 3 | Complete |
 | HELP-04 | Phase 3 | Complete |
 | REBASE-01 | Phase 4 | Complete |
-| REBASE-02 | Phase 4 | Pending |
+| REBASE-02 | Phase 4 | Complete |
 | REBASE-03 | Phase 4 | Complete |
 | REBASE-04 | Phase 4 | Complete |
 | REBASE-05 | Phase 4 | Complete |
