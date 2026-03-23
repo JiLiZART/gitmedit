@@ -19,12 +19,19 @@ impl Renderer {
             .constraints([Constraint::Min(0), Constraint::Length(1)])
             .split(frame.area());
 
-        if *app.context() == GitContext::Rebase {
-            Self::render_rebase_table(frame, app, chunks[0]);
-            Self::render_rebase_status_bar(frame, app, chunks[1]);
-        } else {
-            Self::render_content(frame, app, chunks[0]);
-            Self::render_status_bar(frame, app, chunks[1]);
+        match app.context() {
+            GitContext::Rebase => {
+                Self::render_rebase_table(frame, app, chunks[0]);
+                Self::render_rebase_status_bar(frame, app, chunks[1]);
+            }
+            GitContext::Squash if !app.squash_log().is_empty() => {
+                Self::render_squash_mode(frame, app, chunks[0]);
+                Self::render_squash_status_bar(frame, app, chunks[1]);
+            }
+            _ => {
+                Self::render_content(frame, app, chunks[0]);
+                Self::render_status_bar(frame, app, chunks[1]);
+            }
         }
 
         // Render help overlay on top if visible.
@@ -215,6 +222,11 @@ impl Renderer {
                 lines.push(Line::raw(""));
                 lines.push(Line::raw("NOTE: Conflict markers (<<<, ===, >>>) are read-only."));
             }
+            GitContext::Squash => {
+                lines.push(Line::raw(""));
+                lines.push(Line::raw("NOTE: Commit log above is read-only."));
+                lines.push(Line::raw("      Edit the combined message below."));
+            }
             _ => {}
         }
 
@@ -237,6 +249,64 @@ impl Renderer {
             .alignment(Alignment::Left);
 
         frame.render_widget(help_widget, popup_area);
+    }
+
+    fn render_squash_mode(frame: &mut Frame, app: &App, area: Rect) {
+        let log_lines = app.squash_log();
+        // Log section: height based on number of log lines, capped at 40% of area.
+        let log_height = (log_lines.len() as u16 + 2).min(area.height * 40 / 100);
+
+        let layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Length(log_height),
+                Constraint::Min(5),
+            ])
+            .split(area);
+
+        let log_area = layout[0];
+        let msg_area = layout[1];
+
+        // Render read-only commit log with distinct background.
+        let log_text: Vec<Line> = log_lines.iter().map(|line| {
+            Line::from(Span::styled(
+                line.clone(),
+                Style::default().fg(Color::DarkGray),
+            ))
+        }).collect();
+
+        let log_widget = Paragraph::new(log_text)
+            .block(Block::default()
+                .title(" Commit Log (read-only) ")
+                .borders(Borders::ALL)
+                .style(Style::default().bg(Color::Black)))
+            .style(Style::default().fg(Color::DarkGray));
+
+        frame.render_widget(log_widget, log_area);
+
+        // Render editable message using the same render_content logic.
+        Self::render_content(frame, app, msg_area);
+    }
+
+    fn render_squash_status_bar(frame: &mut Frame, app: &App, area: Rect) {
+        let first_line = app.document().first_line();
+        let char_count = first_line.chars().count();
+        let counter_color = counter_color_for(char_count);
+        let counter_text = format!("Chars: {}", char_count);
+        let counter_span = Span::styled(
+            counter_text,
+            Style::default().fg(counter_color).add_modifier(Modifier::BOLD),
+        );
+
+        let has_blank = app.document().has_blank_line_after_subject();
+        let blank_warning = blank_warning_span(has_blank);
+
+        let actions_span = Span::raw("  |  ^S Save  Esc Cancel  ^H Help  [Squash]");
+
+        let status_line = Line::from(vec![counter_span, blank_warning, actions_span]);
+        let status_widget = Paragraph::new(status_line)
+            .style(Style::default().fg(Color::White).bg(Color::DarkGray));
+        frame.render_widget(status_widget, area);
     }
 
     fn render_rebase_table(frame: &mut Frame, app: &App, area: Rect) {
