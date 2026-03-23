@@ -1,10 +1,10 @@
 use crate::app::App;
-use crate::document::ContentLine;
+use crate::document::{ContentLine, RebaseLine, RebaseAction};
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span, Text};
-use ratatui::widgets::{Block, Borders, Paragraph};
+use ratatui::widgets::{Block, Borders, Cell, Paragraph, Row, Table};
 use ratatui::layout::Alignment;
 use crate::context::GitContext;
 
@@ -19,8 +19,13 @@ impl Renderer {
             .constraints([Constraint::Min(0), Constraint::Length(1)])
             .split(frame.area());
 
-        Self::render_content(frame, app, chunks[0]);
-        Self::render_status_bar(frame, app, chunks[1]);
+        if *app.context() == GitContext::Rebase {
+            Self::render_rebase_table(frame, app, chunks[0]);
+            Self::render_rebase_status_bar(frame, app, chunks[1]);
+        } else {
+            Self::render_content(frame, app, chunks[0]);
+            Self::render_status_bar(frame, app, chunks[1]);
+        }
 
         // Render help overlay on top if visible.
         if app.is_help_visible() {
@@ -193,6 +198,19 @@ impl Renderer {
             .collect();
 
         match context {
+            GitContext::Rebase => {
+                // Rebase mode uses a completely different set of actions — no free-text editing.
+                return vec![
+                    Line::raw("Tab     Cycle action (pick/squash/fixup/drop)"),
+                    Line::raw("Up/Down Navigate commits"),
+                    Line::raw(""),
+                    Line::raw("Ctrl+S  Save rebase plan"),
+                    Line::raw("Esc     Cancel rebase"),
+                    Line::raw(""),
+                    Line::raw("NOTE: Comment lines are read-only."),
+                    Line::raw("      Exec lines do not cycle."),
+                ];
+            }
             GitContext::Merge => {
                 lines.push(Line::raw(""));
                 lines.push(Line::raw("NOTE: Conflict markers (<<<, ===, >>>) are read-only."));
@@ -219,6 +237,97 @@ impl Renderer {
             .alignment(Alignment::Left);
 
         frame.render_widget(help_widget, popup_area);
+    }
+
+    fn render_rebase_table(frame: &mut Frame, app: &App, area: Rect) {
+        let rebase_lines = app.rebase_lines();
+        let selected_line_idx = app.selected_rebase_line_idx();
+
+        // Compute scroll offset to keep selected row visible.
+        let visible_height = area.height as usize;
+        let scroll_offset = if let Some(idx) = selected_line_idx {
+            if idx >= visible_height {
+                idx.saturating_sub(visible_height / 2)
+            } else {
+                0
+            }
+        } else {
+            0
+        };
+
+        let rows: Vec<Row> = rebase_lines
+            .iter()
+            .enumerate()
+            .skip(scroll_offset)
+            .take(visible_height)
+            .map(|(i, line)| {
+                let is_selected = selected_line_idx == Some(i);
+                match line {
+                    RebaseLine::Action { action, hash, subject } => {
+                        let action_style = match action {
+                            RebaseAction::Pick   => Style::default().fg(Color::Green),
+                            RebaseAction::Squash => Style::default().fg(Color::Yellow),
+                            RebaseAction::Fixup  => Style::default().fg(Color::Cyan),
+                            RebaseAction::Drop   => Style::default().fg(Color::Red),
+                            RebaseAction::Exec   => Style::default().fg(Color::Magenta),
+                        };
+                        let row_style = if is_selected {
+                            Style::default().bg(Color::DarkGray).add_modifier(Modifier::BOLD)
+                        } else {
+                            Style::default()
+                        };
+                        Row::new(vec![
+                            Cell::from(format!("{:<7}", action.as_str())).style(action_style),
+                            Cell::from(hash.chars().take(7).collect::<String>()),
+                            Cell::from(subject.clone()),
+                        ])
+                        .style(row_style)
+                    }
+                    RebaseLine::Comment(text) => {
+                        Row::new(vec![
+                            Cell::from(text.clone()),
+                        ])
+                        .style(Style::default().fg(Color::DarkGray))
+                    }
+                }
+            })
+            .collect();
+
+        let widths = [
+            Constraint::Length(8),
+            Constraint::Length(8),
+            Constraint::Min(20),
+        ];
+
+        let table = Table::new(rows, widths)
+            .block(Block::default().title(" Rebase ").borders(Borders::NONE));
+
+        frame.render_widget(table, area);
+    }
+
+    fn render_rebase_status_bar(frame: &mut Frame, app: &App, area: Rect) {
+        let line_info = if !app.selectable_indices().is_empty() {
+            format!("Line {}/{}", app.selected_rebase_idx() + 1, app.selectable_indices().len())
+        } else {
+            "No commits".to_string()
+        };
+
+        let status_line = Line::from(vec![
+            Span::raw(line_info),
+            Span::raw("  |  "),
+            Span::styled("Tab", Style::default().add_modifier(Modifier::BOLD)),
+            Span::raw(" Cycle action  "),
+            Span::styled("^S", Style::default().add_modifier(Modifier::BOLD)),
+            Span::raw(" Save  "),
+            Span::styled("Esc", Style::default().add_modifier(Modifier::BOLD)),
+            Span::raw(" Cancel  "),
+            Span::styled("^H", Style::default().add_modifier(Modifier::BOLD)),
+            Span::raw(" Help"),
+        ]);
+
+        let status_widget = Paragraph::new(status_line)
+            .style(Style::default().fg(Color::White).bg(Color::DarkGray));
+        frame.render_widget(status_widget, area);
     }
 
     fn render_status_bar(frame: &mut Frame, app: &App, area: Rect) {
