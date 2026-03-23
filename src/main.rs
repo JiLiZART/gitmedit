@@ -6,6 +6,7 @@ use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui_textarea::CursorMove;
 
 use app::{Action, App, Outcome};
+use context::GitContext;
 
 mod app;
 mod context;
@@ -69,8 +70,51 @@ fn main() -> anyhow::Result<()> {
                         }
                         _ => { /* ignore all other input while help visible */ }
                     }
+                } else if *app.context() == GitContext::Rebase {
+                    // Rebase mode: structured navigation, no free-text editing.
+                    match (*code, *modifiers) {
+                        // Ctrl+H — Show help overlay.
+                        (KeyCode::Char('h'), KeyModifiers::CONTROL) => {
+                            app.apply(Action::Help);
+                        }
+                        // Ctrl+S — Save rebase plan.
+                        (KeyCode::Char('s'), KeyModifiers::CONTROL) => {
+                            match app.apply(Action::Save) {
+                                Outcome::Save => {
+                                    drop(guard);
+                                    writer::FileWriter::write_atomic(&app.serialized_content(), &path)?;
+                                    process::exit(0);
+                                }
+                                _ => {}
+                            }
+                        }
+                        // Esc — Cancel rebase.
+                        (KeyCode::Esc, _) => {
+                            match app.apply(Action::Cancel) {
+                                Outcome::Cancel => {
+                                    drop(guard);
+                                    process::exit(1);
+                                }
+                                _ => {}
+                            }
+                        }
+                        // Tab — Cycle action on selected line.
+                        (KeyCode::Tab, KeyModifiers::NONE) => {
+                            app.apply(Action::CycleRebaseAction);
+                        }
+                        // Up arrow — Move selection up.
+                        (KeyCode::Up, KeyModifiers::NONE) => {
+                            app.apply(Action::MoveRebaseUp);
+                        }
+                        // Down arrow — Move selection down.
+                        (KeyCode::Down, KeyModifiers::NONE) => {
+                            app.apply(Action::MoveRebaseDown);
+                        }
+                        // All other keys ignored in rebase mode.
+                        _ => {}
+                    }
                 } else {
-                    // Normal editing mode.
+                    // Normal editing mode (commit, merge, unknown).
                     match (*code, *modifiers) {
                         // Ctrl+H — Show help overlay.
                         (KeyCode::Char('h'), KeyModifiers::CONTROL) => {
