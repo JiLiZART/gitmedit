@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Git Contract + TUI Shell** - Binary opens a file, renders it in TUI, saves or cancels with correct exit codes, and never corrupts the terminal (completed 2026-03-18)
 - [ ] **Phase 2: Text Editing + Comment Handling** - Full text editing for COMMIT_EDITMSG and MERGE_MSG with comment preservation, cursor movement, multiline, and merge conflict styling
 - [x] **Phase 3: Commit Message Intelligence** - Subject line counter with 50/72 color coding, blank line enforcement, and context-aware hotkey help overlay (completed 2026-03-22)
-- [ ] **Phase 4: Rebase + Squash Modes** - Structured rebase-todo display with action cycling, squash context rendering with protected commit log
+- [x] **Phase 4: Rebase + Squash Modes** - Structured rebase-todo display with action cycling, squash context rendering with protected commit log (completed 2026-03-23)
 - [ ] **Phase 5: Installation + Distribution** - cargo install path, PATH availability, and dual git config setup (core.editor + sequence.editor)
 
 ## Phase Details
@@ -105,5 +105,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Git Contract + TUI Shell | 3/3 | Complete   | 2026-03-18 |
 | 2. Text Editing + Comment Handling | 0/3 | Not started | - |
 | 3. Commit Message Intelligence | 2/2 | Complete   | 2026-03-22 |
-| 4. Rebase + Squash Modes | 1/3 | In Progress|  |
+| 4. Rebase + Squash Modes | 3/3 | Complete   | 2026-03-23 |
 | 5. Installation + Distribution | 0/? | Not started | - |

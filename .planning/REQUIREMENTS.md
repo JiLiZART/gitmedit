@@ -59,10 +59,10 @@
 
 ### Squash Detection
 
-- [ ] **SQUASH-01**: Squash mode detects when editing a squash operation file
-- [ ] **SQUASH-02**: Squash mode displays the original commit log (read-only)
-- [ ] **SQUASH-03**: Squash mode allows editing the combined commit message
-- [ ] **SQUASH-04**: Squash commits list is highlighted and protected from editing
+- [x] **SQUASH-01**: Squash mode detects when editing a squash operation file
+- [x] **SQUASH-02**: Squash mode displays the original commit log (read-only)
+- [x] **SQUASH-03**: Squash mode allows editing the combined commit message
+- [x] **SQUASH-04**: Squash commits list is highlighted and protected from editing
 
 ### Hotkey Help & Display
 
@@ -164,10 +164,10 @@
 | REBASE-04 | Phase 4 | Complete |
 | REBASE-05 | Phase 4 | Complete |
 | REBASE-06 | Phase 4 | Complete |
-| SQUASH-01 | Phase 4 | Pending |
-| SQUASH-02 | Phase 4 | Pending |
-| SQUASH-03 | Phase 4 | Pending |
-| SQUASH-04 | Phase 4 | Pending |
+| SQUASH-01 | Phase 4 | Complete |
+| SQUASH-02 | Phase 4 | Complete |
+| SQUASH-03 | Phase 4 | Complete |
+| SQUASH-04 | Phase 4 | Complete |
 | INSTALL-01 | Phase 5 | Pending |
 | INSTALL-02 | Phase 5 | Pending |
 | INSTALL-03 | Phase 5 | Pending |
