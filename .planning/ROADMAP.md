@@ -105,5 +105,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Git Contract + TUI Shell | 3/3 | Complete   | 2026-03-18 |
 | 2. Text Editing + Comment Handling | 0/3 | Not started | - |
 | 3. Commit Message Intelligence | 2/2 | Complete   | 2026-03-22 |
-| 4. Rebase + Squash Modes | 0/3 | Not started | - |
+| 4. Rebase + Squash Modes | 1/3 | In Progress|  |
 | 5. Installation + Distribution | 0/? | Not started | - |

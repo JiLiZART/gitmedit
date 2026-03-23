@@ -50,12 +50,12 @@
 
 ### Rebase Todo Mode
 
-- [ ] **REBASE-01**: Rebase todo file is parsed into lines with actions (pick, squash, fixup, drop, etc.)
+- [x] **REBASE-01**: Rebase todo file is parsed into lines with actions (pick, squash, fixup, drop, etc.)
 - [ ] **REBASE-02**: Rebase mode displays lines in a structured table (not free-form text)
-- [ ] **REBASE-03**: User can cycle through action types with hotkey (e.g., p→s→f→d→p)
-- [ ] **REBASE-04**: Non-comment lines can have their action changed
-- [ ] **REBASE-05**: Comment lines and order are preserved on save
-- [ ] **REBASE-06**: Save writes rebase todo back in exact git format
+- [x] **REBASE-03**: User can cycle through action types with hotkey (e.g., p→s→f→d→p)
+- [x] **REBASE-04**: Non-comment lines can have their action changed
+- [x] **REBASE-05**: Comment lines and order are preserved on save
+- [x] **REBASE-06**: Save writes rebase todo back in exact git format
 
 ### Squash Detection
 
@@ -158,12 +158,12 @@
 | HELP-02 | Phase 3 | Complete |
 | HELP-03 | Phase 3 | Complete |
 | HELP-04 | Phase 3 | Complete |
-| REBASE-01 | Phase 4 | Pending |
+| REBASE-01 | Phase 4 | Complete |
 | REBASE-02 | Phase 4 | Pending |
-| REBASE-03 | Phase 4 | Pending |
-| REBASE-04 | Phase 4 | Pending |
-| REBASE-05 | Phase 4 | Pending |
-| REBASE-06 | Phase 4 | Pending |
+| REBASE-03 | Phase 4 | Complete |
+| REBASE-04 | Phase 4 | Complete |
+| REBASE-05 | Phase 4 | Complete |
+| REBASE-06 | Phase 4 | Complete |
 | SQUASH-01 | Phase 4 | Pending |
 | SQUASH-02 | Phase 4 | Pending |
 | SQUASH-03 | Phase 4 | Pending |
