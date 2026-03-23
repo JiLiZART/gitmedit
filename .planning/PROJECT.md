@@ -23,22 +23,30 @@ Provide a fast, distraction-free git editor that feels like nano's simplicity bu
 - ✓ Startup < 100ms (17ms on developer hardware)
 - ✓ Terminal output preserved (no screen wipe)
 
+**Phase 03 (commit-message-intelligence):**
+- ✓ Subject line shows real-time character counter (green ≤50, yellow 51-72, red >72)
+- ✓ Blank line enforced/suggested between subject and body
+- ✓ Hotkey help overlay visible on Ctrl+H (context-aware)
+- ✓ Help overlay does not interfere with editing
+
+**Phase 04 (rebase-squash-modes):**
+- ✓ Interactive rebase opens structured table (pick, squash, fixup, drop, exec)
+- ✓ User cycles action types with Tab (pick→squash→fixup→drop→pick)
+- ✓ Comment lines preserved and protected (not editable or cycled)
+- ✓ Rebase-todo saved in exact git format (no corruption)
+- ✓ Squash mode detects SQUASH_MSG file
+- ✓ Squash mode displays commit log as read-only header
+- ✓ Squash mode allows editing combined message below log
+- ✓ Commit log protected (visually distinct, not selectable)
+
 ### Active
 
-- [ ] User can set gitmedit as global git editor
-- [ ] User sees TUI window with editable message area
-- [ ] User can commit with standard hotkey (Ctrl+S save)
-- [ ] User can cancel edits with standard hotkey (Esc cancel)
-- [ ] Editor displays available hotkeys (non-intrusive)
-- [ ] Editor handles commit message files (COMMIT_EDITMSG)
-- [ ] Editor handles merge conflict messages (MERGE_MSG)
-- [ ] Editor handles rebase todo files with comment detection
-- [ ] Editor detects squash context and highlights commit log
-- [ ] Editor provides hotkeys to manipulate squash commits (mark/delete/reorder)
-- [ ] Multiline commit messages work correctly (paragraphs with blank lines)
-- [ ] Empty message is allowed to cancel but warns user
-- [ ] Comments in files are preserved and styled (not editable)
-- [ ] Exit status codes match git expectations (success/cancel)
+- [ ] Full text editing (Ctrl+U delete line, Undo/redo)
+- [ ] Rebase line reordering (move commits up/down in todo)
+- [ ] Exec line argument editing in rebase mode
+- [ ] User can install with `cargo install` and set as global editor
+- [ ] Cross-platform (Windows terminal, iTerm2, etc.)
+- [ ] Custom hotkey configuration (not hardcoded to Ctrl+S/Esc)
 
 ### Out of Scope
 
