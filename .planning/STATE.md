@@ -104,7 +104,9 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- **Decide v1.0 milestone scope** — Ship v0.1-beta (phases 1,3,4) or complete phases 2 & 5 first for full v1.0?
+  - Files: ROADMAP.md, REQUIREMENTS.md
+  - Status: Awaiting decision
 
 ### Blockers/Concerns
 
