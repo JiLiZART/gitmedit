@@ -63,7 +63,11 @@ Plans:
   2. A blank line between subject and body is enforced or clearly suggested while editing
   3. Pressing Ctrl+H (or similar) opens a hotkey reference showing only the actions relevant to the current context (commit mode shows commit actions, not rebase actions)
   4. The hotkey reference does not interfere with editing and can be dismissed to resume editing without losing cursor position
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [x] 03-01-PLAN.md — Subject line counter and blank line detection
+- [x] 03-02-PLAN.md — Help overlay
 
 ### Phase 4: Rebase + Squash Modes
 **Goal**: gitmedit handles interactive rebase and squash operations as a sequence.editor replacement — parsing git-rebase-todo into a structured table, supporting action cycling, and rendering squash commit logs as read-only context
@@ -74,7 +78,12 @@ Plans:
   2. User can cycle through action types for any non-comment line using a hotkey (e.g., p→s→f→d→p); comment lines are protected
   3. Saving writes the rebase-todo file in exact git format; git rebase proceeds correctly without file corruption
   4. When editing a squash operation (SQUASH_MSG), the accumulated commit log is displayed as a styled read-only block and the combined commit message is editable
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Rebase data model, parsing, action cycling, serialization
+- [ ] 04-02-PLAN.md — Rebase table rendering, Tab/arrow key wiring, status bar
+- [ ] 04-03-PLAN.md — Squash log parsing, dual-pane rendering, squash mode wiring
 
 ### Phase 5: Installation + Distribution
 **Goal**: Users can install gitmedit with a single cargo command, find it in PATH, and configure git to use it for both standard commits and interactive rebase
@@ -96,5 +105,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Git Contract + TUI Shell | 3/3 | Complete   | 2026-03-18 |
 | 2. Text Editing + Comment Handling | 0/3 | Not started | - |
 | 3. Commit Message Intelligence | 2/2 | Complete   | 2026-03-22 |
-| 4. Rebase + Squash Modes | 0/? | Not started | - |
+| 4. Rebase + Squash Modes | 0/3 | Not started | - |
 | 5. Installation + Distribution | 0/? | Not started | - |
