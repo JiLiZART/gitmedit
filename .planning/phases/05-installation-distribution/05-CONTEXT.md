@@ -17,7 +17,7 @@ Users can install gitmedit with a single `cargo install gitmedit` command (from 
 - Publish to crates.io as a public crate for discoverability
 - Initial version: v0.1.0 (signals early/stable status, allows future iteration)
 - Users install via: `cargo install gitmedit`
-- Also support local: `cargo install --path crates/gitmedit` from repo
+- Also support local: `cargo install --path .` from project root (single-crate, no workspace split)
 
 ### Configuration
 - No automatic setup script in Phase 5
