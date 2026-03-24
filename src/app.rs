@@ -164,7 +164,7 @@ impl App {
     }
 
     /// Return an immutable reference to the TextArea.
-    pub fn textarea(&self) -> &TextArea {
+    pub fn textarea(&self) -> &TextArea<'_> {
         &self.textarea
     }
 

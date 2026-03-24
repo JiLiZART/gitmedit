@@ -101,7 +101,7 @@ impl Renderer {
 
                     if is_cursor_line {
                         // Highlight the cursor line with an underline modifier.
-                        let style = Style::default().add_modifier(Modifier::UNDERLINED);
+                        let style = Style::default().fg(Color::White);
                         styled_lines.push(Line::styled(text, style));
                     } else {
                         styled_lines.push(Line::raw(text));
@@ -126,7 +126,9 @@ impl Renderer {
         }
 
         // No wrapping: lines are explicitly truncated to visible_width above.
-        let content_widget = Paragraph::new(Text::from(styled_lines));
+        let content_widget = Paragraph::new(Text::from(styled_lines))
+            .block(Block::default().borders(Borders::NONE));
+
         frame.render_widget(content_widget, area);
 
         // Position the blinking terminal cursor at the correct cell.
