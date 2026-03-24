@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-03-23T11:59:12.465Z"
+status: Ready to execute
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-24T11:48:47.716Z"
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 13
+  completed_plans: 12
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 04 (rebase-squash-modes) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Plan: 2 of 3
 | Phase 04-rebase-squash-modes P01 | 4 | 2 tasks | 2 files |
 | Phase 04-rebase-squash-modes P02 | 1 | 2 tasks | 2 files |
 | Phase 04-rebase-squash-modes P03 | 3 | 2 tasks | 3 files |
+| Phase 05-installation-distribution P01 | 8 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,9 @@ Recent decisions affecting current work:
 - [Phase 04-02]: Event loop branch order: help_visible -> rebase_mode -> normal_editing — guarantees help dismissal works identically in both modes
 - [Phase 04]: squash_log stores raw comment lines separately from Document — Document only parses editable message portion
 - [Phase 04]: Squash mode falls through to normal editing in main.rs event loop — no new key handling needed
+- [Phase 05]: Dual-license MIT OR Apache-2.0 using single MIT LICENSE file (Rust ecosystem standard)
+- [Phase 05]: Omit homepage field in Cargo.toml (no dedicated website; redundant with repository per crates.io docs)
+- [Phase 05]: Use cargo install --path . for local install (single-crate at root, workspace split not needed for v1)
 
 ### Pending Todos
 
@@ -118,6 +122,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-23T11:56:30.482Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-03-24T11:48:47.671Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None

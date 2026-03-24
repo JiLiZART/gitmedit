@@ -79,10 +79,10 @@
 
 ### Installation & Configuration
 
-- [ ] **INSTALL-01**: Binary can be installed with `cargo install --path crates/gitmedit`
-- [ ] **INSTALL-02**: Binary is available in PATH after installation
-- [ ] **INSTALL-03**: User can set as `core.editor` with `git config --global core.editor gitmedit`
-- [ ] **INSTALL-04**: User can set as `sequence.editor` with `git config --global sequence.editor gitmedit`
+- [x] **INSTALL-01**: Binary can be installed with `cargo install --path crates/gitmedit`
+- [x] **INSTALL-02**: Binary is available in PATH after installation
+- [x] **INSTALL-03**: User can set as `core.editor` with `git config --global core.editor gitmedit`
+- [x] **INSTALL-04**: User can set as `sequence.editor` with `git config --global sequence.editor gitmedit`
 - [ ] **INSTALL-05**: Editor respects both `core.editor` and `sequence.editor` configs
 
 ## v2 Requirements
@@ -168,10 +168,10 @@
 | SQUASH-02 | Phase 4 | Complete |
 | SQUASH-03 | Phase 4 | Complete |
 | SQUASH-04 | Phase 4 | Complete |
-| INSTALL-01 | Phase 5 | Pending |
-| INSTALL-02 | Phase 5 | Pending |
-| INSTALL-03 | Phase 5 | Pending |
-| INSTALL-04 | Phase 5 | Pending |
+| INSTALL-01 | Phase 5 | Complete |
+| INSTALL-02 | Phase 5 | Complete |
+| INSTALL-03 | Phase 5 | Complete |
+| INSTALL-04 | Phase 5 | Complete |
 | INSTALL-05 | Phase 5 | Pending |
 
 **Coverage:**
