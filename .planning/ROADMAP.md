@@ -90,10 +90,14 @@ Plans:
 **Depends on**: Phase 4
 **Requirements**: INSTALL-01, INSTALL-02, INSTALL-03, INSTALL-04, INSTALL-05
 **Success Criteria** (what must be TRUE):
-  1. `cargo install --path crates/gitmedit` completes without errors and the binary is available at `~/.cargo/bin/gitmedit`
+  1. `cargo install --path .` completes without errors and the binary is available at `~/.cargo/bin/gitmedit`
   2. `git config --global core.editor gitmedit` and `git config --global sequence.editor gitmedit` configure git to invoke gitmedit for both commit messages and interactive rebase
   3. gitmedit respects whichever of core.editor or sequence.editor was used to invoke it and handles the corresponding file format correctly
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Cargo.toml metadata, LICENSE file, README.md with install/config instructions
+- [ ] 05-02-PLAN.md — Install verification, PATH check, git editor integration test
 
 ## Progress
 
@@ -106,4 +110,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Text Editing + Comment Handling | 0/3 | Not started | - |
 | 3. Commit Message Intelligence | 2/2 | Complete   | 2026-03-22 |
 | 4. Rebase + Squash Modes | 3/3 | Complete   | 2026-03-23 |
-| 5. Installation + Distribution | 0/? | Not started | - |
+| 5. Installation + Distribution | 0/2 | Not started | - |
