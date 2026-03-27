@@ -111,3 +111,13 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Commit Message Intelligence | 2/2 | Complete   | 2026-03-22 |
 | 4. Rebase + Squash Modes | 3/3 | Complete   | 2026-03-23 |
 | 5. Installation + Distribution | 1/2 | In Progress|  |
+
+### Phase 6: Rebase view horizontal scrolling — implement left/right arrow navigation to view full commit subjects in rebase table
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 5
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 6 to break down)

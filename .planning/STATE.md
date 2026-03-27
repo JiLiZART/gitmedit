@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Complete
-stopped_at: Completed 05-02-PLAN.md (final plan)
-last_updated: "2026-03-26T00:00:00.000Z"
+status: v1.0 shipped; v1.1 in planning
+stopped_at: Phase 05 complete; Phase 06 added
+last_updated: "2026-03-27T00:00:00.000Z"
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 5
   total_plans: 13
   completed_plans: 13
@@ -105,6 +105,13 @@ Recent decisions affecting current work:
 - [Phase 05]: Dual-license MIT OR Apache-2.0 using single MIT LICENSE file (Rust ecosystem standard)
 - [Phase 05]: Omit homepage field in Cargo.toml (no dedicated website; redundant with repository per crates.io docs)
 - [Phase 05]: Use cargo install --path . for local install (single-crate at root, workspace split not needed for v1)
+
+### Roadmap Evolution
+
+- Phase 6 added (2026-03-27): Rebase view horizontal scrolling — implement left/right arrow navigation to view full commit subjects in rebase table
+  - **Trigger:** Debug investigation identified text truncation issue in rebase table (long commit subjects cut off at column width)
+  - **Root cause:** ratatui Table widget silently truncates text exceeding cell width; no horizontal scroll support
+  - **Planned approach:** Implement left/right arrow key navigation for horizontal scrolling within truncated cells
 
 ### Pending Todos
 
