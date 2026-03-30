@@ -102,7 +102,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -111,13 +111,14 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Commit Message Intelligence | 2/2 | Complete   | 2026-03-22 |
 | 4. Rebase + Squash Modes | 3/3 | Complete   | 2026-03-23 |
 | 5. Installation + Distribution | 1/2 | In Progress|  |
+| 6. Rebase View Horizontal Scrolling | 0/1 | Not started | - |
 
 ### Phase 6: Rebase view horizontal scrolling — implement left/right arrow navigation to view full commit subjects in rebase table
 
-**Goal:** [To be planned]
-**Requirements**: TBD
-**Depends on:** Phase 5
-**Plans:** 0 plans
+**Goal:** Long commit subjects in the rebase table are fully visible via word-wrapped continuation lines, with scroll offset accounting for variable-height rows
+**Requirements**: REBASE-02
+**Depends on:** Phase 4
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 6 to break down)
+- [ ] 06-01-PLAN.md — Subject wrapping helper, render_rebase_table integration, scroll offset fix
