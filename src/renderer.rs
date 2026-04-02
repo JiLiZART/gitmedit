@@ -315,11 +315,36 @@ impl Renderer {
         let rebase_lines = app.rebase_lines();
         let selected_line_idx = app.selected_rebase_line_idx();
 
-        // Compute scroll offset to keep selected row visible.
+        // Compute subject column wrap width: total width minus 8 (action) minus 8 (hash).
+        let wrap_width = area.width.saturating_sub(16) as usize;
+
+        // Pre-compute terminal line heights for each row (multi-line wrapping for Action rows).
+        let row_heights: Vec<usize> = rebase_lines
+            .iter()
+            .map(|line| match line {
+                RebaseLine::Action { subject, .. } => wrap_subject(subject, wrap_width).len(),
+                RebaseLine::Comment(_) => 1,
+            })
+            .collect();
+
+        // Compute scroll offset counting terminal lines, not row count.
+        // Goal: keep selected row centered vertically in the visible area.
         let visible_height = area.height as usize;
         let scroll_offset = if let Some(idx) = selected_line_idx {
-            if idx >= visible_height {
-                idx.saturating_sub(visible_height / 2)
+            let lines_before: usize = row_heights[..idx].iter().sum();
+            let half_visible = visible_height / 2;
+            if lines_before >= half_visible {
+                let target_skip = lines_before.saturating_sub(half_visible);
+                let mut accumulated = 0usize;
+                let mut skip_rows = 0;
+                for &h in &row_heights {
+                    if accumulated >= target_skip {
+                        break;
+                    }
+                    accumulated += h;
+                    skip_rows += 1;
+                }
+                skip_rows
             } else {
                 0
             }
@@ -327,43 +352,49 @@ impl Renderer {
             0
         };
 
-        let rows: Vec<Row> = rebase_lines
-            .iter()
-            .enumerate()
-            .skip(scroll_offset)
-            .take(visible_height)
-            .map(|(i, line)| {
-                let is_selected = selected_line_idx == Some(i);
-                match line {
-                    RebaseLine::Action { action, hash, subject } => {
-                        let action_style = match action {
-                            RebaseAction::Pick   => Style::default().fg(Color::Green),
-                            RebaseAction::Squash => Style::default().fg(Color::Yellow),
-                            RebaseAction::Fixup  => Style::default().fg(Color::Cyan),
-                            RebaseAction::Drop   => Style::default().fg(Color::Red),
-                            RebaseAction::Exec   => Style::default().fg(Color::Magenta),
-                        };
-                        let row_style = if is_selected {
-                            Style::default().bg(Color::DarkGray).add_modifier(Modifier::BOLD)
-                        } else {
-                            Style::default()
-                        };
-                        Row::new(vec![
-                            Cell::from(format!("{:<7}", action.as_str())).style(action_style),
-                            Cell::from(hash.chars().take(7).collect::<String>()),
-                            Cell::from(subject.clone()),
-                        ])
-                        .style(row_style)
-                    }
-                    RebaseLine::Comment(text) => {
-                        Row::new(vec![
-                            Cell::from(text.clone()),
-                        ])
-                        .style(Style::default().fg(Color::DarkGray))
-                    }
+        // Build visible rows, stopping when we've consumed `visible_height` terminal lines.
+        let mut rows: Vec<Row> = Vec::new();
+        let mut lines_used = 0usize;
+        for (i, (line, &h)) in rebase_lines.iter().zip(row_heights.iter()).enumerate().skip(scroll_offset) {
+            if lines_used + h > visible_height && !rows.is_empty() {
+                break;
+            }
+            lines_used += h;
+            let is_selected = selected_line_idx == Some(i);
+            let row = match line {
+                RebaseLine::Action { action, hash, subject } => {
+                    let wrapped_lines = wrap_subject(subject, wrap_width);
+                    let height = wrapped_lines.len() as u16;
+                    let subject_text = wrapped_lines.join("\n");
+                    let action_style = match action {
+                        RebaseAction::Pick   => Style::default().fg(Color::Green),
+                        RebaseAction::Squash => Style::default().fg(Color::Yellow),
+                        RebaseAction::Fixup  => Style::default().fg(Color::Cyan),
+                        RebaseAction::Drop   => Style::default().fg(Color::Red),
+                        RebaseAction::Exec   => Style::default().fg(Color::Magenta),
+                    };
+                    let row_style = if is_selected {
+                        Style::default().bg(Color::DarkGray).add_modifier(Modifier::BOLD)
+                    } else {
+                        Style::default()
+                    };
+                    Row::new(vec![
+                        Cell::from(format!("{:<7}", action.as_str())).style(action_style),
+                        Cell::from(hash.chars().take(7).collect::<String>()),
+                        Cell::from(subject_text),
+                    ])
+                    .height(height)
+                    .style(row_style)
                 }
-            })
-            .collect();
+                RebaseLine::Comment(text) => {
+                    Row::new(vec![
+                        Cell::from(text.clone()),
+                    ])
+                    .style(Style::default().fg(Color::DarkGray))
+                }
+            };
+            rows.push(row);
+        }
 
         let widths = [
             Constraint::Length(8),
