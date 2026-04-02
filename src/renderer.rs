@@ -294,7 +294,7 @@ impl Renderer {
         let first_line = app.document().first_line();
         let char_count = first_line.chars().count();
         let counter_color = counter_color_for(char_count);
-        let counter_text = format!("Chars: {}", char_count);
+        let counter_text = format!("Length: {}", char_count);
         let counter_span = Span::styled(
             counter_text,
             Style::default().fg(counter_color).add_modifier(Modifier::BOLD),
@@ -424,6 +424,76 @@ impl Renderer {
     }
 }
 
+/// Word-wrap a subject string to lines of at most `wrap_width` characters.
+///
+/// - If `wrap_width == 0` or the subject fits in one line, returns `vec![subject.to_string()]`.
+/// - Prefers breaking at the last space before `wrap_width` (word-boundary).
+/// - Falls back to a hard char-count break when no space is found within the width.
+/// - Continuation lines have NO leading indent (column alignment is handled by the Cell position).
+/// - Leading whitespace on continuation lines is trimmed.
+/// - Safe on multi-byte Unicode (operates on char boundaries).
+fn wrap_subject(subject: &str, wrap_width: usize) -> Vec<String> {
+    if wrap_width == 0 {
+        return vec![subject.to_string()];
+    }
+
+    let chars: Vec<char> = subject.chars().collect();
+    if chars.len() <= wrap_width {
+        return vec![subject.to_string()];
+    }
+
+    let mut lines: Vec<String> = Vec::new();
+    let mut start = 0;
+
+    while start < chars.len() {
+        let remaining = chars.len() - start;
+        if remaining <= wrap_width {
+            // Rest fits on one line.
+            let line: String = chars[start..].iter().collect();
+            lines.push(line);
+            break;
+        }
+
+        // Look for the last space within [start, start + wrap_width].
+        let end = start + wrap_width;
+        let mut break_at = None;
+
+        // Scan backwards from wrap_width position to find a space.
+        for i in (start..=end).rev() {
+            if chars[i] == ' ' {
+                break_at = Some(i);
+                break;
+            }
+        }
+
+        match break_at {
+            Some(space_idx) => {
+                // Break at the space (exclude it from the line).
+                let line: String = chars[start..space_idx].iter().collect();
+                lines.push(line);
+                // Skip the space and any leading spaces on continuation.
+                let mut next = space_idx + 1;
+                while next < chars.len() && chars[next] == ' ' {
+                    next += 1;
+                }
+                start = next;
+            }
+            None => {
+                // No space found — hard break at wrap_width chars.
+                let line: String = chars[start..end].iter().collect();
+                lines.push(line);
+                start = end;
+            }
+        }
+    }
+
+    if lines.is_empty() {
+        lines.push(String::new());
+    }
+
+    lines
+}
+
 /// Return the appropriate counter color for a given character count:
 /// - Green  if count <= 50
 /// - Yellow if 51 <= count <= 72
@@ -452,6 +522,75 @@ pub(crate) fn blank_warning_span(has_blank: bool) -> Span<'static> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // -------------------------------------------------------------------------
+    // wrap_subject
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_wrap_subject_short_no_wrap() {
+        let result = wrap_subject("short", 40);
+        assert_eq!(result, vec!["short"]);
+    }
+
+    #[test]
+    fn test_wrap_subject_exact_fit() {
+        let s = "exactly forty chars padded to forty!!!!!";
+        assert_eq!(s.len(), 40);
+        let result = wrap_subject(s, 40);
+        assert_eq!(result, vec!["exactly forty chars padded to forty!!!!!"]);
+    }
+
+    #[test]
+    fn test_wrap_subject_wraps_at_word_boundary() {
+        // "hello world" = 11 chars, "foo bar baz" = 11 chars
+        let result = wrap_subject("hello world foo bar baz", 11);
+        assert_eq!(result, vec!["hello world", "foo bar baz"]);
+    }
+
+    #[test]
+    fn test_wrap_subject_hard_break_no_spaces() {
+        let result = wrap_subject("abcdefghijklmnop", 5);
+        assert_eq!(result, vec!["abcde", "fghij", "klmno", "p"]);
+    }
+
+    #[test]
+    fn test_wrap_subject_empty() {
+        let result = wrap_subject("", 40);
+        assert_eq!(result, vec![""]);
+    }
+
+    #[test]
+    fn test_wrap_subject_zero_width() {
+        let result = wrap_subject("any text", 0);
+        assert_eq!(result, vec!["any text"]);
+    }
+
+    #[test]
+    fn test_wrap_subject_unicode_safe() {
+        // cafe + combining accent (U+0301) = 5 chars visually, 6 bytes
+        // Should not panic on char boundary
+        let result = wrap_subject("cafe\u{0301} is good", 6);
+        assert!(!result.is_empty());
+        // Each line should be non-empty or the whole thing fits
+        for line in &result {
+            assert!(line.chars().count() <= 6 || result.len() == 1);
+        }
+    }
+
+    #[test]
+    fn test_wrap_subject_no_continuation_indent() {
+        let result = wrap_subject("hello world foo", 11);
+        // "hello world" fits in 11, "foo" is continuation
+        assert!(result.len() > 1, "should have wrapped");
+        for line in result.iter().skip(1) {
+            assert!(
+                !line.starts_with(' '),
+                "continuation line should not start with space, got: {:?}",
+                line
+            );
+        }
+    }
 
     // -------------------------------------------------------------------------
     // counter_color_for
