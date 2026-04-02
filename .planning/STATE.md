@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: v1.0 shipped; v1.1 in planning
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-28T14:38:17.228Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-04-02T15:35:08.781Z"
 progress:
   total_phases: 6
-  completed_phases: 5
-  total_plans: 13
-  completed_plans: 13
+  completed_phases: 6
+  total_plans: 14
+  completed_plans: 14
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Fast, distraction-free git editor with nano's simplicity that understands git's context (commits, merges, rebases, squashes) without bloat
-**Current focus:** Phase 04 — rebase-squash-modes
+**Current focus:** Phase 06 — rebase-view-horizontal-scrolling
 
 ## Current Position
 
-Phase: 04 (rebase-squash-modes) — EXECUTING
-Plan: 3 of 3
+Phase: 06 (rebase-view-horizontal-scrolling) — EXECUTING
+Plan: 1 of 1
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Plan: 3 of 3
 | Phase 04-rebase-squash-modes P02 | 1 | 2 tasks | 2 files |
 | Phase 04-rebase-squash-modes P03 | 3 | 2 tasks | 3 files |
 | Phase 05-installation-distribution P01 | 8 | 2 tasks | 3 files |
+| Phase 06-rebase-view-horizontal-scrolling P01 | 2 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,9 @@ Recent decisions affecting current work:
 - [Phase 05]: Dual-license MIT OR Apache-2.0 using single MIT LICENSE file (Rust ecosystem standard)
 - [Phase 05]: Omit homepage field in Cargo.toml (no dedicated website; redundant with repository per crates.io docs)
 - [Phase 05]: Use cargo install --path . for local install (single-crate at root, workspace split not needed for v1)
+- [Phase 06-01]: wrap_subject is a standalone fn (not impl method) matching counter_color_for/blank_warning_span pattern
+- [Phase 06-01]: wrap_width = area.width.saturating_sub(16): 8 for action + 8 for hash columns; no indent on continuation lines
+- [Phase 06-01]: Scroll uses pre-computed row_heights Vec for terminal-line-aware centering, replacing row-count approach
 
 ### Roadmap Evolution
 
@@ -129,6 +133,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-28T14:38:17.173Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-rebase-view-horizontal-scrolling-implement-left-right-arrow-navigation-to-view-full-commit-subjects-in-rebase-table/06-CONTEXT.md
+Last session: 2026-04-02T15:35:08.733Z
+Stopped at: Completed 06-01-PLAN.md
+Resume file: None
