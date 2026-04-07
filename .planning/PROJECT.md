@@ -52,13 +52,32 @@ Binary starts in 17ms, compiles to 663KB release.
 - PERF-03: No lag on large files — pending formal verification
 - INSTALL-05: Editor respects both editor configs — pending
 
-### Active (next milestone)
+### Active (v1.1)
 
+- [ ] Plain editor default — remove comment protection/read-only logic, use ratatui_textarea default
+- [ ] Nano-style chrome — top header with folder name, filename in toolbar, bottom command bar (^S/Esc)
+- [ ] Standalone commit mode — `gitmedit` with no args in git repo commits via `git commit -F`
+- [ ] Merge commit toolbar — parse comment block for conflict/affected files, display in status bar
 - [ ] Fix IO-06 alternate screen regression
 - [ ] Rebase line reordering (move commits up/down in todo)
 - [ ] Exec line argument editing in rebase mode
 - [ ] Cross-platform testing (Windows terminal, iTerm2)
 - [ ] Custom hotkey configuration
+
+## Current Milestone: v1.1 Standalone Commit + Editor Overhaul
+
+**Goal:** Add standalone commit mode, simplify editor to nano-like behavior with nano-style chrome, add merge toolbar intelligence, and close v1.0 gaps.
+
+**Target features:**
+- Plain editor default (remove comment protection, all lines editable)
+- Nano-style chrome (header bar, filename, command bar) across all modes
+- Standalone commit mode (no-args git commit via temp file)
+- Merge commit toolbar (conflict/affected file info)
+- Fix IO-06 alternate screen regression
+- Rebase line reordering
+- Exec line argument editing
+- Cross-platform testing
+- Custom hotkey configuration
 
 ### Out of Scope
 
@@ -95,5 +114,22 @@ Binary starts in 17ms, compiles to 663KB release.
 | Drop-based terminal cleanup | RAII ensures cleanup even on panic | ✓ Good |
 | Atomic file writes (rename) | Prevents data corruption | ✓ Good |
 
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd:transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd:complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
 ---
-*Last updated: 2026-04-07 after v1.0 milestone*
+*Last updated: 2026-04-07 after v1.1 milestone start*
