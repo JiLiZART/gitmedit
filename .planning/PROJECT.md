@@ -2,51 +2,63 @@
 
 ## What This Is
 
-A lightweight TUI git editor that replaces heavier defaults (vim, nano) as the global git editor. Set it once via `git config --global core.editor gitmedit` and it handles commits, merges, rebases, and squashes with a minimal interface and fast startup.
+A lightweight TUI git editor that replaces heavier defaults (vim, nano) as the global git editor. Handles commits, merges, rebases, and squashes with a minimal interface, context-aware UI, and fast startup. Set it once via `git config --global core.editor gitmedit`.
 
 ## Core Value
 
-Provide a fast, distraction-free git editor that feels like nano's simplicity but understands git's context (merges, rebases, squashes) without bloat.
+Provide a fast, distraction-free git editor that feels like nano's simplicity but understands git's context (commits, merges, rebases, squashes) without bloat.
+
+## Current State
+
+Shipped v1.0 MVP with 2,448 LOC Rust across 6 phases (14 plans).
+Tech stack: ratatui 0.30, crossterm 0.29, clap 4.6, arboard (clipboard).
+Binary starts in 17ms, compiles to 663KB release.
 
 ## Requirements
 
 ### Validated
 
 **Phase 01 (git-contract-tui-shell):**
-- ✓ User can set gitmedit as global git editor
-- ✓ User sees TUI window with editable message area
-- ✓ User can commit with Ctrl+S save (exit 0)
-- ✓ User can cancel with Esc (exit 1)
-- ✓ Editor handles commit message files (COMMIT_EDITMSG)
-- ✓ Exit status codes match git expectations
-- ✓ Editor detects git context (commit, merge, rebase, squash, tag)
-- ✓ Startup < 100ms (17ms on developer hardware)
-- ✓ Terminal output preserved (no screen wipe)
+- ✓ IO-01–IO-05: File read, TUI display, save/cancel exit codes — v1.0
+- ✓ CTX-01, CTX-02: Git context detection (commit/merge/rebase/squash/tag) — v1.0
+- ✓ PERF-01: Startup < 100ms (17ms achieved) — v1.0
+
+**Phase 02 (text-editing-comment-handling):**
+- ✓ EDIT-01, EDIT-02, EDIT-04, EDIT-05, EDIT-06: Full text editing, multiline, comment styling — v1.0
+- ✓ CTX-03–CTX-06: Comment char detection, parsing, protection, preservation — v1.0
+- ✓ COMMIT-04, COMMIT-05: Commit editing features — v1.0
+- ✓ MERGE-01–MERGE-03: Merge conflict styling — v1.0
 
 **Phase 03 (commit-message-intelligence):**
-- ✓ Subject line shows real-time character counter (green ≤50, yellow 51-72, red >72)
-- ✓ Blank line enforced/suggested between subject and body
-- ✓ Hotkey help overlay visible on Ctrl+H (context-aware)
-- ✓ Help overlay does not interfere with editing
+- ✓ COMMIT-01–COMMIT-03, COMMIT-06: Subject counter, blank line, character limits — v1.0
+- ✓ HELP-01–HELP-04: Context-aware help overlay — v1.0
 
 **Phase 04 (rebase-squash-modes):**
-- ✓ Interactive rebase opens structured table (pick, squash, fixup, drop, exec)
-- ✓ User cycles action types with Tab (pick→squash→fixup→drop→pick)
-- ✓ Comment lines preserved and protected (not editable or cycled)
-- ✓ Rebase-todo saved in exact git format (no corruption)
-- ✓ Squash mode detects SQUASH_MSG file
-- ✓ Squash mode displays commit log as read-only header
-- ✓ Squash mode allows editing combined message below log
-- ✓ Commit log protected (visually distinct, not selectable)
+- ✓ REBASE-01–REBASE-06: Structured table, action cycling, save format — v1.0
+- ✓ SQUASH-01–SQUASH-04: Squash log display, editable message, protection — v1.0
 
-### Active
+**Phase 05 (installation-distribution):**
+- ✓ INSTALL-01–INSTALL-04: Cargo install, PATH, git config — v1.0
 
-- [ ] Full text editing (Ctrl+U delete line, Undo/redo)
+**Phase 06 (rebase-view-horizontal-scrolling):**
+- ✓ REBASE-02 (enhanced): Word-wrapped subjects in rebase table — v1.0
+
+### Known Gaps (from v1.0 audit)
+
+- IO-06: Alternate screen regression (terminal.rs uses EnterAlternateScreen)
+- EDIT-03: Ctrl+U delete line — pending formal verification
+- EDIT-07: Undo/redo — pending formal verification
+- PERF-02: 30+ FPS rendering — pending formal verification
+- PERF-03: No lag on large files — pending formal verification
+- INSTALL-05: Editor respects both editor configs — pending
+
+### Active (next milestone)
+
+- [ ] Fix IO-06 alternate screen regression
 - [ ] Rebase line reordering (move commits up/down in todo)
 - [ ] Exec line argument editing in rebase mode
-- [ ] User can install with `cargo install` and set as global editor
-- [ ] Cross-platform (Windows terminal, iTerm2, etc.)
-- [ ] Custom hotkey configuration (not hardcoded to Ctrl+S/Esc)
+- [ ] Cross-platform testing (Windows terminal, iTerm2)
+- [ ] Custom hotkey configuration
 
 ### Out of Scope
 
@@ -55,20 +67,19 @@ Provide a fast, distraction-free git editor that feels like nano's simplicity bu
 - Plugin system — single focused tool, not extensible
 - Graphical UI — terminal only
 - Configuration file complexity — sensible defaults
-- Copy/paste advanced features — basic editing only
 
 ## Context
 
-- **User motivation**: Current git editors feel too heavy; want speed and simplicity
-- **Monorepo structure**: Building as `crates/gitmedit` in Rust workspace root. Prepared for future git tools but focused on this editor for v1
-- **Git context awareness**: Must handle multiple git scenarios (standard commits, merges with conflict markers, rebase todo files, squash contexts)
-- **Existing code**: Initial Rust project exists; will use as reference but rewrite cleanly for this design
+- **Codebase:** 2,448 LOC Rust, single-crate structure
+- **Dependencies:** ratatui 0.30, crossterm 0.29, clap 4.6, arboard, ratatui-textarea 0.8
+- **Git context awareness:** Handles commit, merge, rebase, squash, tag contexts
+- **Tech debt:** TerminalGuard::Drop unwrap, dead code in Document, IO-06 regression
 
 ## Constraints
 
-- **Language**: Rust (monorepo uses Cargo workspace)
-- **UI Library**: TUI library choice (crossterm or termion for cross-platform terminal support)
-- **Platform**: Linux, macOS (stretch: Windows support)
+- **Language**: Rust
+- **UI Library**: ratatui + crossterm
+- **Platform**: Linux, macOS (stretch: Windows)
 - **Performance**: Must start faster than vim/nano alternatives
 - **Git integration**: Must respect git's file formats exactly (no corruption risk)
 
@@ -76,10 +87,13 @@ Provide a fast, distraction-free git editor that feels like nano's simplicity bu
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Monorepo structure (Cargo workspace) | Prepare for future git tools while keeping focused on gitmedit | — Pending |
-| Single crate for v1 (no extraction to core/ui libs yet) | Keep complexity low, extract shared code as tools grow | — Pending |
-| Standard hotkeys (Ctrl+S, Esc) vs nano-style (Ctrl+X, Ctrl+C) | Users expect standard shortcuts; simplifies UI | — Pending |
-| Minimal status bar (no visible hotkey help initially) | Matches minimal UI philosophy; hotkeys shown on demand | — Pending |
+| Single crate (no workspace) | Keep complexity low for v1 | ✓ Good |
+| No alternate screen (IO-06) | Preserve terminal output like nano | ⚠️ Revisit (regressed) |
+| ratatui 0.30 + crossterm 0.29 | Modern Rust TUI with cross-platform | ✓ Good |
+| Standard hotkeys (Ctrl+S/Esc) | Users expect standard shortcuts | ✓ Good |
+| Word-wrap over horizontal scroll | Simpler UX, no state tracking | ✓ Good |
+| Drop-based terminal cleanup | RAII ensures cleanup even on panic | ✓ Good |
+| Atomic file writes (rename) | Prevents data corruption | ✓ Good |
 
 ---
-*Last updated: 2026-03-18 after Phase 01 completion*
+*Last updated: 2026-04-07 after v1.0 milestone*
