@@ -73,34 +73,34 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| EDIT-10 | — | Pending |
-| EDIT-11 | — | Pending |
-| IO-06 | — | Pending |
-| IO-07 | — | Pending |
-| UI-01 | — | Pending |
-| UI-02 | — | Pending |
-| UI-03 | — | Pending |
-| UI-04 | — | Pending |
-| UI-05 | — | Pending |
-| UI-06 | — | Pending |
-| COMMIT-10 | — | Pending |
-| COMMIT-11 | — | Pending |
-| COMMIT-12 | — | Pending |
-| COMMIT-13 | — | Pending |
-| COMMIT-14 | — | Pending |
-| REBASE-10 | — | Pending |
-| REBASE-11 | — | Pending |
-| REBASE-12 | — | Pending |
-| REBASE-13 | — | Pending |
-| PLAT-01 | — | Pending |
-| PLAT-02 | — | Pending |
-| PLAT-03 | — | Pending |
+| IO-06 | Phase 7 | Pending |
+| IO-07 | Phase 7 | Pending |
+| EDIT-10 | Phase 8 | Pending |
+| EDIT-11 | Phase 8 | Pending |
+| UI-01 | Phase 9 | Pending |
+| UI-02 | Phase 9 | Pending |
+| UI-03 | Phase 9 | Pending |
+| UI-04 | Phase 9 | Pending |
+| UI-05 | Phase 10 | Pending |
+| UI-06 | Phase 10 | Pending |
+| REBASE-10 | Phase 10 | Pending |
+| REBASE-11 | Phase 10 | Pending |
+| REBASE-12 | Phase 10 | Pending |
+| REBASE-13 | Phase 10 | Pending |
+| COMMIT-10 | Phase 11 | Pending |
+| COMMIT-11 | Phase 11 | Pending |
+| COMMIT-12 | Phase 11 | Pending |
+| COMMIT-13 | Phase 11 | Pending |
+| COMMIT-14 | Phase 11 | Pending |
+| PLAT-01 | Phase 12 | Pending |
+| PLAT-02 | Phase 12 | Pending |
+| PLAT-03 | Phase 12 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22 ⚠️
+- Mapped to phases: 22
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-07*
-*Last updated: 2026-04-07 after initial definition*
+*Last updated: 2026-04-07 after roadmap creation*
