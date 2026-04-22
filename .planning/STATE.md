@@ -2,16 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Standalone Commit + Editor Overhaul
-status: planning
-stopped_at: Phase 7 context gathered
-last_updated: "2026-04-15T12:49:54.645Z"
-last_activity: 2026-04-07 — v1.1 roadmap created (6 phases, 22 requirements mapped)
+status: Phase complete — ready for verification
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-04-22T13:44:30.954Z"
 progress:
   total_phases: 6
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
 ---
 
 # Project State
@@ -21,16 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-07)
 
 **Core value:** Fast, distraction-free git editor with nano's simplicity that understands git's context (commits, merges, rebases, squashes) without bloat
-**Current focus:** v1.1 Phase 7 — Foundations Fix
+**Current focus:** Phase 07 — foundations-fix
 
 ## Current Position
 
-Phase: 7 of 12 (Foundations Fix)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-04-07 — v1.1 roadmap created (6 phases, 22 requirements mapped)
-
-Progress: [░░░░░░░░░░] 0% (v1.1)
+Phase: 07 (foundations-fix) — EXECUTING
+Plan: 1 of 1
 
 ## Performance Metrics
 
@@ -60,6 +54,8 @@ Key decisions affecting v1.1:
 - [Pre-v1.1]: 3-slot renderer layout defined once at top level; all sub-renderers receive `chunks[1]` — prevents scroll calculation breakage
 - [Pre-v1.1]: `selectable_indices` regenerated from scratch after every rebase reorder — no incremental update (prevents desync)
 - [Pre-v1.1]: Standalone commit uses `std::process::Command` + `tempfile` (no git2/gix); drop(guard) before subprocess invocation
+- [Phase 07-foundations-fix]: Remove EnterAlternateScreen and EnableMouseCapture — no mouse handlers in event loop, inline rendering confirmed
+- [Phase 07-foundations-fix]: PTY test uses kill backstop pattern for macOS PTY reader hang — child.kill() before wait, incremental read loop
 
 ### Pending Todos
 
@@ -73,6 +69,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-15T12:49:54.591Z
-Stopped at: Phase 7 context gathered
-Resume file: .planning/phases/07-foundations-fix/07-CONTEXT.md
+Last session: 2026-04-22T13:44:30.952Z
+Stopped at: Completed 07-01-PLAN.md
+Resume file: None

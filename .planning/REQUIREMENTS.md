@@ -11,8 +11,8 @@ Requirements for v1.1 milestone. Each maps to roadmap phases.
 
 - [ ] **EDIT-10**: All lines are editable by default (no read-only comment protection)
 - [ ] **EDIT-11**: Editor uses ratatui_textarea default behavior for all text editing
-- [ ] **IO-06**: Editor renders inline without alternate screen (nano-style)
-- [ ] **IO-07**: TerminalGuard::Drop uses safe error handling (no unwrap/panic)
+- [x] **IO-06**: Editor renders inline without alternate screen (nano-style)
+- [x] **IO-07**: TerminalGuard::Drop uses safe error handling (no unwrap/panic)
 
 ### UI Chrome
 
@@ -73,8 +73,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| IO-06 | Phase 7 | Pending |
-| IO-07 | Phase 7 | Pending |
+| IO-06 | Phase 7 | Complete |
+| IO-07 | Phase 7 | Complete |
 | EDIT-10 | Phase 8 | Pending |
 | EDIT-11 | Phase 8 | Pending |
 | UI-01 | Phase 9 | Pending |

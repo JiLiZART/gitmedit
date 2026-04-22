@@ -25,7 +25,7 @@
 
 **Milestone Goal:** Add standalone commit mode, simplify editor to nano-like behavior with nano-style chrome, add merge toolbar intelligence, and close v1.0 regression gaps.
 
-- [ ] **Phase 7: Foundations Fix** - Fix IO-06 alternate screen regression and TerminalGuard Drop panic
+- [x] **Phase 7: Foundations Fix** - Fix IO-06 alternate screen regression and TerminalGuard Drop panic (completed 2026-04-22)
 - [ ] **Phase 8: Plain Editor Default** - Remove comment line read-only protection; use textarea default behavior
 - [ ] **Phase 9: Nano Chrome** - Add header bar (folder + filename) and bottom command bar across all modes
 - [ ] **Phase 10: Rebase Enhancements + Merge Toolbar** - Rebase line reordering, exec editing, merge conflict toolbar
@@ -111,7 +111,7 @@
 | 4. Rebase + Squash Modes | v1.0 | 3/3 | Complete | 2026-03-23 |
 | 5. Installation + Distribution | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 6. Rebase View Horizontal Scrolling | v1.0 | 1/1 | Complete | 2026-04-02 |
-| 7. Foundations Fix | v1.1 | 0/? | Not started | - |
+| 7. Foundations Fix | v1.1 | 1/1 | Complete   | 2026-04-22 |
 | 8. Plain Editor Default | v1.1 | 0/? | Not started | - |
 | 9. Nano Chrome | v1.1 | 0/? | Not started | - |
 | 10. Rebase Enhancements + Merge Toolbar | v1.1 | 0/? | Not started | - |
