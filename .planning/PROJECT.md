@@ -11,6 +11,7 @@ Provide a fast, distraction-free git editor that feels like nano's simplicity bu
 ## Current State
 
 Shipped v1.0 MVP with 2,448 LOC Rust across 6 phases (14 plans).
+v1.1 Phase 7 complete — inline terminal rendering restored, TerminalGuard Drop panic-free.
 Tech stack: ratatui 0.30, crossterm 0.29, clap 4.6, arboard (clipboard).
 Binary starts in 17ms, compiles to 663KB release.
 
@@ -43,9 +44,12 @@ Binary starts in 17ms, compiles to 663KB release.
 **Phase 06 (rebase-view-horizontal-scrolling):**
 - ✓ REBASE-02 (enhanced): Word-wrapped subjects in rebase table — v1.0
 
+**Phase 07 (foundations-fix):**
+- ✓ IO-06: Inline rendering (no alternate screen) — v1.1
+- ✓ IO-07: Panic-free TerminalGuard Drop — v1.1
+
 ### Known Gaps (from v1.0 audit)
 
-- IO-06: Alternate screen regression (terminal.rs uses EnterAlternateScreen)
 - EDIT-03: Ctrl+U delete line — pending formal verification
 - EDIT-07: Undo/redo — pending formal verification
 - PERF-02: 30+ FPS rendering — pending formal verification
@@ -58,7 +62,6 @@ Binary starts in 17ms, compiles to 663KB release.
 - [ ] Nano-style chrome — top header with folder name, filename in toolbar, bottom command bar (^S/Esc)
 - [ ] Standalone commit mode — `gitmedit` with no args in git repo commits via `git commit -F`
 - [ ] Merge commit toolbar — parse comment block for conflict/affected files, display in status bar
-- [ ] Fix IO-06 alternate screen regression
 - [ ] Rebase line reordering (move commits up/down in todo)
 - [ ] Exec line argument editing in rebase mode
 - [ ] Cross-platform testing (Windows terminal, iTerm2)
@@ -92,7 +95,7 @@ Binary starts in 17ms, compiles to 663KB release.
 - **Codebase:** 2,448 LOC Rust, single-crate structure
 - **Dependencies:** ratatui 0.30, crossterm 0.29, clap 4.6, arboard, ratatui-textarea 0.8
 - **Git context awareness:** Handles commit, merge, rebase, squash, tag contexts
-- **Tech debt:** TerminalGuard::Drop unwrap, dead code in Document, IO-06 regression
+- **Tech debt:** Dead code in Document (comment-protection paths — Phase 8 removes)
 
 ## Constraints
 
@@ -107,7 +110,7 @@ Binary starts in 17ms, compiles to 663KB release.
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Single crate (no workspace) | Keep complexity low for v1 | ✓ Good |
-| No alternate screen (IO-06) | Preserve terminal output like nano | ⚠️ Revisit (regressed) |
+| No alternate screen (IO-06) | Preserve terminal output like nano | ✓ Restored in Phase 7 |
 | ratatui 0.30 + crossterm 0.29 | Modern Rust TUI with cross-platform | ✓ Good |
 | Standard hotkeys (Ctrl+S/Esc) | Users expect standard shortcuts | ✓ Good |
 | Word-wrap over horizontal scroll | Simpler UX, no state tracking | ✓ Good |
@@ -132,4 +135,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-07 after v1.1 milestone start*
+*Last updated: 2026-04-22 after Phase 7 (foundations-fix) completion*
