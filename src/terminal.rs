@@ -1,9 +1,6 @@
 use anyhow::Result;
-use crossterm::terminal;
-use crossterm::terminal::{
-    EnterAlternateScreen, LeaveAlternateScreen,
-};
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
+use crossterm::terminal::{self, Clear, ClearType};
+use crossterm::cursor::{MoveTo, Show};
 use ratatui::Terminal;
 use ratatui::backend::CrosstermBackend;
 use std::io::Stdout;
@@ -37,14 +34,11 @@ impl TerminalGuard {
     /// Note: we construct the backend manually rather than calling `ratatui::init()`
     /// because that helper enters alternate screen, which violates IO-06.
     pub fn new() -> Result<Self> {
-        let mut stdout = std::io::stdout();
-
+        let stdout = std::io::stdout();
         terminal::enable_raw_mode()?;
-        crossterm::execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
-
+        // No EnterAlternateScreen — inline rendering per IO-06 / D-01
         let backend = CrosstermBackend::new(stdout);
         let term = Terminal::new(backend)?;
-
         Ok(Self { terminal: term })
     }
 
@@ -56,15 +50,19 @@ impl TerminalGuard {
 
 impl Drop for TerminalGuard {
     fn drop(&mut self) {
-        // Suppress errors — Drop must not panic.
-        let _ = terminal::disable_raw_mode();
-
-        crossterm::execute!(
-            self.terminal().backend_mut(),
-            LeaveAlternateScreen,
-            DisableMouseCapture
-        )
-            .unwrap();
+        // Clear screen so shell prompt returns cleanly (D-02)
+        let _ = crossterm::execute!(
+            self.terminal.backend_mut(),
+            Clear(ClearType::All),
+            MoveTo(0, 0)
+        );
+        // Safe cleanup — no unwrap in Drop (IO-07 / D-03)
+        if let Err(e) = terminal::disable_raw_mode() {
+            eprintln!("gitmedit: terminal cleanup failed: {e}");
+        }
+        if let Err(e) = crossterm::execute!(self.terminal.backend_mut(), Show) {
+            eprintln!("gitmedit: terminal cleanup failed: {e}");
+        }
     }
 }
 
