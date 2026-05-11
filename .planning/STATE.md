@@ -57,6 +57,10 @@ Key decisions affecting v1.1:
 - [Phase 07-foundations-fix]: Remove EnterAlternateScreen and EnableMouseCapture — no mouse handlers in event loop, inline rendering confirmed
 - [Phase 07-foundations-fix]: PTY test uses kill backstop pattern for macOS PTY reader hang — child.kill() before wait, incremental read loop
 
+### Roadmap Evolution
+
+- Phase 13 added: Colorize COMMIT_MSG Comment Sections — context-aware `#` comment colorization across commit/merge/rebase/amend modes; 9 semantic section types derived from fixture analysis
+
 ### Pending Todos
 
 None yet.

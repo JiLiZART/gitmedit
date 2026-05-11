@@ -1,0 +1,42 @@
+Merge remote-tracking branch 'origin/BRANCH-NAME2' into BRANCH-NAME
+
+# Conflicts:
+#	dev-server.config.js
+#	packages/@app/app/api/chain/arkade.ts
+#	packages/@app/app/api/chain/hooks.ts
+#	packages/@app/app/api/contracts/contractsApi.ts
+#	packages/@app/app/api/contracts/hooks.ts
+#	packages/@app/app/api/contracts/types.ts
+#	packages/@app/app/api/users/transformers/userTransformer.ts
+#	packages/@app/app/api/users/types.ts
+#	packages/@app/app/cable/CurrentUserChannel.ts
+#	packages/@app/app/pages/offer-accept/elements/OfferForm.tsx
+#	packages/@app/app/pages/offer-create/OfferCreate.tsx
+#	packages/@app/components/contract-form/types.ts
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please run
+#	git update-ref -d MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch BRANCH-NAME
+# Your branch is ahead of 'origin/BRANCH-NAME' by 1 commit.
+#   (use "git push" to publish your local commits)
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	modified:   dev-server.config.js
+#	modified:   mocks/users_me.json
+#	modified:   mocks/ws_user.json
+#	modified:   packages/@app/app/api/chain/hooks.ts
+#	modified:   packages/@app/app/cable/CurrentUserChannel.ts
+#	modified:   packages/@app/app/pages/offer-accept/elements/OfferForm.tsx
+#	modified:   packages/@app/components/accept-offer-form/AcceptOfferForm.stories.tsx
+#	modified:   packages/@app/components/accept-offer-form/AcceptOfferForm.tsx
+#	modified:   packages/@app/components/contract-form/types.ts
+#

@@ -1,0 +1,47 @@
+feat: validate LN-BTC bolt address
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Tue May 12 01:43:54 2026 +0200
+#
+# On branch EX-3211-arc-epic
+# Your branch and 'origin/EX-3211-arc-epic' have diverged,
+# and have 1 and 2 different commits each, respectively.
+#
+# Changes to be committed:
+#	modified:   i18n/views.en.json
+#	modified:   i18n/views.es.json
+#	modified:   i18n/views.pt.json
+#	modified:   i18n/views.ru.json
+#	modified:   packages/@hodl-exchange/app/api/chain/hooks.ts
+#	modified:   packages/@hodl-exchange/app/api/contracts/hooks/contract.ts
+#	modified:   packages/@hodl-exchange/app/api/contracts/hooks/refundContract.ts
+#	modified:   packages/@hodl-exchange/app/api/contracts/hooks/releaseContract.ts
+#	modified:   packages/@hodl-exchange/app/package.json
+#	modified:   packages/@hodl-exchange/app/pages/contract/Contract.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/ContractForm.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/elements/LNQRSection.tsx
+#	new file:   packages/@hodl-exchange/components/contract-form/hooks/useLNAddress.ts
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/CancelContractModal.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/ConfirmLNPaymentSentForm.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/ConfirmLNPaymentSentModal.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/ConfirmPaymentSentModal.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/DisputeContractModal.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/ProvideLNBTCDepositForm.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/ProvideLNBTCDepositModal.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/RefundBTCDepositModal.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/RefundLNBTCDepositForm.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/RefundLNBTCDepositModal.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/ReleaseAfterDisputeLNBTCForm.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/ReleaseBTCForm.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/modal/ReleaseBTCModal.tsx
+#	new file:   packages/@hodl-exchange/components/contract-form/modal/index.ts
+#	modified:   packages/@hodl-exchange/components/contract-form/state/InprogressPaidContract.tsx
+#	deleted:    packages/@hodl-exchange/components/contract-form/state/ReleaseEscrowLNContract.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/state/StartContract.tsx
+#	modified:   packages/@hodl-exchange/components/contract-form/state/index.ts
+#	modified:   packages/@hodl-exchange/components/contract-form/types.ts
+#	modified:   packages/@hodl-exchange/components/package.json
+#	modified:   yarn.lock
+#

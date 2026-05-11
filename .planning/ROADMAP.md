@@ -31,6 +31,7 @@
 - [ ] **Phase 10: Rebase Enhancements + Merge Toolbar** - Rebase line reordering, exec editing, merge conflict toolbar
 - [ ] **Phase 11: Standalone Commit Mode** - `gitmedit` with no args opens commit editor and invokes `git commit -F`
 - [ ] **Phase 12: Cross-Platform Verification** - Verify correct rendering and key handling on macOS and Windows
+- [ ] **Phase 13: Colorize COMMIT_MSG Comment Sections** - Context-aware colorization of `#` comment sections (instructions, branch info, conflicts, staged changes, rebase status)
 
 ## Phase Details
 
@@ -117,3 +118,31 @@
 | 10. Rebase Enhancements + Merge Toolbar | v1.1 | 0/? | Not started | - |
 | 11. Standalone Commit Mode | v1.1 | 0/? | Not started | - |
 | 12. Cross-Platform Verification | v1.1 | 0/? | Not started | - |
+| 13. Colorize COMMIT_MSG Comment Sections | v1.1 | 0/? | Not started | - |
+
+### Phase 13: Colorize COMMIT_MSG Comment Sections
+
+**Goal**: Comment lines in COMMIT_MSG files are visually distinct and context-aware — each semantic section (instructions, branch info, conflicts, staged changes, rebase status) renders in a different color so users can scan at a glance without reading every `#` line
+**Depends on**: Phase 8 (Plain Editor Default — comment lines must be editable before colorizing them)
+**Requirements**: UI-10, UI-11, UI-12
+**Success Criteria** (what must be TRUE):
+  1. Instructions header (`# Please enter the commit message…`) renders dimmed/muted — visually de-emphasized
+  2. Branch/status lines (`# On branch`, `# Your branch is…`, `# Author:`, `# Date:`) render in a neutral info color (e.g. cyan/blue)
+  3. Conflict file list (`# Conflicts:` + file entries) renders in a warning color (e.g. yellow/amber)
+  4. Staged changes section (`# Changes to be committed:`, `#   modified:`, `#   new file:`, `#   deleted:`) renders in green for new/modified, red for deleted
+  5. Rebase status block (`# interactive rebase in progress`, `# Last commands done`, `# pick …`, `# Next command to do`) renders in a distinct rebase color (e.g. magenta/purple)
+  6. Submodule info lines render in the same neutral info color as branch lines
+  7. All 94 existing tests pass; colorization is rendering-only and does not affect saved file content
+**Comment section taxonomy** (derived from fixtures: ammend, merge, rebase, pull_rebase):
+  - `instructions` — `# Please enter…` / `# Lines starting with '#'…`
+  - `branch-info` — `# On branch`, `# Your branch`, `# Author:`, `# Date:`
+  - `merge-notice` — `# It looks like you may be committing a merge`
+  - `rebase-status` — `# interactive rebase in progress`, `# Last commands done`, `# Next command to do`, `# You are currently rebasing`
+  - `conflicts` — `# Conflicts:` header + file list entries
+  - `changes-staged` — `# Changes to be committed:` + file list
+  - `changes-unstaged` — `# Changes not staged for commit:` + file list
+  - `submodule-info` — `# Submodule changes to be committed:`, `# Submodules changed but not updated:`
+  - `rebase-pick` — `#   pick <hash> # <msg>` lines
+**Plans**: TBD
+
+| 13. Colorize COMMIT_MSG Comment Sections | v1.1 | 0/? | Not started | - |

@@ -1,0 +1,54 @@
+Updated submodule exchange-frontend: 581d7e8c
+
+# Conflicts:
+#	exchange-frontend
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Author:    R2D2 Bot <r2d2.bot@hodlhodl.com>
+#
+# interactive rebase in progress; onto c3d42a1f4
+# Last commands done (3 commands done):
+#    pick c0ad61ef0 # Update chat message stop words
+#    pick f36b29604 # Updated submodule exchange-frontend: 581d7e8c
+# Next command to do (1 remaining command):
+#    pick 9b7565232 # Updated submodule exchange-frontend: 6fae7c94
+# You are currently rebasing branch 'EX-3211-arc-epic' on 'c3d42a1f4'.
+#
+# Changes to be committed:
+#	modified:   exchange-frontend
+#
+# Changes not staged for commit:
+#	modified:   config/locales (new commits)
+#	modified:   exchange-frontend (untracked content)
+#	modified:   vendor/bitcoin-ruby (new commits)
+#	modified:   vendor/coincrypto_ruby (new commits)
+#	modified:   vendor/geo_ip_resolver_client (new commits)
+#	modified:   vendor/unotifier (new commits)
+#
+# Submodule changes to be committed:
+#
+# * exchange-frontend 2e36e055...6fae7c94 (84):
+#   > fix: i18n
+#
+# Submodules changed but not updated:
+#
+# * config/locales 0d87a69...1da70f2 (5):
+#   < EX-3101 Use PT translations from EX-3161 verbatim
+#
+# * vendor/bitcoin-ruby 3be73a7...f9fc7f6:
+#   Warn: vendor/bitcoin-ruby doesn't contain commit 3be73a7538e4877be9b72716a9c5a60059344779
+#
+# * vendor/coincrypto_ruby 4b86e94...7e0564a:
+#   Warn: vendor/coincrypto_ruby doesn't contain commit 4b86e9469a1c6879937f913da158436afd0ef2b5
+#
+# * vendor/geo_ip_resolver_client 0e5c39b...f1454f2:
+#   Warn: vendor/geo_ip_resolver_client doesn't contain commit 0e5c39b55ae9493db51d78e9e30a6657c89f436a
+#
+# * vendor/unotifier fa867f1...c69ab6d:
+#   Warn: vendor/unotifier doesn't contain commit fa867f1d0c6e314d689ce60e55e359cc472aec07
+#
+# Untracked files:
+#	vendor/money-tree/
+#
