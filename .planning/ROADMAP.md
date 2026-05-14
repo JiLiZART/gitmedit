@@ -56,8 +56,8 @@
   4. Existing squash and merge roundtrip tests pass after the Document internals change
 **Plans:** 3 plans
 Plans:
-- [ ] 08-01-PLAN.md — Add `EditorMode` enum and mode-aware `Document::parse`/`editable_lines`/`serialize` (with new + updated tests)
-- [ ] 08-02-PLAN.md — Remove subject-line counter and blank-line warning from commit and squash status bars (delete `counter_color_for` / `blank_warning_span` helpers + their tests)
+- [x] 08-01-PLAN.md — Add `EditorMode` enum and mode-aware `Document::parse`/`editable_lines`/`serialize` (with new + updated tests)
+- [x] 08-02-PLAN.md — Remove subject-line counter and blank-line warning from commit and squash status bars (delete `counter_color_for` / `blank_warning_span` helpers + their tests)
 - [ ] 08-03-PLAN.md — Wire `EditorMode` into `App::new` via `GitContext` match and update `Document::parse` call; add commit/merge-mode behavior tests
 
 ### Phase 9: Nano Chrome

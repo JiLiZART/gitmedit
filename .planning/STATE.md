@@ -4,7 +4,7 @@ milestone: v1.1
 milestone_name: Standalone Commit + Editor Overhaul
 status: Ready to plan
 stopped_at: Phase 8 context gathered
-last_updated: "2026-05-14T15:13:38.602Z"
+last_updated: "2026-05-14T16:37:49.693Z"
 progress:
   total_phases: 7
   completed_phases: 1
@@ -20,12 +20,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-07)
 
 **Core value:** Fast, distraction-free git editor with nano's simplicity that understands git's context (commits, merges, rebases, squashes) without bloat
-**Current focus:** Phase 07 — foundations-fix
+**Current focus:** Phase 08 — plain-editor-default
 
 ## Current Position
 
-Phase: 8
-Plan: Not started
+Phase: 08 (plain-editor-default) — EXECUTING
+Plan: 1 of 3
 
 ## Performance Metrics
 
