@@ -291,21 +291,9 @@ impl Renderer {
     }
 
     fn render_squash_status_bar(frame: &mut Frame, app: &App, area: Rect) {
-        let first_line = app.document().first_line();
-        let char_count = first_line.chars().count();
-        let counter_color = counter_color_for(char_count);
-        let counter_text = format!("Length: {}", char_count);
-        let counter_span = Span::styled(
-            counter_text,
-            Style::default().fg(counter_color).add_modifier(Modifier::BOLD),
-        );
-
-        let has_blank = app.document().has_blank_line_after_subject();
-        let blank_warning = blank_warning_span(has_blank);
-
-        let actions_span = Span::raw("  |  ^S Save  Esc Cancel  ^H Help  [Squash]");
-
-        let status_line = Line::from(vec![counter_span, blank_warning, actions_span]);
+        let _ = app; // app is unused now; underscore prefix keeps the signature stable for Phase 9 command-bar work.
+        let actions_span = Span::raw("^S Save  Esc Cancel  ^H Help  [Squash]");
+        let status_line = Line::from(vec![actions_span]);
         let status_widget = Paragraph::new(status_line)
             .style(Style::default().fg(Color::White).bg(Color::DarkGray));
         frame.render_widget(status_widget, area);
@@ -434,21 +422,9 @@ impl Renderer {
     }
 
     fn render_status_bar(frame: &mut Frame, app: &App, area: Rect) {
-        let first_line = app.document().first_line();
-        let char_count = first_line.chars().count();
-        let counter_color = counter_color_for(char_count);
-        let counter_text = format!("Chars: {}", char_count);
-        let counter_span = Span::styled(
-            counter_text,
-            Style::default().fg(counter_color).add_modifier(Modifier::BOLD),
-        );
-
-        let has_blank = app.document().has_blank_line_after_subject();
-        let blank_warning = blank_warning_span(has_blank);
-
-        let actions_span = Span::raw("  |  ^S Save  Esc Cancel  ^H Help");
-
-        let status_line = Line::from(vec![counter_span, blank_warning, actions_span]);
+        let _ = app;
+        let actions_span = Span::raw("^S Save  Esc Cancel  ^H Help");
+        let status_line = Line::from(vec![actions_span]);
         let status_widget = Paragraph::new(status_line)
             .style(Style::default().fg(Color::White).bg(Color::DarkGray));
         frame.render_widget(status_widget, area);
@@ -525,30 +501,6 @@ fn wrap_subject(subject: &str, wrap_width: usize) -> Vec<String> {
     lines
 }
 
-/// Return the appropriate counter color for a given character count:
-/// - Green  if count <= 50
-/// - Yellow if 51 <= count <= 72
-/// - Red    if count >= 73
-pub(crate) fn counter_color_for(count: usize) -> Color {
-    if count <= 50 {
-        Color::Green
-    } else if count <= 72 {
-        Color::Yellow
-    } else {
-        Color::Red
-    }
-}
-
-/// Return a blank-line warning span.
-/// When `has_blank` is false, returns " [No blank line]" styled in yellow.
-/// When `has_blank` is true, returns an empty raw span.
-pub(crate) fn blank_warning_span(has_blank: bool) -> Span<'static> {
-    if !has_blank {
-        Span::styled(" [No blank line]", Style::default().fg(Color::Yellow))
-    } else {
-        Span::raw("")
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -623,60 +575,4 @@ mod tests {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // counter_color_for
-    // -------------------------------------------------------------------------
-
-    #[test]
-    fn test_counter_color_green_at_50() {
-        assert_eq!(counter_color_for(50), Color::Green);
-    }
-
-    #[test]
-    fn test_counter_color_yellow_at_60() {
-        assert_eq!(counter_color_for(60), Color::Yellow);
-    }
-
-    #[test]
-    fn test_counter_color_red_at_80() {
-        assert_eq!(counter_color_for(80), Color::Red);
-    }
-
-    // Additional boundary checks
-    #[test]
-    fn test_counter_color_green_at_0() {
-        assert_eq!(counter_color_for(0), Color::Green);
-    }
-
-    #[test]
-    fn test_counter_color_yellow_at_51() {
-        assert_eq!(counter_color_for(51), Color::Yellow);
-    }
-
-    #[test]
-    fn test_counter_color_yellow_at_72() {
-        assert_eq!(counter_color_for(72), Color::Yellow);
-    }
-
-    #[test]
-    fn test_counter_color_red_at_73() {
-        assert_eq!(counter_color_for(73), Color::Red);
-    }
-
-    // -------------------------------------------------------------------------
-    // blank_warning_span
-    // -------------------------------------------------------------------------
-
-    #[test]
-    fn test_blank_line_warning_not_shown_when_present() {
-        let span = blank_warning_span(true);
-        assert_eq!(span.content, "");
-    }
-
-    #[test]
-    fn test_blank_line_warning_shown_when_missing() {
-        let span = blank_warning_span(false);
-        assert_eq!(span.content, " [No blank line]");
-        assert_eq!(span.style.fg, Some(Color::Yellow));
-    }
 }
