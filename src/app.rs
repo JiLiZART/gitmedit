@@ -1,5 +1,5 @@
 use crate::context::GitContext;
-use crate::document::{Document, RebaseLine, detect_squash_header, parse_rebase_todo, read_comment_char, serialize_rebase_todo};
+use crate::document::{Document, EditorMode, RebaseLine, detect_squash_header, parse_rebase_todo, read_comment_char, serialize_rebase_todo};
 use ratatui::style::{Color, Style};
 use ratatui::widgets::{Block, Borders};
 use ratatui_textarea::TextArea;
@@ -75,7 +75,13 @@ impl App {
             (Vec::new(), raw_content.to_string())
         };
 
-        let document = Document::parse(&content_for_document, comment_char);
+        let editor_mode = match context {
+            GitContext::Commit => EditorMode::Plain,
+            GitContext::Merge => EditorMode::Merge,
+            GitContext::Squash => EditorMode::Squash,
+            _ => EditorMode::Plain,
+        };
+        let document = Document::parse(&content_for_document, comment_char, editor_mode);
         let editable = document.editable_lines();
         let mut textarea = TextArea::new(editable);
 

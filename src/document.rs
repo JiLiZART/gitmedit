@@ -1,3 +1,15 @@
+/// Controls which line variants are editable in the textarea.
+///
+/// - Plain: all lines (Content + Comment + ConflictMarker) are editable.
+/// - Merge: Content and ConflictMarker are editable; Comment is protected.
+/// - Squash: only Content is editable; Comment and ConflictMarker are protected.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum EditorMode {
+    Plain,
+    Merge,
+    Squash,
+}
+
 /// Actions available for a rebase todo entry.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RebaseAction {
@@ -250,6 +262,7 @@ pub struct Document {
     lines: Vec<ContentLine>,
     editable_index: Vec<usize>,
     comment_char: char,
+    mode: EditorMode,
 }
 
 impl Document {
@@ -263,7 +276,7 @@ impl Document {
     /// will round-trip correctly.
     ///
     /// An empty file ("") produces a single empty `ContentLine::Content("")`.
-    pub fn parse(raw: &str, comment_char: char) -> Document {
+    pub fn parse(raw: &str, comment_char: char, mode: EditorMode) -> Document {
         let mut lines: Vec<ContentLine> = Vec::new();
         let mut editable_index: Vec<usize> = Vec::new();
 
@@ -280,7 +293,12 @@ impl Document {
         for line in slice {
             let classified = classify_line(line, comment_char);
             let idx = lines.len();
-            if let ContentLine::Content(_) = &classified {
+            let include = match &classified {
+                ContentLine::Content(_) => true,
+                ContentLine::Comment(_) => matches!(mode, EditorMode::Plain),
+                ContentLine::ConflictMarker(_) => matches!(mode, EditorMode::Plain | EditorMode::Merge),
+            };
+            if include {
                 editable_index.push(idx);
             }
             lines.push(classified);
@@ -290,21 +308,26 @@ impl Document {
             lines,
             editable_index,
             comment_char,
+            mode,
         }
     }
 
-    /// Return only the editable (Content) lines as plain strings.
+    /// Return only the editable lines as plain strings, respecting the EditorMode
+    /// set at parse time. Drives off `editable_index` which was built mode-awarerly.
     pub fn editable_lines(&self) -> Vec<String> {
-        self.lines
+        self.editable_index
             .iter()
-            .filter_map(|l| {
-                if let ContentLine::Content(s) = l {
-                    Some(s.clone())
-                } else {
-                    None
-                }
+            .map(|&i| match &self.lines[i] {
+                ContentLine::Content(s)
+                | ContentLine::Comment(s)
+                | ContentLine::ConflictMarker(s) => s.clone(),
             })
             .collect()
+    }
+
+    /// Return the EditorMode this document was parsed with.
+    pub fn mode(&self) -> EditorMode {
+        self.mode
     }
 
     /// Map a TextArea row index to the full `lines` Vec index.
@@ -661,7 +684,7 @@ mod tests {
     #[test]
     fn test_parse_mixed_content() {
         let input = "Fix the bug\n# Please enter the commit message\n# Lines starting with '#' will be ignored\nSigned-off-by: Dev\n";
-        let doc = Document::parse(input, '#');
+        let doc = Document::parse(input, '#', EditorMode::Squash);
 
         // Trailing '\n' is consumed — 4 lines stored, not 5.
         // Lines: Content, Comment, Comment, Content
@@ -692,7 +715,7 @@ mod tests {
     fn test_editable_lines_excludes_comments() {
         // 3 content lines, 2 comment lines; trailing '\n' is consumed
         let input = "line1\n# comment1\nline2\n# comment2\nline3\n";
-        let doc = Document::parse(input, '#');
+        let doc = Document::parse(input, '#', EditorMode::Squash);
         let editable = doc.editable_lines();
         assert_eq!(editable.len(), 3); // "line1", "line2", "line3"
         assert_eq!(editable[0], "line1");
@@ -703,7 +726,7 @@ mod tests {
     #[test]
     fn test_editable_lines_excludes_conflict_markers() {
         let input = "<<<<<<< HEAD\nour change\n=======\ntheir change\n>>>>>>> branch\n";
-        let doc = Document::parse(input, '#');
+        let doc = Document::parse(input, '#', EditorMode::Squash);
         let editable = doc.editable_lines();
         // "our change", "their change" (trailing '\n' consumed)
         assert_eq!(editable.len(), 2);
@@ -719,7 +742,7 @@ mod tests {
     fn test_editable_index_maps_correctly() {
         // Lines: Comment(idx=0), Content(idx=1), Comment(idx=2), Content(idx=3)
         let input = "# comment\nfirst content\n# another comment\nsecond content\n";
-        let doc = Document::parse(input, '#');
+        let doc = Document::parse(input, '#', EditorMode::Squash);
         // editable row 0 -> lines index 1
         assert_eq!(doc.full_row_for_editable(0), 1);
         // editable row 1 -> lines index 3
@@ -733,7 +756,7 @@ mod tests {
     #[test]
     fn test_roundtrip_preserves_comments() {
         let input = "subject line\n\n# comment line\nbody text\n";
-        let doc = Document::parse(input, '#');
+        let doc = Document::parse(input, '#', EditorMode::Squash);
         let editable = doc.editable_lines();
         let output = doc.serialize(&editable);
         assert_eq!(input, output);
@@ -742,7 +765,7 @@ mod tests {
     #[test]
     fn test_roundtrip_preserves_conflict_markers() {
         let input = "<<<<<<< HEAD\nour change\n=======\ntheir change\n>>>>>>> branch\n";
-        let doc = Document::parse(input, '#');
+        let doc = Document::parse(input, '#', EditorMode::Squash);
         let editable = doc.editable_lines();
         let output = doc.serialize(&editable);
         assert_eq!(input, output);
@@ -751,7 +774,7 @@ mod tests {
     #[test]
     fn test_serialize_with_edited_content() {
         let input = "old subject\n# comment\n";
-        let doc = Document::parse(input, '#');
+        let doc = Document::parse(input, '#', EditorMode::Squash);
         let mut edited = doc.editable_lines();
         edited[0] = "new subject".to_string();
         let output = doc.serialize(&edited);
@@ -764,7 +787,7 @@ mod tests {
 
     #[test]
     fn test_empty_file() {
-        let doc = Document::parse("", '#');
+        let doc = Document::parse("", '#', EditorMode::Squash);
         // split("") on '\n' -> [""] -> one empty Content line
         assert_eq!(doc.lines().len(), 1);
         assert_eq!(doc.lines()[0], ContentLine::Content("".to_string()));
@@ -774,7 +797,7 @@ mod tests {
     #[test]
     fn test_comment_only_file() {
         let input = "# comment 1\n# comment 2\n";
-        let doc = Document::parse(input, '#');
+        let doc = Document::parse(input, '#', EditorMode::Squash);
         // Lines: Comment, Comment (trailing '\n' consumed) — no editable lines
         assert_eq!(doc.editable_lines().len(), 0);
     }
@@ -785,13 +808,13 @@ mod tests {
 
     #[test]
     fn test_first_line_returns_subject() {
-        let doc = Document::parse("Subject\n\nBody\n", '#');
+        let doc = Document::parse("Subject\n\nBody\n", '#', EditorMode::Squash);
         assert_eq!(doc.first_line(), "Subject");
     }
 
     #[test]
     fn test_first_line_empty_when_no_editable() {
-        let doc = Document::parse("# only comment\n", '#');
+        let doc = Document::parse("# only comment\n", '#', EditorMode::Squash);
         assert_eq!(doc.first_line(), "");
     }
 
@@ -801,19 +824,19 @@ mod tests {
 
     #[test]
     fn test_has_blank_line_true_when_blank_present() {
-        let doc = Document::parse("Subject\n\nBody\n", '#');
+        let doc = Document::parse("Subject\n\nBody\n", '#', EditorMode::Squash);
         assert!(doc.has_blank_line_after_subject());
     }
 
     #[test]
     fn test_has_blank_line_false_when_missing() {
-        let doc = Document::parse("Subject\nBody\n", '#');
+        let doc = Document::parse("Subject\nBody\n", '#', EditorMode::Squash);
         assert!(!doc.has_blank_line_after_subject());
     }
 
     #[test]
     fn test_has_blank_line_true_single_line() {
-        let doc = Document::parse("Subject\n", '#');
+        let doc = Document::parse("Subject\n", '#', EditorMode::Squash);
         assert!(doc.has_blank_line_after_subject());
     }
 
@@ -873,5 +896,44 @@ mod tests {
         let header_end = result.unwrap();
         let lines: Vec<&str> = input.split('\n').collect();
         assert!(lines[header_end].is_empty());
+    }
+
+    // -------------------------------------------------------------------------
+    // EditorMode tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_editor_mode_plain_makes_comments_editable() {
+        let input = "subject\n# comment\nbody\n";
+        let doc = Document::parse(input, '#', EditorMode::Plain);
+        assert_eq!(doc.editable_lines(), vec!["subject", "# comment", "body"]);
+    }
+
+    #[test]
+    fn test_editor_mode_plain_makes_conflict_markers_editable() {
+        let input = "a\n<<<<<<< HEAD\nb\n=======\nc\n>>>>>>> br\nd\n";
+        let doc = Document::parse(input, '#', EditorMode::Plain);
+        let editable = doc.editable_lines();
+        assert_eq!(editable.len(), 7);
+        assert!(editable.contains(&"<<<<<<< HEAD".to_string()));
+        assert!(editable.contains(&"=======".to_string()));
+        assert!(editable.contains(&">>>>>>> br".to_string()));
+    }
+
+    #[test]
+    fn test_editor_mode_merge_protects_comments_but_promotes_conflict_markers() {
+        let input = "subject\n# comment\n<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> br\n";
+        let doc = Document::parse(input, '#', EditorMode::Merge);
+        assert_eq!(
+            doc.editable_lines(),
+            vec!["subject", "<<<<<<< HEAD", "ours", "=======", "theirs", ">>>>>>> br"]
+        );
+    }
+
+    #[test]
+    fn test_editor_mode_squash_unchanged() {
+        let input = "subject\n# comment\n<<<<<<<\nbody\n";
+        let doc = Document::parse(input, '#', EditorMode::Squash);
+        assert_eq!(doc.editable_lines(), vec!["subject", "body"]);
     }
 }
