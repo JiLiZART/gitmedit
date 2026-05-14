@@ -351,11 +351,27 @@ impl Document {
     }
 
     /// Serialize back to a raw string, replacing editable lines with the
-    /// content from `textarea_lines` while preserving all Comment and
-    /// ConflictMarker lines byte-for-byte in original order.
+    /// content from `textarea_lines` while preserving all protected lines
+    /// byte-for-byte in original order.
     ///
-    /// CRITICAL: preserves comment bytes verbatim (CTX-06).
+    /// In Plain mode: all lines came from textarea, so output is simply
+    /// `textarea_lines.join("\n") + "\n"` (no re-injection needed).
+    ///
+    /// In Merge mode: Comment is re-injected verbatim; ConflictMarker comes
+    /// from textarea (it was editable).
+    ///
+    /// In Squash mode (unchanged): both Comment and ConflictMarker are
+    /// re-injected verbatim; only Content lines come from textarea.
+    ///
+    /// CRITICAL: preserves comment bytes verbatim (CTX-06) for non-Plain modes.
     pub fn serialize(&self, textarea_lines: &[String]) -> String {
+        // Plain mode: all lines are in textarea — emit verbatim.
+        if matches!(self.mode, EditorMode::Plain) {
+            let mut out = textarea_lines.join("\n");
+            out.push('\n');
+            return out;
+        }
+
         let mut output = String::new();
         let mut content_idx: usize = 0;
 
@@ -365,8 +381,17 @@ impl Document {
                     output.push_str(&textarea_lines[content_idx]);
                     content_idx += 1;
                 }
-                ContentLine::Comment(s) | ContentLine::ConflictMarker(s) => {
-                    output.push_str(s);
+                ContentLine::Comment(s) => {
+                    output.push_str(s); // always verbatim
+                }
+                ContentLine::ConflictMarker(s) => {
+                    if matches!(self.mode, EditorMode::Merge) {
+                        // ConflictMarker is editable in Merge — it lives in textarea.
+                        output.push_str(&textarea_lines[content_idx]);
+                        content_idx += 1;
+                    } else {
+                        output.push_str(s); // Squash: verbatim
+                    }
                 }
             }
             output.push('\n');
@@ -896,6 +921,43 @@ mod tests {
         let header_end = result.unwrap();
         let lines: Vec<&str> = input.split('\n').collect();
         assert!(lines[header_end].is_empty());
+    }
+
+    // -------------------------------------------------------------------------
+    // Serialize mode-specific tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_serialize_plain_mode_emits_textarea_verbatim() {
+        let input = "subject\n# comment\nbody\n";
+        let doc = Document::parse(input, '#', EditorMode::Plain);
+        let editable = doc.editable_lines();
+        assert_eq!(editable, vec!["subject", "# comment", "body"]);
+        let output = doc.serialize(&editable);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_serialize_plain_mode_edits_comment_line() {
+        let input = "subject\n# comment\n";
+        let doc = Document::parse(input, '#', EditorMode::Plain);
+        let mut editable = doc.editable_lines();
+        editable[1] = "now an edit".to_string();
+        let output = doc.serialize(&editable);
+        assert_eq!(output, "subject\nnow an edit\n");
+    }
+
+    #[test]
+    fn test_serialize_merge_mode_preserves_comment_promotes_marker() {
+        let input = "subject\n# m\n<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> br\n";
+        let doc = Document::parse(input, '#', EditorMode::Merge);
+        let editable = doc.editable_lines();
+        // Plain comment is NOT editable in Merge; markers + content are.
+        assert_eq!(editable, vec![
+            "subject", "<<<<<<< HEAD", "ours", "=======", "theirs", ">>>>>>> br"
+        ]);
+        let output = doc.serialize(&editable);
+        assert_eq!(output, input);
     }
 
     // -------------------------------------------------------------------------
