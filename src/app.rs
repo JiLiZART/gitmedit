@@ -426,4 +426,47 @@ mod tests {
         let lines = app.textarea().lines();
         assert_eq!(lines[0], "Regular commit message");
     }
+
+    // -------------------------------------------------------------------------
+    // Commit mode (Plain EditorMode) tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_app_commit_mode_includes_comment_lines_in_textarea() {
+        let app = App::new("subject\n# comment\nbody\n", GitContext::Commit);
+        let lines: Vec<String> = app.textarea().lines().to_vec();
+        assert_eq!(lines, vec!["subject", "# comment", "body"]);
+    }
+
+    #[test]
+    fn test_app_commit_mode_serializes_back_to_original() {
+        let app = App::new("subject\n# comment\nbody\n", GitContext::Commit);
+        assert_eq!(app.serialized_content(), "subject\n# comment\nbody\n");
+    }
+
+    #[test]
+    fn test_app_commit_mode_edited_comment_persists() {
+        // Build a Document directly to simulate the edit (textarea mutation API is internal);
+        // this proves the serialize path emits whatever the textarea holds.
+        let doc = crate::document::Document::parse(
+            "subject\n# comment\nbody\n", '#', crate::document::EditorMode::Plain
+        );
+        let mut editable = doc.editable_lines();
+        assert_eq!(editable[1], "# comment");
+        editable[1] = "edited comment".to_string();
+        let out = doc.serialize(&editable);
+        assert_eq!(out, "subject\nedited comment\nbody\n");
+        assert!(!out.contains("# comment"));
+    }
+
+    #[test]
+    fn test_app_merge_mode_promotes_conflict_markers() {
+        let input = "subject\n# msg\n<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> br\n";
+        let app = App::new(input, GitContext::Merge);
+        let lines: Vec<String> = app.textarea().lines().to_vec();
+        assert!(lines.contains(&"<<<<<<< HEAD".to_string()), "lines = {:?}", lines);
+        assert!(lines.contains(&"=======".to_string()), "lines = {:?}", lines);
+        assert!(lines.contains(&">>>>>>> br".to_string()), "lines = {:?}", lines);
+        assert!(!lines.contains(&"# msg".to_string()), "lines = {:?}", lines);
+    }
 }
