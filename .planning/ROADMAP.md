@@ -54,7 +54,11 @@
   2. ratatui_textarea default editing behavior (cursor movement, insert, delete) works on every line without special-cased protection
   3. Squash and merge modes remain fully functional — their existing behavior is unchanged
   4. Existing squash and merge roundtrip tests pass after the Document internals change
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 08-01-PLAN.md — Add `EditorMode` enum and mode-aware `Document::parse`/`editable_lines`/`serialize` (with new + updated tests)
+- [ ] 08-02-PLAN.md — Remove subject-line counter and blank-line warning from commit and squash status bars (delete `counter_color_for` / `blank_warning_span` helpers + their tests)
+- [ ] 08-03-PLAN.md — Wire `EditorMode` into `App::new` via `GitContext` match and update `Document::parse` call; add commit/merge-mode behavior tests
 
 ### Phase 9: Nano Chrome
 **Goal**: All editor modes display a top header bar and a bottom command bar in the nano style
@@ -113,7 +117,7 @@
 | 5. Installation + Distribution | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 6. Rebase View Horizontal Scrolling | v1.0 | 1/1 | Complete | 2026-04-02 |
 | 7. Foundations Fix | v1.1 | 1/1 | Complete   | 2026-04-22 |
-| 8. Plain Editor Default | v1.1 | 0/? | Not started | - |
+| 8. Plain Editor Default | v1.1 | 0/3 | Not started | - |
 | 9. Nano Chrome | v1.1 | 0/? | Not started | - |
 | 10. Rebase Enhancements + Merge Toolbar | v1.1 | 0/? | Not started | - |
 | 11. Standalone Commit Mode | v1.1 | 0/? | Not started | - |
