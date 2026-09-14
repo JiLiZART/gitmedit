@@ -1,0 +1,19 @@
+fix: release volume
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Thu May 14 12:39:16 2026 +0200
+#
+# On branch TASK-1111-fix-stage-view
+# Your branch is ahead of 'origin/TASK-1111-fix-stage-view' by 1 commit.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#	modified:   i18n/views.en.json
+#	modified:   i18n/views.es.json
+#	modified:   i18n/views.pt.json
+#	modified:   i18n/views.ru.json
+#	modified:   packages/@project/components/contract-form/ContractForm.tsx
+#	modified:   packages/@project/components/contract-form/elements/EscrowDetails.tsx
+#

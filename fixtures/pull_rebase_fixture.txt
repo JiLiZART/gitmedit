@@ -5,6 +5,6 @@ feat: validate LN-BTC bolt address
 #	i18n/views.es.json
 #	i18n/views.pt.json
 #	i18n/views.ru.json
-#	packages/@hodl-exchange/components/contract-form/modal/ConfirmLNPaymentSentForm.tsx
-#	packages/@hodl-exchange/components/contract-form/state/ReleaseEscrowLNContract.tsx
+#	packages/@project/components/contract-form/modal/ConfirmLNPaymentSentForm.tsx
+#	packages/@project/components/contract-form/state/ReleaseEscrowLNContract.tsx
 

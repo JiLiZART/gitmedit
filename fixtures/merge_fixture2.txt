@@ -1,0 +1,197 @@
+Merge remote-tracking branch 'origin/develop' into feat/TASK-2222-web-integration
+
+# Conflicts:
+#	i18n/views.en.json
+#	i18n/views.es.json
+#	i18n/views.pt.json
+#	i18n/views.ru.json
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please run
+#	git update-ref -d MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch feat/TASK-2222-web-integration
+# Your branch is up to date with 'origin/feat/TASK-2222-web-integration'.
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-app-pages-home-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-app-pages-offers-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-amount-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-apr-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-crypto-network-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-crypto-token-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-currencies-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-footer-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-loan-period-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-ltv-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-offers-filters-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-offers-header-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-offers-table-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-range-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-avatar-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-button-dark-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-button-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-button-primary-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-checkbox-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-checkmark-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-content-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-dialog-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-divider-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-dropdown-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-heading-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-icon-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-image-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-link-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-loader-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-menu-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-menu-navbar-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-pagination-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-range-field-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-range-slider-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-skeleton-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-space-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-tab-switch-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-table-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-text-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-components-text-field-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-icons-outline-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-app-ui-icons-solid-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-pages-home-home-page-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-app-pages-home-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-app-pages-offers-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-amount-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-apr-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-crypto-network-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-crypto-token-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-currencies-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-footer-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-home-guest-section-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-home-welcome-section-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-language-switcher-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-loan-period-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-ltv-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-notification-bar-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-offers-filters-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-offers-header-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-offers-table-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-range-filter-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-avatar-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-button-dark-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-button-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-button-primary-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-checkbox-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-checkmark-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-content-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-dialog-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-divider-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-dropdown-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-heading-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-icon-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-image-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-link-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-list-box-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-loader-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-menu-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-menu-navbar-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-pagination-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-range-field-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-range-slider-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-select-field-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-skeleton-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-space-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-tab-switch-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-table-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-tabs-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-text-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-components-text-field-default-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-icons-outline-1-snap.png
+#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-dev-ui-icons-solid-1-snap.png
+#	deleted:    __tests__/pages/__snapshots__/index.test.tsx.snap
+#	deleted:    __tests__/pages/index.test.tsx
+#	deleted:    __tests__/storyshots.tsx
+#	modified:   dip.yml
+#	modified:   i18n/views.en.json
+#	modified:   i18n/views.es.json
+#	modified:   i18n/views.pt.json
+#	modified:   i18n/views.ru.json
+#	new file:   mail-templates/build/disabling-ru-offers.html
+#	modified:   mail-templates/build/discontinuation-of-support.html
+#	modified:   mail-templates/build/fee-adjustment-power-user.html
+#	modified:   mail-templates/build/fee-adjustment-referral.html
+#	modified:   mail-templates/build/fee-adjustment-user.html
+#	new file:   mail-templates/build/important-updates.html
+#	modified:   mail-templates/build/layout.html
+#	modified:   mail-templates/build/new-contract.html
+#	modified:   mail-templates/build/offers-activated.html
+#	modified:   mail-templates/build/offers-disabled-soon.html
+#	modified:   mail-templates/build/offers-disabled.html
+#	modified:   mail-templates/build/payment-method-already-exists.html
+#	modified:   mail-templates/build/payment-method-approved.html
+#	modified:   mail-templates/build/payment-method-other-reason.html
+#	modified:   mail-templates/build/payment-method-removed.html
+#	modified:   mail-templates/build/payment-method-unsupported-country.html
+#	modified:   mail-templates/build/payment-method-unsupported-type.html
+#	modified:   mail-templates/build/paypal.html
+#	modified:   mail-templates/build/platform-access.html
+#	modified:   mail-templates/build/reset-password.html
+#	modified:   mail-templates/build/welcome.html
+#	new file:   mail-templates/mails/disabling-ru-offers.mjml
+#	new file:   mail-templates/mails/important-updates.mjml
+#	modified:   mail-templates/mails/offers-disabled-soon.mjml
+#	modified:   mail-templates/mails/welcome.mjml
+#	modified:   mail-templates/shared/footer/footer.mjml
+#	modified:   mail-templates/shared/header/header.mjml
+#	modified:   packages/@dev-kit
+#	modified:   packages/@project/app/api/chain/hooks.ts
+#	modified:   packages/@project/app/api/contracts/hooks/releaseContract.ts
+#	modified:   packages/@project/app/api/contracts/types.ts
+#	modified:   packages/@project/app/containers/AppFooter.tsx
+#	modified:   packages/@project/app/pages/contract/Contract.tsx
+#	modified:   packages/@project/app/pages/home/HomePage.tsx
+#	modified:   packages/@project/app/pages/home/home.module.css
+#	modified:   packages/@project/app/pages/offer-accept/hooks/useAcceptOfferPaymentPassword.tsx
+#	modified:   packages/@project/app/pages/offer-create/hooks/useOfferCreatePaymentPassword.tsx
+#	modified:   packages/@project/app/pages/page/about/AboutUs.tsx
+#	modified:   packages/@project/app/pages/page/about/about.module.css
+#	modified:   packages/@project/app/pages/page/contacts/ContactUs.tsx
+#	modified:   packages/@project/app/pages/page/faq/content/faq.mdx
+#	deleted:    packages/@project/app/pages/page/tos/TermOfService.tsx
+#	deleted:    packages/@project/app/pages/page/tos/ToSPage.tsx
+#	deleted:    packages/@project/app/pages/page/tos/content/tos.mdx
+#	deleted:    packages/@project/app/pages/page/tos/index.ts
+#	deleted:    packages/@project/app/pages/page/tos/paragraphs.ts
+#	deleted:    packages/@project/app/pages/page/tos/termOfService.module.css
+#	modified:   packages/@project/components/contract-form/ContractForm.tsx
+#	modified:   packages/@project/components/contract-form/modal/ConfirmPaymentPasswordForm.tsx
+#	modified:   packages/@project/components/contract-form/modal/ReleaseAfterDisputeBTCForm.tsx
+#	modified:   packages/@project/components/contract-form/modal/ReleaseAfterDisputeLNBTCForm.tsx
+#	modified:   packages/@project/components/contract-form/modal/ReleaseBTCForm.tsx
+#	modified:   packages/@project/components/contract-form/state/BuyerResolvedContract.tsx
+#	modified:   packages/@project/components/create-payment-password/CreatePaymentPassword.tsx
+#	modified:   packages/@project/components/create-payment-password/CreatePaymentPasswordForm.tsx
+#	modified:   packages/@some/client/__fixtures__/releaseTransaction.ts
+#	modified:   packages/@some/client/crypto.test.ts
+#	modified:   packages/@some/client/multisig.js
+#	deleted:    pages/tos.tsx
+#	modified:   tsconfig.json
+#
+# Changes not staged for commit:
+#	modified:   packages/@dev-kit (new commits)
+#
+# Submodule changes to be committed:
+#
+# * packages/@dev-kit 2ce1d422...9a4f2cf9 (3):
+#   > feat(TICKET-1419): replaced TryBanner with CalloutBanner, adopt for About page
+#
+# Submodules changed but not updated:
+#
+# * packages/@dev-kit 9a4f2cf9...0303ce14 (4):
+#   > Merge branch 'sync-ui' into master
+#

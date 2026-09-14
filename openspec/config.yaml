@@ -1,0 +1,34 @@
+schema: spec-driven
+
+context: |
+  gitmedit is a fast, distraction-free terminal git editor. It replaces vim/nano as the
+  global git editor and understands git's context (commit, merge, rebase, squash, tag)
+  without bloat. Set once via `git config --global core.editor gitmedit`.
+
+  Tech stack: Rust 2024 edition, single crate (no workspace). ratatui 0.30, crossterm 0.29,
+  ratatui-textarea 0.8, clap 4.6, arboard (clipboard), anyhow + thiserror.
+  Tests: built-in `#[cfg(test)]` modules per source file, plus `tests/terminal_integration.rs`
+  (PTY-based, `#[ignore]`d because it needs a real PTY).
+
+  Source layout: `src/main.rs` (arg parsing + event loop + key bindings), `src/context.rs`
+  (git context detection from filename), `src/document.rs` (line classification, EditorMode,
+  rebase todo parse/serialize), `src/app.rs` (state machine), `src/renderer.rs` (ratatui
+  widgets), `src/terminal.rs` (raw-mode RAII guard), `src/writer.rs` (atomic file writes).
+
+  Hard constraints:
+  - Must respect git's file formats exactly. Corrupting a rebase todo or dropping a comment
+    line is the worst failure mode this tool has; roundtrip fidelity beats every other concern.
+  - Must render inline, without the alternate screen, so prior terminal output stays visible
+    (nano behavior). This is currently violated in the tree.
+  - Startup must stay well under 100ms; it competes with vim/nano on launch feel.
+  - Terminal must always be restored, including on panic.
+  - Cross-platform target: Linux and macOS, with Windows as a stretch goal.
+
+  Conventions:
+  - Conventional commits.
+  - Requirement ids from the previous planning system (IO-*, CTX-*, EDIT-*, COMMIT-*, MERGE-*,
+    REBASE-*, SQUASH-*, HELP-*, PERF-*, INSTALL-*, UI-*, PLAT-*) are referenced in specs for
+    traceability back to `.planning/`, which is a frozen archive.
+
+  Deliberately out of scope: vim/emacs keybindings, plugin system, graphical UI, interactive
+  staging, git2/gix crate integration (subprocess is enough for one call), syntax highlighting.

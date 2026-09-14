@@ -1,27 +1,27 @@
-Updated submodule exchange-frontend: 581d7e8c
+Updated submodule app-frontend: 581d7e8c
 
 # Conflicts:
-#	exchange-frontend
+#	app-frontend
 
 # Please enter the commit message for your changes. Lines starting
 # with '#' will be ignored, and an empty message aborts the commit.
 #
-# Author:    R2D2 Bot <r2d2.bot@hodlhodl.com>
+# Author:    R2D2 Bot <r2d2.bot@bot.com>
 #
 # interactive rebase in progress; onto c3d42a1f4
 # Last commands done (3 commands done):
 #    pick c0ad61ef0 # Update chat message stop words
-#    pick f36b29604 # Updated submodule exchange-frontend: 581d7e8c
+#    pick f36b29604 # Updated submodule app-frontend: 581d7e8c
 # Next command to do (1 remaining command):
-#    pick 9b7565232 # Updated submodule exchange-frontend: 6fae7c94
-# You are currently rebasing branch 'EX-3211-arc-epic' on 'c3d42a1f4'.
+#    pick 9b7565232 # Updated submodule app-frontend: 6fae7c94
+# You are currently rebasing branch 'TASK-3333-epic' on 'c3d42a1f4'.
 #
 # Changes to be committed:
-#	modified:   exchange-frontend
+#	modified:   app-frontend
 #
 # Changes not staged for commit:
 #	modified:   config/locales (new commits)
-#	modified:   exchange-frontend (untracked content)
+#	modified:   app-frontend (untracked content)
 #	modified:   vendor/bitcoin-ruby (new commits)
 #	modified:   vendor/coincrypto_ruby (new commits)
 #	modified:   vendor/geo_ip_resolver_client (new commits)
@@ -29,7 +29,7 @@ Updated submodule exchange-frontend: 581d7e8c
 #
 # Submodule changes to be committed:
 #
-# * exchange-frontend 2e36e055...6fae7c94 (84):
+# * app-frontend 2e36e055...6fae7c94 (84):
 #   > fix: i18n
 #
 # Submodules changed but not updated:
