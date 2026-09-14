@@ -1,8 +1,9 @@
 # git-context-detection Specification
 
 ## Purpose
-Determines which git operation invoked the editor, so the interface can adapt to commit, merge,
-rebase, squash, and tag work without the user having to say which one they are in.
+Determines which git operation invoked the editor, so it can choose the right layout — message editor
+with status pane, or rebase table with commit details — without the user having to say which one they
+are in.
 
 ## Requirements
 
@@ -28,7 +29,7 @@ at minimum `COMMIT_EDITMSG`, `MERGE_MSG`, `git-rebase-todo`, `SQUASH_MSG`, and `
 
 #### Scenario: Tag message file
 - **WHEN** the editor is invoked on a file named `TAG_EDITMSG`
-- **THEN** the detected operation is treated as commit, since a tag message is edited the same way
+- **THEN** the detected operation is tag
 
 #### Scenario: Unrecognized file
 - **WHEN** the editor is invoked on a file whose name matches none of the known git files
@@ -39,17 +40,53 @@ at minimum `COMMIT_EDITMSG`, `MERGE_MSG`, `git-rebase-todo`, `SQUASH_MSG`, and `
 - **WHEN** the path contains directories, such as `/some/repo/.git/COMMIT_EDITMSG`
 - **THEN** detection uses only the final path segment and the leading directories are ignored
 
-### Requirement: Detected operation selects the interface
-The detected operation SHALL determine which editing interface is presented, so that structured
-operations get a structured interface rather than free-form text.
+### Requirement: Detected operation selects the layout
+The detected operation SHALL determine the layout. Commit, merge, squash, and tag SHALL use the message
+layout: the message editor with the status pane. Rebase SHALL use the rebase layout: the table with
+commit details. Unknown SHALL use a plain text editor with no split and no right pane.
 
-#### Scenario: Rebase gets a structured interface
+#### Scenario: Rebase gets the table
 - **WHEN** the detected operation is rebase
-- **THEN** a structured, non-free-text interface is presented
+- **THEN** the rebase table and commit details are presented
 
-#### Scenario: Message operations get a text interface
-- **WHEN** the detected operation is commit, merge, or unknown
-- **THEN** a free-form text editing interface is presented
+#### Scenario: Message operations share one layout
+- **WHEN** the detected operation is commit, merge, squash, or tag
+- **THEN** the message editor and status pane are presented, with no operation-specific restrictions
+
+#### Scenario: Unknown file
+- **WHEN** the detected operation is unknown
+- **THEN** the whole file is shown in a plain text editor at full width
+
+### Requirement: Git directory derived from the path
+For a known git file, the editor SHALL treat the directory that holds it as the git directory, except
+for `git-rebase-todo`, whose git directory is the parent of the `rebase-merge` directory that holds it.
+This directory locates stored reword messages and rebase state.
+
+#### Scenario: Commit message in a worktree
+- **WHEN** the editor is invoked on `/repo/.git/worktrees/feature/COMMIT_EDITMSG`
+- **THEN** the git directory is `/repo/.git/worktrees/feature`
+
+#### Scenario: Rebase todo
+- **WHEN** the editor is invoked on `/repo/.git/rebase-merge/git-rebase-todo`
+- **THEN** the git directory is `/repo/.git`
+
+### Requirement: Reword in progress detected
+When the operation is commit and `<gitdir>/rebase-merge/done` exists, the editor SHALL read its last
+line. If that line is a reword instruction whose commit reference matches a stored reword message
+(one reference a prefix of the other), the editor SHALL treat the session as that reword, as specified
+in `rebase-mode`.
+
+#### Scenario: Matching stored message
+- **WHEN** the last done line is `reword 45f8bcd subject` and `<gitdir>/gitmedit/reword/45f8bcd` exists
+- **THEN** the session is detected as rewording `45f8bcd`
+
+#### Scenario: No rebase in progress
+- **WHEN** `<gitdir>/rebase-merge/done` does not exist
+- **THEN** no reword is detected and the file opens as written
+
+#### Scenario: Unreadable rebase state
+- **WHEN** the done file cannot be read or parsed
+- **THEN** no reword is detected and the editor starts normally
 
 ### Requirement: Configured comment character
 The editor SHALL read git's configured comment character at startup and use it to recognize comment

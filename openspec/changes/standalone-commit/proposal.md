@@ -41,9 +41,12 @@ messages, running `gitmedit` in a repository should do exactly that.
 - The editor gains a subprocess call and a temporary file, in a process that until now only read and
   wrote one file it was handed.
 - Requirements covered: COMMIT-10, COMMIT-11, COMMIT-12, COMMIT-13, COMMIT-14.
-- Depends on: `restore-inline-rendering`. This change drops the terminal guard and then runs a
-  subprocess that writes to the same terminal; doing that while the guard's cleanup can panic, and
-  while the alternate screen may or may not be active, is how output ends up lost or garbled.
+- Depends on: the "Terminal is always restored" requirement in `git-editor-contract` being
+  implemented. This change drops the terminal guard and then runs a subprocess that writes to the
+  same terminal; doing that while the guard's cleanup can panic, or before the alternate screen and
+  mouse capture are released, is how output ends up lost or garbled.
+- Layout: the standalone editor has no comment trailer, so it opens in the message layout with no
+  right pane (see `pane-layout`).
 
 **Carried-over risk:** the failure paths here — nothing staged, empty message, hook rejection — are
 the ones users will actually hit, and none of them can be covered by a unit test of the happy path.

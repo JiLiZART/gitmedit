@@ -15,13 +15,13 @@
 ## 3. Editing
 
 - [ ] 3.1 Open the editor with an empty message area
-- [ ] 3.2 Use the same plain-mode editing behavior as a commit message file
+- [ ] 3.2 Use the same message editor as a commit message file, with no right pane
 - [ ] 3.3 Exit without committing on cancel
 
 ## 4. Committing
 
 - [ ] 4.1 Write the message to a temporary file
-- [ ] 4.2 Drop the terminal guard before invoking git
+- [ ] 4.2 Drop the terminal guard (mouse capture, alternate screen, raw mode) before invoking git
 - [ ] 4.3 Invoke `git commit -F` with the temporary file
 - [ ] 4.4 Show git's output to the user, including on failure
 - [ ] 4.5 Exit with git's exit code

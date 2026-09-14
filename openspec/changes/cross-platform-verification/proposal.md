@@ -18,8 +18,10 @@ it is sufficient on a real Windows console.
 
 ## What Changes
 
-- Establish that every mode renders without artifacts on the target terminals.
+- Establish that both layouts render without artifacts on the target terminals.
 - Establish that each keypress produces exactly one action on Windows.
+- Establish that mouse clicks and wheel events reach the editor, and that the Alt-modified focus and
+  reorder keys arrive in a form the editor recognizes, on each target terminal.
 - Turn what is currently an assumption about platform support into a stated, checked requirement.
 
 ## Capabilities
