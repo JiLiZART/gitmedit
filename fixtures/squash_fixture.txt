@@ -1,0 +1,45 @@
+pick 54763e6 # docs(state): record phase 8 context session
+pick 45f8bcd # docs(08): create phase plan
+pick 8dd89f1 # Revert "fix(07-01): remove alternate screen and fix Drop safety in TerminalGuard"
+pick 22c0053 # feat(08-01): add EditorMode enum and mode-aware parse/editable_lines
+pick 7314ba6 # feat(08-01): plain-mode short-circuit in serialize + merge ConflictMarker promotion
+pick d066d3f # docs(08-01): complete EditorMode plan execution summary
+pick 2c8ef7c # feat(08-02): remove subject counter and blank-line warning from status bars
+pick 6a2c6a5 # docs(08-02): complete plan summary — counter and blank-warning removed from status bars
+pick 8a3804e # docs(phase-08): update tracking after wave 1 .planning/ROADMAP.md .planning/STATE.md
+pick 992dfa2 # feat(08-03): wire EditorMode in App::new and add commit/merge mode tests
+pick 97d3786 # docs(08-03): complete plan 03 summary — EditorMode wiring + 4 new tests
+pick b1f5a73 # docs(phase-08): update tracking after wave 2 .planning/ROADMAP.md .planning/STATE.md
+pick fe2ecd7 # docs(phase-08): complete phase execution .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md .planning/phases/08-plain-editor-default/08-VERIFICATION.md
+pick aa619f8 # fix: migrate to openspec
+
+# Rebase 36d7eda..aa619f8 onto 36d7eda (14 commands)
+#
+# Commands:
+# p, pick <commit> = use commit
+# r, reword <commit> = use commit, but edit the commit message
+# e, edit <commit> = use commit, but stop for amending
+# s, squash <commit> = use commit, but meld into previous commit
+# f, fixup [-C | -c] <commit> = like "squash" but keep only the previous
+#                    commit's log message, unless -C is used, in which case
+#                    keep only this commit's message; -c is same as -C but
+#                    opens the editor
+# x, exec <command> = run command (the rest of the line) using shell
+# b, break = stop here (continue rebase later with 'git rebase --continue')
+# d, drop <commit> = remove commit
+# l, label <label> = label current HEAD with a name
+# t, reset <label> = reset HEAD to a label
+# m, merge [-C <commit> | -c <commit>] <label> [# <oneline>]
+#         create a merge commit using the original merge commit's
+#         message (or the oneline, if no original merge commit was
+#         specified); use -c <commit> to reword the commit message
+# u, update-ref <ref> = track a placeholder for the <ref> to be updated
+#                       to this position in the new commits. The <ref> is
+#                       updated at the end of the rebase
+#
+# These lines can be re-ordered; they are executed from top to bottom.
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+#
+# However, if you remove everything, the rebase will be aborted.
+#
