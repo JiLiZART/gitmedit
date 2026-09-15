@@ -19,14 +19,14 @@ Conventions for every task:
 
 ## 3. Wrapping (`src/wrap.rs`)
 
-- [ ] 3.1 Add `Segment { start, text }` and `wrap(line, width) -> Vec<Segment>`:
+- [x] 3.1 Add `Segment { start, text }` and `wrap(line, width) -> Vec<Segment>`:
   - break at the last space within width, consuming the space
   - hard-break words wider than width
   - width 0 or a line that fits gives one segment
   - add a `ponytail:` comment that widths are char counts, not terminal cells
 
   Verify: `wrap("hello world foo bar baz", 11)` gives `["hello world", "foo bar baz"]` with the second segment starting at char 12; `wrap("abcdefghijklmnop", 5)` gives `abcde/fghij/klmno/p`; empty input gives one empty segment; rejoining the rows loses no text.
-- [ ] 3.2 Add `locate(segments, col) -> (row, col_in_row)`; verify for `wrap("hello world foo", 10)` that col 0→(0,0), 5→(0,5), 6→(1,0), 15→(1,9)
+- [x] 3.2 Add `locate(segments, col) -> (row, col_in_row)`; verify for `wrap("hello world foo", 10)` that col 0→(0,0), 5→(0,5), 6→(1,0), 15→(1,9)
 
 ## 4. Message split (`src/message.rs`)
 

@@ -13,6 +13,7 @@ mod context;
 mod document;
 mod renderer;
 mod terminal;
+mod wrap;
 mod writer;
 
 #[derive(Parser, Debug)]
