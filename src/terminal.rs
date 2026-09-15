@@ -5,6 +5,10 @@ use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::Terminal;
 use ratatui::backend::CrosstermBackend;
 use std::io::{Stdout, Write};
+use std::sync::atomic::{AtomicBool, Ordering};
+
+/// Whether `TerminalGuard` has set the terminal up and it has not been restored yet.
+static ACTIVE: AtomicBool = AtomicBool::new(false);
 
 /// Write the sequences that undo `TerminalGuard::new`: mouse capture off, alternate screen left,
 /// cursor shown. Every step runs even if an earlier one fails, and errors are discarded, because
@@ -15,10 +19,21 @@ pub fn write_restore_sequences(out: &mut impl Write) {
     let _ = crossterm::execute!(out, Show);
 }
 
-/// Fully restore the user's terminal. Safe to call more than once.
+/// Fully restore the user's terminal, once per setup. The panic hook restores before the panic
+/// message is printed; the guard's `Drop` then runs while unwinding and must not emit the sequences
+/// again, because leaving the alternate screen a second time moves the cursor back over the message.
 pub fn restore_terminal() {
-    write_restore_sequences(&mut std::io::stdout());
-    let _ = terminal::disable_raw_mode();
+    if restore_if_active(&mut std::io::stdout()) {
+        let _ = terminal::disable_raw_mode();
+    }
+}
+
+fn restore_if_active(out: &mut impl Write) -> bool {
+    let active = ACTIVE.swap(false, Ordering::SeqCst);
+    if active {
+        write_restore_sequences(out);
+    }
+    active
 }
 
 /// Installs a panic hook that restores the terminal before the panic message is printed.
@@ -40,6 +55,7 @@ impl TerminalGuard {
     pub fn new() -> Result<Self> {
         let mut stdout = std::io::stdout();
         terminal::enable_raw_mode()?;
+        ACTIVE.store(true, Ordering::SeqCst);
         if let Err(e) = crossterm::execute!(stdout, EnterAlternateScreen, EnableMouseCapture) {
             restore_terminal();
             return Err(e.into());
@@ -86,6 +102,17 @@ mod tests {
         fn flush(&mut self) -> io::Result<()> {
             Err(io::Error::other("closed"))
         }
+    }
+
+    #[test]
+    fn restore_runs_only_once_per_setup() {
+        ACTIVE.store(true, Ordering::SeqCst);
+        let mut first = Vec::new();
+        assert!(restore_if_active(&mut first));
+        assert!(!first.is_empty());
+        let mut second = Vec::new();
+        assert!(!restore_if_active(&mut second));
+        assert!(second.is_empty());
     }
 
     #[test]

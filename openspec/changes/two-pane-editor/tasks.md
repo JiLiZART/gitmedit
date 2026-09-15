@@ -282,17 +282,17 @@ Conventions for every task:
 
 ## 16. End-to-end verification
 
-- [ ] 16.1 Run `cargo test` and `cargo test -- --ignored`; verify all pass
-- [ ] 16.2 In a scratch directory, copy each fixture to its git filename under a fake `.git/` (`COMMIT_EDITMSG`, `MERGE_MSG`, `SQUASH_MSG`, `rebase-merge/git-rebase-todo`) and open each with `target/debug/gitmedit` at ≥120 and 80 columns. Verify:
+- [x] 16.1 Run `cargo test` and `cargo test -- --ignored`; verify all pass
+- [x] 16.2 In a scratch directory, copy each fixture to its git filename under a fake `.git/` (`COMMIT_EDITMSG`, `MERGE_MSG`, `SQUASH_MSG`, `rebase-merge/git-rebase-todo`) and open each with `target/debug/gitmedit` at ≥120 and 80 columns. Verify:
   - both panes appear, clicks and Alt+arrows move focus, and the wheel scrolls the pane under the pointer
   - End in `merge_fixture2` reaches `sync-ui`, and Ctrl+T works on narrow terminals
   - Esc leaves the file unchanged
   - Ctrl+S without edits writes a byte-identical file (`cmp` against the fixture)
-- [ ] 16.3 In a temp repo with 3 commits, run `GIT_SEQUENCE_EDITOR=<abs>/target/debug/gitmedit GIT_EDITOR=<abs>/target/debug/gitmedit git rebase -i HEAD~2`. Verify:
+- [x] 16.3 In a temp repo with 3 commits, run `GIT_SEQUENCE_EDITOR=<abs>/target/debug/gitmedit GIT_EDITOR=<abs>/target/debug/gitmedit git rebase -i HEAD~2`. Verify:
   - reorder one row with Alt+Up, then reword the other with Enter, type a new subject and press Enter, then save with Ctrl+S
   - the message editor opens prefilled with the new subject and the original body
   - after Ctrl+S, `git log --format=%B -2` shows the new order, the new subject and the original body
   - `.git/gitmedit/reword` is empty
-- [ ] 16.4 Verify the terminal is fully usable after save, after cancel, and after a panic (temporarily add `panic!()` to the Ctrl+T handler in a local debug build, then revert): echo works, the cursor is visible, prior output is back, no mouse escape codes appear on click, and the panic message is readable
-- [ ] 16.5 Build with `cargo build --release` and time opening `ammend_fixture` then pressing Esc through `script`; verify wall time stays under 100 ms
-- [ ] 16.6 Run `openspec validate two-pane-editor --strict`; verify it passes
+- [x] 16.4 Verify the terminal is fully usable after save, after cancel, and after a panic (temporarily add `panic!()` to the Ctrl+T handler in a local debug build, then revert): echo works, the cursor is visible, prior output is back, no mouse escape codes appear on click, and the panic message is readable
+- [x] 16.5 Build with `cargo build --release` and time opening `ammend_fixture` then pressing Esc through `script`; verify wall time stays under 100 ms
+- [x] 16.6 Run `openspec validate two-pane-editor --strict`; verify it passes
