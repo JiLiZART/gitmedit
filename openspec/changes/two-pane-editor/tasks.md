@@ -30,7 +30,7 @@ Conventions for every task:
 
 ## 4. Message split (`src/message.rs`)
 
-- [ ] 4.1 Add `is_scissors(line, cc)` and `split(raw, cc) -> MessageFile { message, trailer, final_newline }`:
+- [x] 4.1 Add `is_scissors(line, cc)` and `split(raw, cc) -> MessageFile { message, trailer, final_newline }`:
   - the trailer runs from the first comment line (above any scissors line) to the end of the file
   - the message is the lines before it, with trailing blank lines trimmed
   - non-blank, non-comment lines inside the trailer move into the message
@@ -42,7 +42,7 @@ Conventions for every task:
   - `"\n# Please…"` → empty message
   - an interleaved squash file → `["feat: one","","body one","","fix: two"]`
   - the scissors line and diff lines stay in the trailer
-- [ ] 4.2 Add `MessageFile::assemble(&self, message)`: trimmed message, one blank line and the trailer when there is a trailer, then the final newline if the original had one. Verify:
+- [x] 4.2 Add `MessageFile::assemble(&self, message)`: trimmed message, one blank line and the trailer when there is a trailer, then the final newline if the original had one. Verify:
   - `ammend`, `ammend2`, `merge`, `merge2`, `rebase_fixture` and `pull_rebase_fixture` all round-trip byte for byte
   - an edited message keeps the trailer
   - trailing blanks in the edited message collapse to one separator
@@ -52,7 +52,7 @@ Conventions for every task:
 
 ## 5. Status pane model and rendering (`src/status.rs`)
 
-- [ ] 5.1 Add the types and headings:
+- [x] 5.1 Add the types and headings:
   - `SectionKind`, in this order: Branch, Merge, Rebase, Squash, Conflicts, Staged, Unstaged, SubmodulesStaged, SubmodulesNotUpdated, Untracked, Other, Diff. It has `title()` and `counted()`.
   - `Entry::{File{badge,path,suffix}, Submodule, Commit, Warning, Text, DiffLine}`.
   - `Section { kind, entries }` with `count()`, which counts File and Submodule entries.
@@ -64,10 +64,10 @@ Conventions for every task:
   - `merge_fixture2`: kinds `[Branch, Merge, Conflicts, Staged, Unstaged, SubmodulesStaged, SubmodulesNotUpdated]`; Conflicts 4, Staged 160, Unstaged 1, each submodule section 1.
   - `rebase_fixture`: kinds `[Branch, Rebase, Conflicts, Staged, Unstaged, SubmodulesStaged, SubmodulesNotUpdated, Untracked]`; Rebase entry 0 is the "interactive rebase in progress; onto c3d42a1f4" text and entry 2 is the commit `pick c0ad61ef0 # Update chat message stop words`; Unstaged 6; not-updated 5 with 4 warnings; Untracked `?` `vendor/money-tree/`.
   - `pull_rebase_fixture`: only Conflicts, 6 `U` entries.
-- [ ] 5.2 Build the compact branch summary from `On branch`/`HEAD detached`, ahead/behind/diverged (`and have A and B …`)/up-to-date, plus `Date:`/`Author:` extras; set `Status.branch`. Verify:
+- [x] 5.2 Build the compact branch summary from `On branch`/`HEAD detached`, ahead/behind/diverged (`and have A and B …`)/up-to-date, plus `Date:`/`Author:` extras; set `Status.branch`. Verify:
   - `ammend_fixture` → `EX-3211-arc-epic → origin/EX-3211-arc-epic  ahead 1, behind 2`, then `Date: Tue May 12 01:43:54 2026 +0200`
   - `ammend2` → `TASK-1111-fix-stage-view → origin/TASK-1111-fix-stage-view  ahead 1`
-- [ ] 5.3 Parse file entries: status word → badge (modified M, new file A, deleted D, renamed R, copied C, typechange T, unmerged states U); bare path → `U`, or `?` in Untracked; a trailing ` (…)` becomes the suffix. Submodule lines: `* ` → Submodule, `> `/`< ` → Commit, `Warn:` → Warning. After a scissors line, non-comment lines become DiffLine. Verify:
+- [x] 5.3 Parse file entries: status word → badge (modified M, new file A, deleted D, renamed R, copied C, typechange T, unmerged states U); bare path → `U`, or `?` in Untracked; a trailing ` (…)` becomes the suffix. Submodule lines: `* ` → Submodule, `> `/`< ` → Commit, `Warn:` → Warning. After a scissors line, non-comment lines become DiffLine. Verify:
   - badges M/A/D/R/U, with the rename path `old.rs -> new.rs`
   - `packages/@dev-kit (new commits)` has suffix `(new commits)`
   - a heading with no entries has count 0
@@ -75,7 +75,7 @@ Conventions for every task:
   - diff lines are collected
   - a `;` comment char works
   - an empty trailer gives an empty status
-- [ ] 5.4 Add `badge_style(char)` (A green, D red, M yellow, U red bold, R/C/T blue, other dim) and `render_lines(&Status, width)`:
+- [x] 5.4 Add `badge_style(char)` (A green, D red, M yellow, U red bold, R/C/T blue, other dim) and `render_lines(&Status, width)`:
   - a cyan bold header with the count for counted sections
   - a blank line between sections
   - file rows ` B path`, wrapped at width−3 with a 3-space continuation indent, suffix dimmed on the last row
