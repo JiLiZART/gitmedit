@@ -150,7 +150,7 @@ Conventions for every task:
 - [x] 10.1 Add the state types and constructor:
   - `ScrollBy::{Lines, Pages, Top, End}`, `Action` (Save, Cancel, ToggleHelp, ScrollHelp, FocusLeft, FocusRight, ToggleFocus, ClickAt, WheelAt, ScrollRight, Edit(Input), CursorUp, CursorDown, DeleteLine, Undo, Redo, DeleteWord, DeleteNextWord, Copy, Cut, Paste), `Outcome::{Save, Cancel, Continue}`.
   - `Body::{Message(MessageBody), Plain(TextArea), Rebase(RebaseBody)}`.
-  - `App` has public fields: body, context, git_dir, comment_char, file_name, focus, show_help, help_scroll, right_scroll, and renderer-written rects, editor_width, right_page, editor_top, table_top.
+  - `App` has public fields: body, git_dir, comment_char, file_name, focus, show_help, help_scroll, right_scroll, and renderer-written rects, editor_width, right_page, editor_top, table_top.
   - `App::new(raw, context, git_dir, comment_char)`: message contexts split the file and parse status, and commit prefills from `reword::pending_for_commit`; rebase builds a `RebaseBody` with `DetailsLoader`, requests details for the selection, and loads stored rewords; unknown files get a plain editor.
   - `has_right()` is true for rebase, for message with a non-empty status, and false for plain.
 
@@ -178,8 +178,8 @@ Conventions for every task:
 ## 11. Session: rebase actions (`src/session.rs`)
 
 - [x] 11.1 Add `SelectBy(ScrollBy)`: Lines, Pages ×10, Top and End, clamped. Selection changes request details and reset `right_scroll`, and the wheel over the table moves the selection. Verify on `squash_fixture` that Down/Up/End/Top land on the expected index and that selection stops at the ends.
-- [x] 11.2 Add `SetAction(rebase::Action)` and `CycleAction`, where any action other than Reword removes a pending reword, and `MoveInstruction { up }`, where the selection follows the moved row. Verify:
-  - `SetAction(Fixup)` on the first row serializes as `fixup 54763e6 # docs(state): record phase 8 context session`
+- [x] 11.2 Add `SetInstruction(rebase::Action)` and `CycleInstruction`, where any action other than Reword removes a pending reword, and `MoveInstruction { up }`, where the selection follows the moved row. Verify:
+  - `SetInstruction(Fixup)` on the first row serializes as `fixup 54763e6 # docs(state): record phase 8 context session`
   - Tab turns pick into squash
   - moving up at index 0 does nothing
   - moving down sets the selection to 1 and swaps the lines
@@ -192,7 +192,7 @@ Conventions for every task:
   - editing to `new subject` gives `rewords["54763e6"] == "new subject"`
   - that line serializes as `reword 54763e6 # docs(state): record phase 8 context session`
   - Cancel leaves no reword
-  - `SetAction(Pick)` afterwards clears the reword
+  - `SetInstruction(Pick)` afterwards clears the reword
 - [x] 11.4 Add `ToggleRaw` and save behaviour:
   - Entering raw mode opens a `TextArea` of `todo.serialize().lines()` and closes any inline edit.
   - Leaving joins the lines (plus the final newline), re-parses, keeps rewords only for hashes still marked reword, clamps the selection, and requests details.
@@ -223,11 +223,11 @@ Conventions for every task:
   Verify: `a` with help open gives `None`; Esc with help open toggles it; Alt+Right while inline editing gives `Edit`.
 - [x] 12.3 Add focus keys: Alt+Left/`Alt+b` → FocusLeft, Alt+Right/`Alt+f` → FocusRight, Ctrl+T → ToggleFocus. With the right pane focused: Esc → FocusLeft, Up/Down/PgUp/PgDn/Home/End → `ScrollRight`, anything else `None`. With the left pane focused, Esc → Cancel. Verify all of these.
 - [x] 12.4 Add table and editor keys:
-  - Table: Alt+Up/Down → MoveInstruction; Up/Down/PgUp/PgDn/Home/End → SelectBy; Tab → CycleAction; Enter → StartInline; Ctrl+E → ToggleRaw; unmodified p r e s f d → SetAction.
+  - Table: Alt+Up/Down → MoveInstruction; Up/Down/PgUp/PgDn/Home/End → SelectBy; Tab → CycleInstruction; Enter → StartInline; Ctrl+E → ToggleRaw; unmodified p r e s f d → SetInstruction.
   - Raw mode: Ctrl+E → ToggleRaw.
   - Editors: unmodified Up/Down → CursorUp/CursorDown; Ctrl+U/Z/Y/W/D/C/X/V → their actions; anything else → `Edit(Input::from(key))`.
 
-  Verify: `f` → SetAction(Fixup), Tab, Alt+Up, Enter and Ctrl+E map correctly, and `a` in a message maps to `Edit`.
+  Verify: `f` → SetInstruction(Fixup), Tab, Alt+Up, Enter and Ctrl+E map correctly, and `a` in a message maps to `Edit`.
 
 ## 13. Rendering (`src/ui.rs`)
 
@@ -259,18 +259,18 @@ Conventions for every task:
 
 ## 14. Switch over (`src/main.rs`)
 
-- [ ] 14.1 Rewrite `main.rs`:
+- [x] 14.1 Rewrite `main.rs`:
   - Module list: context, details, keys, layout, message, rebase, reword, session, status, terminal, ui, wrap, writer.
   - Before the terminal is touched: install the panic hook, check the path exists (exit 1 if not), read the file, detect the context, call `App::new` with `git_dir` and `read_comment_char()`, and set `file_name`.
   - Event loop: draw, `event::poll(100ms)` with `poll_background` on timeout, `keys::map_event`, `apply`.
   - Save: serialize, drop the guard, `write_atomic`, `finish_save`, exit 0. Cancel: drop the guard, exit 1.
 
   Verify `cargo build` succeeds.
-- [ ] 14.2 Delete `src/app.rs`, `src/renderer.rs` and `src/document.rs`; verify `cargo test` passes and `cargo clippy --all-targets` reports no warnings in new modules
+- [x] 14.2 Delete `src/app.rs`, `src/renderer.rs` and `src/document.rs`; verify `cargo test` passes and `cargo clippy --all-targets` reports no warnings in new modules
 
 ## 15. Docs and release
 
-- [ ] 15.1 Update `README.md`, keeping the user's uncommitted README edit (check `git diff README.md` first):
+- [x] 15.1 Update `README.md`, keeping the user's uncommitted README edit (check `git diff README.md` first):
   - features (two-pane layout, status pane, rebase table with reorder/reword/raw)
   - keyboard shortcut tables per pane
   - recommend setting both `core.editor` and `sequence.editor`
@@ -278,7 +278,7 @@ Conventions for every task:
   - remove the subject-counter and "no alternate screen" claims
 
   Verify by reviewing the rendered README.
-- [ ] 15.2 Set `version = "1.0.0"` in `Cargo.toml`; verify `cargo build` and `target/debug/gitmedit --version` prints 1.0.0
+- [x] 15.2 Set `version = "1.0.0"` in `Cargo.toml`; verify `cargo build` and `target/debug/gitmedit --version` prints 1.0.0
 
 ## 16. End-to-end verification
 
