@@ -209,20 +209,20 @@ Conventions for every task:
 
 ## 12. Key mapping (`src/keys.rs`)
 
-- [ ] 12.1 Map mouse input in `map_event(&Event, &App) -> Option<Action>`:
+- [x] 12.1 Map mouse input in `map_event(&Event, &App) -> Option<Action>`:
   - Left-button down → `ClickAt`, unless help is visible.
   - Wheel up/down → `WheelAt(±1)`, or `ScrollHelp(±1)` while help is visible.
   - Only key Press events are handled.
 
   Verify that click and wheel events map correctly and that a key Release event maps to `None`.
-- [ ] 12.2 Apply key precedence, top rule first:
+- [x] 12.2 Apply key precedence, top rule first:
   1. Help visible: Esc and Ctrl+H map to ToggleHelp, Up/Down map to ScrollHelp, everything else is `None`.
   2. Global: Ctrl+S → Save, Ctrl+H → ToggleHelp.
   3. Inline editor open: Enter → CommitInline, Esc → CancelInline, everything else is an editing key.
 
   Verify: `a` with help open gives `None`; Esc with help open toggles it; Alt+Right while inline editing gives `Edit`.
-- [ ] 12.3 Add focus keys: Alt+Left/`Alt+b` → FocusLeft, Alt+Right/`Alt+f` → FocusRight, Ctrl+T → ToggleFocus. With the right pane focused: Esc → FocusLeft, Up/Down/PgUp/PgDn/Home/End → `ScrollRight`, anything else `None`. With the left pane focused, Esc → Cancel. Verify all of these.
-- [ ] 12.4 Add table and editor keys:
+- [x] 12.3 Add focus keys: Alt+Left/`Alt+b` → FocusLeft, Alt+Right/`Alt+f` → FocusRight, Ctrl+T → ToggleFocus. With the right pane focused: Esc → FocusLeft, Up/Down/PgUp/PgDn/Home/End → `ScrollRight`, anything else `None`. With the left pane focused, Esc → Cancel. Verify all of these.
+- [x] 12.4 Add table and editor keys:
   - Table: Alt+Up/Down → MoveInstruction; Up/Down/PgUp/PgDn/Home/End → SelectBy; Tab → CycleAction; Enter → StartInline; Ctrl+E → ToggleRaw; unmodified p r e s f d → SetAction.
   - Raw mode: Ctrl+E → ToggleRaw.
   - Editors: unmodified Up/Down → CursorUp/CursorDown; Ctrl+U/Z/Y/W/D/C/X/V → their actions; anything else → `Edit(Input::from(key))`.
@@ -231,28 +231,28 @@ Conventions for every task:
 
 ## 13. Rendering (`src/ui.rs`)
 
-- [ ] 13.1 `render(frame, &mut App)` computes the layout, stores `rects`, and draws bordered panes (focused border cyan, unfocused dark gray). Titles: the file name on the left; branch or `Status` on the right; `Rebase <range>`; `Details`. Verify with a TestBackend test at 120×30 on `ammend2` that the output contains `fix: release volume`, `Staged (6)` and `COMMIT_EDITMSG`, and not `Please enter`.
-- [ ] 13.2 Draw the soft-wrapped editor for message, plain and raw text:
+- [x] 13.1 `render(frame, &mut App)` computes the layout, stores `rects`, and draws bordered panes (focused border cyan, unfocused dark gray). Titles: the file name on the left; branch or `Status` on the right; `Rebase <range>`; `Details`. Verify with a TestBackend test at 120×30 on `ammend2` that the output contains `fix: release volume`, `Staged (6)` and `COMMIT_EDITMSG`, and not `Please enter`.
+- [x] 13.2 Draw the soft-wrapped editor for message, plain and raw text:
   - rows from `wrap::wrap`; selected text reversed; conflict-marker lines (a run of 6–7 `<`/`=`/`>`) white on red
   - `editor_top` adjusted so the cursor stays visible; `editor_width` stored
   - cursor column clamped to width−1, with a `ponytail:` comment
   - draw the cursor only when the left pane is focused and help is closed
 
   Verify a plain file with a 40-word line at 60 columns shows its last word.
-- [ ] 13.3 Draw the rebase table:
+- [x] 13.3 Draw the rebase table:
   - Column widths: action 7, hash 8, subject the rest.
   - Rows: commit rows get an action color (pick green, reword blue, edit magenta, squash yellow, fixup cyan, drop red) and a `✎` prefix when a reword is pending; Other rows show the command word; Unknown rows are dimmed.
   - Wrapped subjects set row heights, and `table_top` keeps the selected row fully visible.
   - The inline editor text and cursor are drawn in the selected row.
 
   Verify `squash_fixture` at 140×30 shows `Rebase 36d7eda..aa619f8` and `54763e6`.
-- [ ] 13.4 Draw the right pane:
+- [x] 13.4 Draw the right pane:
   - Content: the status `render_lines`, or the details view (summary `N → M commits`, counts line, first-squash warning, hash, then `loading…` / `details unavailable` / message and badge rows).
   - Scrolling: clamp `right_scroll` to content minus height, store `right_page`, and show a `top-bottom/total` indicator in the bottom border when the content overflows.
 
   Verify: `merge_fixture2` scrolled to End shows `sync-ui` with `right_scroll < usize::MAX`, and the rebase fixture shows `14 → 14 commits`.
-- [ ] 13.5 Verify narrow mode with TestBackend: `ammend2` at 80×30 shows `fix: release volume` but not `Staged`; after `ToggleFocus` it shows `Staged (6)` but not `fix: release volume`
-- [ ] 13.6 Add `key_bar_entries(&App)` per state (help, inline, right focus, table, raw, message) with save/cancel/help first, `key_bar_line(entries, width)` dropping entries that don't fit, and the help overlay: global keys, per-layout keys, rebase command legend, reword prerequisite note, scrollable and centered over `Clear`. Verify:
+- [x] 13.5 Verify narrow mode with TestBackend: `ammend2` at 80×30 shows `fix: release volume` but not `Staged`; after `ToggleFocus` it shows `Staged (6)` but not `fix: release volume`
+- [x] 13.6 Add `key_bar_entries(&App)` per state (help, inline, right focus, table, raw, message) with save/cancel/help first, `key_bar_line(entries, width)` dropping entries that don't fit, and the help overlay: global keys, per-layout keys, rebase command legend, reword prerequisite note, scrollable and centered over `Clear`. Verify:
   - entries `^S Save, Esc Cancel, ^H Help, Tab Cycle` at width 30 keep `Help` and drop `Cycle`
   - the rebase help contains `update-ref`
   - the message help contains `Ctrl+C`

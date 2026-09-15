@@ -12,6 +12,7 @@ mod app;
 mod context;
 mod details;
 mod document;
+mod keys;
 mod layout;
 mod message;
 mod rebase;
@@ -20,6 +21,7 @@ mod reword;
 mod session;
 mod status;
 mod terminal;
+mod ui;
 mod wrap;
 mod writer;
 
