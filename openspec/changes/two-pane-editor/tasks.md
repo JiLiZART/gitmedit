@@ -13,9 +13,9 @@ Conventions for every task:
 
 ## 2. Context detection (`src/context.rs`)
 
-- [ ] 2.1 Make `GitContext` `Copy`, add `Tag` for `TAG_EDITMSG`, add `is_message(self)` (commit, merge, squash, tag); verify tests for every filename, full paths, and `is_message`
-- [ ] 2.2 Add `git_dir(path, context) -> Option<PathBuf>` (parent for message files, parent of `rebase-merge` for the todo, `None` for unknown); verify `/repo/.git/worktrees/feature/COMMIT_EDITMSG` → `/repo/.git/worktrees/feature` and `/repo/.git/rebase-merge/git-rebase-todo` → `/repo/.git`
-- [ ] 2.3 Add `read_comment_char()` (git config with stdin closed) and pure `parse_comment_char(&str)`; leave `document::read_comment_char` untouched until group 14; verify `";\n"` → `;`, `""` → `#`, `"auto\n"` → `#`
+- [x] 2.1 Make `GitContext` `Copy`, add `Tag` for `TAG_EDITMSG`, add `is_message(self)` (commit, merge, squash, tag); verify tests for every filename, full paths, and `is_message`
+- [x] 2.2 Add `git_dir(path, context) -> Option<PathBuf>` (parent for message files, parent of `rebase-merge` for the todo, `None` for unknown); verify `/repo/.git/worktrees/feature/COMMIT_EDITMSG` → `/repo/.git/worktrees/feature` and `/repo/.git/rebase-merge/git-rebase-todo` → `/repo/.git`
+- [x] 2.3 Add `read_comment_char()` (git config with stdin closed) and pure `parse_comment_char(&str)`; leave `document::read_comment_char` untouched until group 14; verify `";\n"` → `;`, `""` → `#`, `"auto\n"` → `#`
 
 ## 3. Wrapping (`src/wrap.rs`)
 
