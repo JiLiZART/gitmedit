@@ -1,12 +1,11 @@
-# status-pane Specification
-
 ## Purpose
+
 Turns the comment block git writes into a message file — branch state, conflicts, staged and unstaged
 files, submodules, rebase progress — into a structured, colored, scrollable view in the right pane, so
 the user can see what they are committing without reading raw comment text. The pane is display
 only: nothing shown or done here changes what is saved.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Comment block parsed into sections
 The status pane SHALL parse the comment trailer of a message file into sections, recognizing git's

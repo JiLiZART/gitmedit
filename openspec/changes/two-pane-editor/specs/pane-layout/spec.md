@@ -1,12 +1,11 @@
-# pane-layout Specification
-
 ## Purpose
+
 Arranges every editing session as two panes: an editing pane on the left, where the user changes what
 git will read, and a context pane on the right, where the information git put in the file is shown in
 a readable form. Covers screen ownership, focus, mouse and keyboard scrolling, narrow terminals, and
 the key bar.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Full-screen two-pane layout
 The editor SHALL draw on the terminal's alternate screen and SHALL divide it into a left editing pane

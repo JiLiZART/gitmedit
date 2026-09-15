@@ -1,58 +1,46 @@
 # help-overlay Specification
 
 ## Purpose
-Makes the editor's shortcuts discoverable from inside the editor, showing the set that applies to the
-current layout, along with the reference information that no longer appears in the editing pane.
+Makes the editor's shortcuts discoverable from inside the editor, showing the set that applies to
+the git operation currently in progress.
 
 ## Requirements
 
 ### Requirement: Shortcut reference on demand
-The editor SHALL display a shortcut reference over the whole layout when the user presses Ctrl+H,
-whichever pane has focus.
+The editor SHALL display a shortcut reference when the user presses Ctrl+H.
 
 #### Scenario: Opening the reference
 - **WHEN** the user presses Ctrl+H
-- **THEN** a shortcut reference is displayed over both panes
+- **THEN** a shortcut reference is displayed over the current view
 
-### Requirement: Reference is scoped to the current layout
-The shortcut reference SHALL list the actions available in the current layout, grouped into global
-keys, left-pane keys, and right-pane keys.
+### Requirement: Reference is scoped to the current operation
+The shortcut reference SHALL list only the actions available in the current git operation, and SHALL
+state the editing restrictions that apply there.
 
-#### Scenario: Message layout
-- **WHEN** the reference is opened in the message layout
-- **THEN** it lists save, cancel, and help; focus switching (click, Alt+Left/Right, Esc) and the
-  narrow-terminal toggle; text editing, clipboard, and undo keys; and status pane scrolling keys
+#### Scenario: Editing a message
+- **WHEN** the reference is opened while editing a commit or merge message
+- **THEN** it lists the text editing, clipboard, save, and cancel shortcuts
 
-#### Scenario: Rebase layout
-- **WHEN** the reference is opened in the rebase layout
-- **THEN** it lists the action letters and Tab cycle, reordering with Alt+Up/Down, inline reword with
-  Enter, the raw text toggle Ctrl+E, and details pane scrolling
-- **AND** it does not list text editing shortcuts that do not apply to the table
+#### Scenario: Planning a rebase
+- **WHEN** the reference is opened while editing a rebase todo
+- **THEN** it lists the rebase navigation and action-cycling shortcuts
+- **AND** it does not list free-text editing shortcuts, which do not apply there
 
-#### Scenario: Rebase command legend
-- **WHEN** the reference is opened in the rebase layout
-- **THEN** it includes git's rebase command legend (pick, reword, edit, squash, fixup, exec, break,
-  drop, label, reset, merge, update-ref) with a one-line meaning for each
-
-#### Scenario: Reword prerequisite stated
-- **WHEN** the reference is opened in the rebase layout
-- **THEN** it states that inline reword needs gitmedit as git's message editor as well
+#### Scenario: Restrictions are stated
+- **WHEN** the current operation protects some lines from editing
+- **THEN** the reference states which lines are read-only
 
 ### Requirement: Reference does not interfere with editing
-While the shortcut reference is visible, the editor SHALL NOT apply keystrokes or mouse events to
-either pane, so that reading the reference can never change what the user has written.
+While the shortcut reference is visible, the editor SHALL NOT apply keystrokes to the message, so
+that reading the reference can never corrupt what the user has written.
 
 #### Scenario: Typing while the reference is open
 - **WHEN** the user types ordinary characters while the reference is visible
-- **THEN** the message and the rebase table are unchanged
-
-#### Scenario: Scrolling the reference
-- **WHEN** the reference is taller than the terminal and the user presses Down or scrolls the wheel
-- **THEN** the reference scrolls and the panes beneath are unchanged
+- **THEN** the message is left unchanged
 
 ### Requirement: Reference is dismissible
-The user SHALL be able to dismiss the shortcut reference and resume exactly where they left off, with
-the same pane focused.
+The user SHALL be able to dismiss the shortcut reference and resume editing exactly where they left
+off.
 
 #### Scenario: Dismiss with Esc
 - **WHEN** the user presses Esc while the reference is visible

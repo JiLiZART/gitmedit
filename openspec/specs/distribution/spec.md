@@ -28,12 +28,11 @@ launch it from a configuration value that names only the binary.
 
 ### Requirement: Configurable as git's editor
 The editor SHALL work when configured as git's message editor and as git's sequence editor, and the
-configuration SHALL be verifiable. The documentation SHALL recommend setting both, because inline
-reword in the rebase table relies on the message editor being gitmedit too.
+configuration SHALL be verifiable.
 
 #### Scenario: Configured for messages
 - **WHEN** the user sets `core.editor` to `gitmedit`
-- **THEN** commit, merge, squash, and tag messages open in this editor
+- **THEN** commit, merge, and tag messages open in this editor
 
 #### Scenario: Configured for sequences
 - **WHEN** the user sets `sequence.editor` to `gitmedit`
@@ -49,5 +48,5 @@ serves both editor settings without separate configuration or flags.
 
 #### Scenario: Same binary under both settings
 - **WHEN** the editor is configured as both `core.editor` and `sequence.editor`
-- **THEN** message files open in the message layout and rebase todos open in the rebase layout, with
-  no additional configuration
+- **THEN** message files open in the text interface and rebase todos open in the structured
+  interface, with no additional configuration
