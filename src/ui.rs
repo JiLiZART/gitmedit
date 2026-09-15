@@ -353,11 +353,11 @@ fn key_bar_entries(app: &App) -> Vec<(&'static str, &'static str)> {
         return vec![("Esc", "Close"), ("↑↓", "Scroll")];
     }
     let mut keys = vec![("^S", "Save")];
-    if let Body::Rebase(r) = &app.body {
-        if r.inline.is_some() {
-            keys.extend([("Enter", "Confirm"), ("Esc", "Discard"), ("^H", "Help")]);
-            return keys;
-        }
+    if let Body::Rebase(r) = &app.body
+        && r.inline.is_some()
+    {
+        keys.extend([("Enter", "Confirm"), ("Esc", "Discard"), ("^H", "Help")]);
+        return keys;
     }
     if app.focus == Pane::Right {
         keys.extend([("Esc", "Back"), ("^H", "Help"), ("↑↓", "Scroll"), ("PgUp/PgDn", "Page"), ("Home/End", "Top/End")]);

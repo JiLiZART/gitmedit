@@ -100,10 +100,10 @@ fn table_key(key: KeyEvent, ctrl: bool, alt: bool) -> Option<Action> {
         KeyCode::PageDown => Some(Action::SelectBy(ScrollBy::Pages(1))),
         KeyCode::Home => Some(Action::SelectBy(ScrollBy::Top)),
         KeyCode::End => Some(Action::SelectBy(ScrollBy::End)),
-        KeyCode::Tab => Some(Action::CycleAction),
+        KeyCode::Tab => Some(Action::CycleInstruction),
         KeyCode::Enter => Some(Action::StartInline),
         KeyCode::Char('e') if ctrl => Some(Action::ToggleRaw),
-        KeyCode::Char(c) if !ctrl && !alt => rebase::Action::from_key(c).map(Action::SetAction),
+        KeyCode::Char(c) if !ctrl && !alt => rebase::Action::from_key(c).map(Action::SetInstruction),
         _ => None,
     }
 }
@@ -218,9 +218,9 @@ mod tests {
     #[test]
     fn rebase_table_keys() {
         let app = rebase_app();
-        assert_eq!(map_event(&plain(KeyCode::Char('f')), &app), Some(Action::SetAction(rebase::Action::Fixup)));
+        assert_eq!(map_event(&plain(KeyCode::Char('f')), &app), Some(Action::SetInstruction(rebase::Action::Fixup)));
         assert_eq!(map_event(&plain(KeyCode::Char('x')), &app), None);
-        assert_eq!(map_event(&plain(KeyCode::Tab), &app), Some(Action::CycleAction));
+        assert_eq!(map_event(&plain(KeyCode::Tab), &app), Some(Action::CycleInstruction));
         assert_eq!(map_event(&key(KeyCode::Up, KeyModifiers::ALT), &app), Some(Action::MoveInstruction { up: true }));
         assert_eq!(map_event(&plain(KeyCode::Down), &app), Some(Action::SelectBy(ScrollBy::Lines(1))));
         assert_eq!(map_event(&plain(KeyCode::End), &app), Some(Action::SelectBy(ScrollBy::End)));

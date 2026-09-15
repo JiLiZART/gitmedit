@@ -45,8 +45,8 @@ pub enum Action {
     Paste,
     // Rebase table.
     SelectBy(ScrollBy),
-    SetAction(rebase::Action),
-    CycleAction,
+    SetInstruction(rebase::Action),
+    CycleInstruction,
     MoveInstruction { up: bool },
     StartInline,
     CommitInline,
@@ -83,12 +83,11 @@ pub struct RebaseBody {
 pub enum Body {
     Message(MessageBody),
     Plain(TextArea<'static>),
-    Rebase(RebaseBody),
+    Rebase(Box<RebaseBody>),
 }
 
 pub struct App {
     pub body: Body,
-    pub context: GitContext,
     pub git_dir: Option<PathBuf>,
     pub comment_char: char,
     pub file_name: String,
@@ -107,7 +106,7 @@ pub struct App {
 impl App {
     pub fn new(raw: &str, context: GitContext, git_dir: Option<PathBuf>, comment_char: char) -> Self {
         let body = if context == GitContext::Rebase {
-            Body::Rebase(RebaseBody::new(raw, git_dir.as_deref(), comment_char))
+            Body::Rebase(Box::new(RebaseBody::new(raw, git_dir.as_deref(), comment_char)))
         } else if context.is_message() {
             Body::Message(new_message_body(raw, context, git_dir.as_deref(), comment_char))
         } else {
@@ -115,7 +114,6 @@ impl App {
         };
         Self {
             body,
-            context,
             git_dir,
             comment_char,
             file_name: String::new(),
@@ -191,12 +189,12 @@ impl App {
                     self.right_scroll = 0;
                 }
             }
-            Action::SetAction(action) => {
+            Action::SetInstruction(action) => {
                 if let Body::Rebase(r) = &mut self.body {
                     r.set_action(action);
                 }
             }
-            Action::CycleAction => {
+            Action::CycleInstruction => {
                 if let Body::Rebase(r) = &mut self.body {
                     r.cycle_action();
                 }
@@ -300,12 +298,13 @@ impl App {
     }
 
     fn wheel_left(&mut self, delta: isize) {
-        if let Body::Rebase(r) = &mut self.body {
-            if r.inline.is_none() && r.raw.is_none() {
-                r.move_selection(ScrollBy::Lines(delta));
-                self.right_scroll = 0;
-                return;
-            }
+        if let Body::Rebase(r) = &mut self.body
+            && r.inline.is_none()
+            && r.raw.is_none()
+        {
+            r.move_selection(ScrollBy::Lines(delta));
+            self.right_scroll = 0;
+            return;
         }
         for _ in 0..delta.unsigned_abs() {
             self.move_cursor_row(delta > 0);
@@ -345,11 +344,11 @@ impl App {
 fn new_message_body(raw: &str, context: GitContext, git_dir: Option<&Path>, cc: char) -> MessageBody {
     let mut file = message::split(raw, cc);
     let mut reword_file = None;
-    if context == GitContext::Commit {
-        if let Some((path, stored)) = git_dir.and_then(reword::pending_for_commit) {
-            file.message = stored.lines().map(str::to_string).collect();
-            reword_file = Some(path);
-        }
+    if context == GitContext::Commit
+        && let Some((path, stored)) = git_dir.and_then(reword::pending_for_commit)
+    {
+        file.message = stored.lines().map(str::to_string).collect();
+        reword_file = Some(path);
     }
     let status = status::parse(&file.trailer, cc);
     let editor = TextArea::new(file.message.clone());
@@ -742,10 +741,10 @@ mod tests {
     #[test]
     fn actions_change_the_selected_instruction() {
         let mut app = rebase_app();
-        app.apply(Action::SetAction(rebase::Action::Fixup));
+        app.apply(Action::SetInstruction(rebase::Action::Fixup));
         assert_eq!(first_line(&app), "fixup 54763e6 # docs(state): record phase 8 context session");
-        app.apply(Action::SetAction(rebase::Action::Pick));
-        app.apply(Action::CycleAction);
+        app.apply(Action::SetInstruction(rebase::Action::Pick));
+        app.apply(Action::CycleInstruction);
         assert_eq!(first_line(&app), "squash 54763e6 # docs(state): record phase 8 context session");
     }
 
@@ -768,7 +767,7 @@ mod tests {
         reword_first(&mut app, "new subject");
         assert_eq!(rebase(&mut app).rewords.get("54763e6").map(String::as_str), Some("new subject"));
         assert_eq!(first_line(&app), "reword 54763e6 # docs(state): record phase 8 context session");
-        app.apply(Action::SetAction(rebase::Action::Pick));
+        app.apply(Action::SetInstruction(rebase::Action::Pick));
         assert!(rebase(&mut app).rewords.is_empty());
     }
 

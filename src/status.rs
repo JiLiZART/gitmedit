@@ -95,6 +95,7 @@ impl Status {
         self.sections.is_empty()
     }
 
+    #[cfg(test)]
     pub fn section(&self, kind: SectionKind) -> Option<&Section> {
         self.sections.iter().find(|s| s.kind == kind)
     }
@@ -369,11 +370,11 @@ fn push_entry(out: &mut Vec<Line<'static>>, entry: &Entry, width: usize) {
                 } else {
                     vec![Span::raw("   "), Span::raw(row.text)]
                 };
-                if i == last {
-                    if let Some(suffix) = suffix {
-                        // ponytail: the suffix is appended, not wrapped; a very narrow pane clips it
-                        spans.push(Span::styled(format!(" {suffix}"), Style::default().fg(Color::DarkGray)));
-                    }
+                // ponytail: the suffix is appended, not wrapped; a very narrow pane clips it
+                if i == last
+                    && let Some(suffix) = suffix
+                {
+                    spans.push(Span::styled(format!(" {suffix}"), Style::default().fg(Color::DarkGray)));
                 }
                 out.push(Line::from(spans));
             }
