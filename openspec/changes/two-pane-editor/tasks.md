@@ -7,9 +7,9 @@ Conventions for every task:
 
 ## 1. Terminal restore (`src/terminal.rs`, `tests/terminal_integration.rs`)
 
-- [ ] 1.1 Add `write_restore_sequences(out: &mut impl Write)` (disable mouse capture, leave alternate screen, show cursor — each step runs, errors ignored) and `restore_terminal()` (sequences on stdout, then disable raw mode); verify a `#[cfg(unix)]` test finds `\x1b[?1000l` before `\x1b[?1049l` before `\x1b[?25h` in a `Vec<u8>`, and a writer that always errors does not panic
-- [ ] 1.2 Make the panic hook and `TerminalGuard::drop` call `restore_terminal()` (drop flushes the backend first; no `unwrap`), and have `TerminalGuard::new` restore before returning a setup error; verify `cargo test terminal::tests` passes and `grep unwrap src/terminal.rs` finds nothing outside tests
-- [ ] 1.3 Rewrite the ignored PTY test as `enters_alternate_screen_and_restores_terminal_on_exit`, asserting the output contains `\x1b[?1049h`, `\x1b[?1049l`, and `\x1b[?1000l`; verify `cargo test --test terminal_integration -- --ignored` passes
+- [x] 1.1 Add `write_restore_sequences(out: &mut impl Write)` (disable mouse capture, leave alternate screen, show cursor — each step runs, errors ignored) and `restore_terminal()` (sequences on stdout, then disable raw mode); verify a `#[cfg(unix)]` test finds `\x1b[?1000l` before `\x1b[?1049l` before `\x1b[?25h` in a `Vec<u8>`, and a writer that always errors does not panic
+- [x] 1.2 Make the panic hook and `TerminalGuard::drop` call `restore_terminal()` (drop flushes the backend first; no `unwrap`), and have `TerminalGuard::new` restore before returning a setup error; verify `cargo test terminal::tests` passes and `grep unwrap src/terminal.rs` finds nothing outside tests
+- [x] 1.3 Rewrite the ignored PTY test as `enters_alternate_screen_and_restores_terminal_on_exit`, asserting the output contains `\x1b[?1049h`, `\x1b[?1049l`, and `\x1b[?1000l`; verify `cargo test --test terminal_integration -- --ignored` passes
 
 ## 2. Context detection (`src/context.rs`)
 
