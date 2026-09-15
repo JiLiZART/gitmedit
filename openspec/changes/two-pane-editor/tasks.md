@@ -86,8 +86,8 @@ Conventions for every task:
 
 ## 6. Rebase todo model (`src/rebase.rs`)
 
-- [ ] 6.1 Add `Action::{Pick, Reword, Edit, Squash, Fixup, Drop}` with `parse` (long and one-letter), `from_key` (p r e s f d), `as_str`, `cycled` (pick→squash→fixup→drop→pick; reword/edit→squash); verify key and cycle tests
-- [ ] 6.2 Parse lines and serialize:
+- [x] 6.1 Add `Action::{Pick, Reword, Edit, Squash, Fixup, Drop}` with `parse` (long and one-letter), `from_key` (p r e s f d), `as_str`, `cycled` (pick→squash→fixup→drop→pick; reword/edit→squash); verify key and cycle tests
+- [x] 6.2 Parse lines and serialize:
   - `CommitLine { action, flag, hash, rest }` keeps the raw text and the original action/flag, and has `subject()`, which strips `# `.
   - `TodoLine::{Commit, Other, Comment, Blank, Unknown}` with `is_instruction()`.
   - Other = exec/x, break/b, label/l, reset/t, merge/m, update-ref/u, noop.
@@ -100,19 +100,19 @@ Conventions for every task:
   - `fixup -C 7314ba6 subject` round-trips
   - exec and break are Other, garbage is Unknown
   - `""`, `"\n"` and input without a final newline round-trip
-- [ ] 6.3 `CommitLine::set_action` clears the flag unless the new action is fixup; changed lines serialize as `action [flag] hash rest`. Add `Todo::range(cc)` from the `Rebase a..b onto` comment. Verify:
+- [x] 6.3 `CommitLine::set_action` clears the flag unless the new action is fixup; changed lines serialize as `action [flag] hash rest`. Add `Todo::range(cc)` from the `Rebase a..b onto` comment. Verify:
   - changing line 1 to fixup makes exactly one line differ: `fixup 45f8bcd # docs(08): create phase plan`
   - `fixup -c` → pick drops the flag
   - `range` is `36d7eda..aa619f8`
-- [ ] 6.4 Add `instruction_indices()`, `commit(line)`, `commit_mut(line)`, and `move_instruction(line, up) -> Option<new_line>`, which swaps with the neighbouring instruction. Verify:
+- [x] 6.4 Add `instruction_indices()`, `commit(line)`, `commit_mut(line)`, and `move_instruction(line, up) -> Option<new_line>`, which swaps with the neighbouring instruction. Verify:
   - `pick A/# comment/pick B`: moving B up gives `pick B/# comment/pick A`
   - moving past either end returns `None`
   - 40 arbitrary moves keep the multiset of hashes
-- [ ] 6.5 Add `Summary { total, result, squash_fixup, drop, reword, first_is_squash }` and `summary()`, where pick/reword/edit count as results; verify the fixture with lines 1–2 squash, 3 drop and 4 reword gives (14, 11, 2, 1, 1), and a leading fixup sets `first_is_squash`
+- [x] 6.5 Add `Summary { total, result, squash_fixup, drop, reword, first_is_squash }` and `summary()`, where pick/reword/edit count as results; verify the fixture with lines 1–2 squash, 3 drop and 4 reword gives (14, 11, 2, 1, 1), and a leading fixup sets `first_is_squash`
 
 ## 7. Reword storage (`src/reword.rs`)
 
-- [ ] 7.1 Add `store_dir(git_dir)` = `<gitdir>/gitmedit/reword` and the storage functions:
+- [x] 7.1 Add `store_dir(git_dir)` = `<gitdir>/gitmedit/reword` and the storage functions:
   - `replace_subject(original, subject)`: new subject plus the original body, or `subject\n` when there is no body.
   - `store(git_dir, &HashMap<hash, subject>, full_message)`: remove the directory, write one file per pending reword, and skip names that aren't hex.
   - `git_full_message(git_dir, hash)`: `git --git-dir <dir> log -1 --format=%B <hash>` with stdin closed.
@@ -121,13 +121,13 @@ Conventions for every task:
   - `replace_subject(Some("c3\n\nbody 3\n"), "new")` returns `new\n\nbody 3\n`
   - an empty map removes the directory
   - a non-hex hash writes nothing
-- [ ] 7.2 Add `load(git_dir, reword_hashes: &[&str]) -> HashMap<hash, subject>`, matching stored names to todo hashes by prefix in either direction, keeping the first line of each match, and deleting unmatched files; verify a stored `54763e6` loads for a reword line and a stale `deadbeef` is deleted
-- [ ] 7.3 Add `pending_for_commit(git_dir) -> Option<(PathBuf, String)>` from the last non-empty line of `<gitdir>/rebase-merge/done` (`reword`/`r` plus a full sha matched against stored names); verify `reword 545ca5d95e7b6bbb297681be181a60d396ee8ee8 # c3` finds stored `545ca5d`, while a pick line or a missing done file returns `None`
+- [x] 7.2 Add `load(git_dir, reword_hashes: &[&str]) -> HashMap<hash, subject>`, matching stored names to todo hashes by prefix in either direction, keeping the first line of each match, and deleting unmatched files; verify a stored `54763e6` loads for a reword line and a stale `deadbeef` is deleted
+- [x] 7.3 Add `pending_for_commit(git_dir) -> Option<(PathBuf, String)>` from the last non-empty line of `<gitdir>/rebase-merge/done` (`reword`/`r` plus a full sha matched against stored names); verify `reword 545ca5d95e7b6bbb297681be181a60d396ee8ee8 # c3` finds stored `545ca5d`, while a pick line or a missing done file returns `None`
 
 ## 8. Commit details (`src/details.rs`)
 
-- [ ] 8.1 Add `CommitDetails { message: Vec<String>, files: Vec<(char, String)> }` and `parse_show(out)`: split at NUL; message is the trimmed lines; each name-status line becomes (first status char, tab-separated paths joined by ` -> `); verify unit tests for add, modify and `R100\told\tnew`
-- [ ] 8.2 Add `DetailsLoader::spawn(git_dir)` with a worker thread over mpsc running `git [--git-dir d] show --no-color --format=%B%x00 --name-status <hash>` with stdin null, plus `request(hash)` (deduplicated), `poll() -> bool` (drain into the cache) and `get(hash) -> Option<&Option<CommitDetails>>`. Verify an integration test that:
+- [x] 8.1 Add `CommitDetails { message: Vec<String>, files: Vec<(char, String)> }` and `parse_show(out)`: split at NUL; message is the trimmed lines; each name-status line becomes (first status char, tab-separated paths joined by ` -> `); verify unit tests for add, modify and `R100\told\tnew`
+- [x] 8.2 Add `DetailsLoader::spawn(git_dir)` with a worker thread over mpsc running `git [--git-dir d] show --no-color --format=%B%x00 --name-status <hash>` with stdin null, plus `request(hash)` (deduplicated), `poll() -> bool` (drain into the cache) and `get(hash) -> Option<&Option<CommitDetails>>`. Verify an integration test that:
   - creates a temp repo, committing with `-c commit.gpgsign=false -c user.email=t@t -c user.name=t`
   - checks HEAD gives message `["subject","","body"]` and files `[('A',"a.txt")]` within 5 s
   - checks an unknown hash gives `Some(None)`
@@ -135,7 +135,7 @@ Conventions for every task:
 
 ## 9. Layout (`src/layout.rs`)
 
-- [ ] 9.1 Add `NARROW_WIDTH = 100`, `Pane::{Left, Right}` and `PaneRects { left, right, key_bar }`, plus:
+- [x] 9.1 Add `NARROW_WIDTH = 100`, `Pane::{Left, Right}` and `PaneRects { left, right, key_bar }`, plus:
   - `compute(area, has_right, focus)`: key bar on the last row; no right pane → left takes the body; narrower than 100 → only the focused pane, full width; otherwise a 60/40 split.
   - `pane_at(rects, col, row)`.
 
@@ -147,7 +147,7 @@ Conventions for every task:
 
 ## 10. Session: message and plain layouts (`src/session.rs`)
 
-- [ ] 10.1 Add the state types and constructor:
+- [x] 10.1 Add the state types and constructor:
   - `ScrollBy::{Lines, Pages, Top, End}`, `Action` (Save, Cancel, ToggleHelp, ScrollHelp, FocusLeft, FocusRight, ToggleFocus, ClickAt, WheelAt, ScrollRight, Edit(Input), CursorUp, CursorDown, DeleteLine, Undo, Redo, DeleteWord, DeleteNextWord, Copy, Cut, Paste), `Outcome::{Save, Cancel, Continue}`.
   - `Body::{Message(MessageBody), Plain(TextArea), Rebase(RebaseBody)}`.
   - `App` has public fields: body, context, git_dir, comment_char, file_name, focus, show_help, help_scroll, right_scroll, and renderer-written rects, editor_width, right_page, editor_top, table_top.
@@ -158,32 +158,32 @@ Conventions for every task:
   - `ammend2`: the editor lines are `["fix: release volume"]`, `has_right` is true, and `serialized_content()` equals the raw file
   - an unknown file keeps its comment lines and `has_right` is false
   - `"just text\n"` as a commit has `has_right` false
-- [ ] 10.2 Add the non-editing actions:
+- [x] 10.2 Add the non-editing actions:
   - `apply(Action)`: FocusRight only when `has_right`; ToggleFocus; ClickAt via `layout::pane_at`; ToggleHelp resets `help_scroll`; ScrollHelp.
   - `ScrollRight`: Lines/Pages use `right_page`, Top = 0, End = `usize::MAX`.
   - `WheelAt`: scrolls the right pane or moves the left cursor by display row.
 
   Verify focus, click with manually computed rects, End → `usize::MAX`, and that Lines(-1) from 5 gives 4.
-- [ ] 10.3 Route editing actions to `active_editor_mut()` (message, plain, inline or raw editor):
+- [x] 10.3 Route editing actions to `active_editor_mut()` (message, plain, inline or raw editor):
   - DeleteLine = Head then `delete_line_by_end`
   - clipboard through `arboard`, doing nothing when no clipboard is available
   - CursorUp/Down move by display row using `wrap` with `editor_width`, via `CursorMove::Jump`
 
   Verify with `editor_width = 10` and lines `["hello world foo", "x"]`: CursorDown from (0,0) → (0,6) → (1,0), and CursorUp → (0,6).
-- [ ] 10.4 Add `serialized_content()` (message assemble; plain lines joined plus `\n`; rebase `todo.serialize()`) and `finish_save()` (removes a used reword file; rebase calls `reword::store` with `git_full_message`). Verify a tempdir with `rebase-merge/done` ending `reword 545ca5d…` and a stored `545ca5d` of `new subject\n\nbody 3\n`:
+- [x] 10.4 Add `serialized_content()` (message assemble; plain lines joined plus `\n`; rebase `todo.serialize()`) and `finish_save()` (removes a used reword file; rebase calls `reword::store` with `git_full_message`). Verify a tempdir with `rebase-merge/done` ending `reword 545ca5d…` and a stored `545ca5d` of `new subject\n\nbody 3\n`:
   - `App::new` on the commit message makes the editor lines `["new subject","","body 3"]`
   - the serialized content keeps the trailer
   - `finish_save` removes the stored file
 
 ## 11. Session: rebase actions (`src/session.rs`)
 
-- [ ] 11.1 Add `SelectBy(ScrollBy)`: Lines, Pages ×10, Top and End, clamped. Selection changes request details and reset `right_scroll`, and the wheel over the table moves the selection. Verify on `squash_fixture` that Down/Up/End/Top land on the expected index and that selection stops at the ends.
-- [ ] 11.2 Add `SetAction(rebase::Action)` and `CycleAction`, where any action other than Reword removes a pending reword, and `MoveInstruction { up }`, where the selection follows the moved row. Verify:
+- [x] 11.1 Add `SelectBy(ScrollBy)`: Lines, Pages ×10, Top and End, clamped. Selection changes request details and reset `right_scroll`, and the wheel over the table moves the selection. Verify on `squash_fixture` that Down/Up/End/Top land on the expected index and that selection stops at the ends.
+- [x] 11.2 Add `SetAction(rebase::Action)` and `CycleAction`, where any action other than Reword removes a pending reword, and `MoveInstruction { up }`, where the selection follows the moved row. Verify:
   - `SetAction(Fixup)` on the first row serializes as `fixup 54763e6 # docs(state): record phase 8 context session`
   - Tab turns pick into squash
   - moving up at index 0 does nothing
   - moving down sets the selection to 1 and swaps the lines
-- [ ] 11.3 Add inline reword:
+- [x] 11.3 Add inline reword:
   - `StartInline` opens a one-line `TextArea` holding the display subject, cursor at the end.
   - `CommitInline` trims the text. Empty, or equal to the original subject, removes the pending reword; otherwise it sets Reword and stores `rewords[hash]`.
   - `CancelInline`; `RebaseBody::display_subject(commit)`.
@@ -193,7 +193,7 @@ Conventions for every task:
   - that line serializes as `reword 54763e6 # docs(state): record phase 8 context session`
   - Cancel leaves no reword
   - `SetAction(Pick)` afterwards clears the reword
-- [ ] 11.4 Add `ToggleRaw` and save behaviour:
+- [x] 11.4 Add `ToggleRaw` and save behaviour:
   - Entering raw mode opens a `TextArea` of `todo.serialize().lines()` and closes any inline edit.
   - Leaving joins the lines (plus the final newline), re-parses, keeps rewords only for hashes still marked reword, clamps the selection, and requests details.
   - `Save` commits an open inline edit and leaves raw mode before returning `Outcome::Save`.
@@ -202,7 +202,7 @@ Conventions for every task:
   - toggling twice without edits serializes to the fixture
   - inserting `exec cargo test` after the last pick in raw mode gives 15 instructions, the last one `Other`
   - `Save` with an inline edit open stores the reword
-- [ ] 11.5 Add `poll_background() -> bool` (drains details). Verify with a tempdir git dir:
+- [x] 11.5 Add `poll_background() -> bool` (drains details). Verify with a tempdir git dir:
   - a stored subject is loaded for a todo whose first line is `reword 54763e6 …`
   - a stale stored file is deleted
   - after a reword, `finish_save` writes `gitmedit/reword/54763e6` containing `new subject\n` (git lookup fails in the tempdir)

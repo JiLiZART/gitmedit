@@ -10,9 +10,14 @@ use context::GitContext;
 
 mod app;
 mod context;
+mod details;
 mod document;
+mod layout;
 mod message;
+mod rebase;
 mod renderer;
+mod reword;
+mod session;
 mod status;
 mod terminal;
 mod wrap;
