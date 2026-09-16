@@ -10,7 +10,7 @@ Both layouts SHALL render without visual artifacts on the standard macOS termina
 Terminal.app and iTerm2.
 
 #### Scenario: All layouts on macOS
-- **WHEN** the message layout, the rebase layout, and standalone commit mode are opened on a macOS
+- **WHEN** the message layout, the rebase layout, and a commit started without arguments are opened on a macOS
   terminal
 - **THEN** each renders with correct pane layout, colors, and cursor placement, and no stray escape
   sequences appear as visible text
@@ -23,7 +23,7 @@ Terminal.app and iTerm2.
 Both layouts SHALL render without visual artifacts on Windows Terminal.
 
 #### Scenario: All layouts on Windows
-- **WHEN** the message layout, the rebase layout, and standalone commit mode are opened on Windows
+- **WHEN** the message layout, the rebase layout, and a commit started without arguments are opened on Windows
   Terminal
 - **THEN** each renders with correct pane layout, colors, and cursor placement
 

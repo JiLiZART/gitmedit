@@ -2,7 +2,7 @@
 
 - [ ] 1.1 Verify the message layout (commit, amend, merge, squash) in Terminal.app and iTerm2
 - [ ] 1.2 Verify the rebase layout in both, including wrapped subjects, row alignment, and commit details
-- [ ] 1.3 Verify standalone commit mode in both
+- [ ] 1.3 Verify running `gitmedit` with no arguments (commit without arguments) in both
 - [ ] 1.4 Verify redraw after a terminal resize, including crossing the narrow-terminal threshold
 - [ ] 1.5 Verify the previous terminal content is back after exit
 

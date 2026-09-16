@@ -57,6 +57,7 @@ git config --global --get sequence.editor # should print: gitmedit
 
 ## Usage
 
+- **Commit without arguments:** run `gitmedit` in a repository to start `git commit` with gitmedit as the editor for that run only, whatever `core.editor` says. git writes the usual template, so the message opens with the status pane; hooks, `commit.template` and signing all apply, and gitmedit exits with git's own exit code and output ("nothing to commit", a rejected hook, and so on).
 - **Commit, merge, squash, tag:** the message is on the left and git's status on the right. Below 100 columns, only one pane is shown; press Ctrl+T to switch.
 - **Rebase:** `git rebase -i HEAD~5` opens the rebase table. Set actions, reorder, or reword, then save with Ctrl+S.
   - When git reaches a reworded commit, gitmedit opens with the new subject already filled in; confirm with Ctrl+S.
