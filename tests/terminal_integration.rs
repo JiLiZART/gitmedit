@@ -18,15 +18,29 @@ fn enters_alternate_screen_and_restores_terminal_on_exit() {
     tmp.flush().expect("failed to flush temp file");
 
     let pair = native_pty_system()
-        .openpty(PtySize { rows: 24, cols: 80, pixel_width: 0, pixel_height: 0 })
+        .openpty(PtySize {
+            rows: 24,
+            cols: 80,
+            pixel_width: 0,
+            pixel_height: 0,
+        })
         .expect("failed to open PTY");
 
     let mut cmd = CommandBuilder::new(env!("CARGO_BIN_EXE_gitmedit"));
     cmd.arg(tmp.path());
-    let mut child = pair.slave.spawn_command(cmd).expect("failed to spawn gitmedit in PTY");
+    let mut child = pair
+        .slave
+        .spawn_command(cmd)
+        .expect("failed to spawn gitmedit in PTY");
 
-    let mut writer = pair.master.take_writer().expect("failed to take PTY writer");
-    let mut reader = pair.master.try_clone_reader().expect("failed to clone PTY reader");
+    let mut writer = pair
+        .master
+        .take_writer()
+        .expect("failed to take PTY writer");
+    let mut reader = pair
+        .master
+        .try_clone_reader()
+        .expect("failed to clone PTY reader");
     drop(pair.slave);
 
     // Collect output in a background thread; macOS PTY reads block until the master closes.
@@ -56,7 +70,16 @@ fn enters_alternate_screen_and_restores_terminal_on_exit() {
 
     let output = collected.lock().unwrap().clone();
     let raw = String::from_utf8_lossy(&output);
-    assert!(raw.contains("\x1b[?1049h"), "alternate screen was not entered");
-    assert!(raw.contains("\x1b[?1049l"), "alternate screen was not left on exit");
-    assert!(raw.contains("\x1b[?1000l"), "mouse capture was not disabled on exit");
+    assert!(
+        raw.contains("\x1b[?1049h"),
+        "alternate screen was not entered"
+    );
+    assert!(
+        raw.contains("\x1b[?1049l"),
+        "alternate screen was not left on exit"
+    );
+    assert!(
+        raw.contains("\x1b[?1000l"),
+        "mouse capture was not disabled on exit"
+    );
 }

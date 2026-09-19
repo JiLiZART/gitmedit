@@ -14,7 +14,10 @@ pub struct Segment {
 pub fn wrap(line: &str, width: usize) -> Vec<Segment> {
     let chars: Vec<char> = line.chars().collect();
     if width == 0 || chars.len() <= width {
-        return vec![Segment { start: 0, text: line.to_string() }];
+        return vec![Segment {
+            start: 0,
+            text: line.to_string(),
+        }];
     }
     let mut out = Vec::new();
     let mut start = 0;
@@ -22,16 +25,25 @@ pub fn wrap(line: &str, width: usize) -> Vec<Segment> {
         let end = start + width;
         match (start + 1..=end).rev().find(|&i| chars[i] == ' ') {
             Some(space) => {
-                out.push(Segment { start, text: chars[start..space].iter().collect() });
+                out.push(Segment {
+                    start,
+                    text: chars[start..space].iter().collect(),
+                });
                 start = space + 1;
             }
             None => {
-                out.push(Segment { start, text: chars[start..end].iter().collect() });
+                out.push(Segment {
+                    start,
+                    text: chars[start..end].iter().collect(),
+                });
                 start = end;
             }
         }
     }
-    out.push(Segment { start, text: chars[start..].iter().collect() });
+    out.push(Segment {
+        start,
+        text: chars[start..].iter().collect(),
+    });
     out
 }
 
@@ -51,7 +63,13 @@ mod tests {
 
     #[test]
     fn short_line_is_one_segment() {
-        assert_eq!(wrap("short", 40), vec![Segment { start: 0, text: "short".into() }]);
+        assert_eq!(
+            wrap("short", 40),
+            vec![Segment {
+                start: 0,
+                text: "short".into()
+            }]
+        );
     }
 
     #[test]
@@ -73,7 +91,10 @@ mod tests {
 
     #[test]
     fn hard_breaks_words_wider_than_width() {
-        assert_eq!(texts(&wrap("abcdefghijklmnop", 5)), vec!["abcde", "fghij", "klmno", "p"]);
+        assert_eq!(
+            texts(&wrap("abcdefghijklmnop", 5)),
+            vec!["abcde", "fghij", "klmno", "p"]
+        );
     }
 
     #[test]

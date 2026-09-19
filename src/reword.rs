@@ -46,7 +46,10 @@ pub fn store(
     }
     fs::create_dir_all(&dir)?;
     for (hash, subject) in valid {
-        fs::write(dir.join(hash), replace_subject(full_message(hash).as_deref(), subject))?;
+        fs::write(
+            dir.join(hash),
+            replace_subject(full_message(hash).as_deref(), subject),
+        )?;
     }
     Ok(())
 }
@@ -61,7 +64,9 @@ pub fn git_full_message(git_dir: &Path, hash: &str) -> Option<String> {
         .stderr(Stdio::null())
         .output()
         .ok()?;
-    out.status.success().then(|| String::from_utf8_lossy(&out.stdout).into_owned())
+    out.status
+        .success()
+        .then(|| String::from_utf8_lossy(&out.stdout).into_owned())
 }
 
 /// Load stored subjects for the reword instructions of an opened todo, keyed by the todo's hash.
@@ -76,7 +81,10 @@ pub fn load(git_dir: &Path, reword_hashes: &[&str]) -> HashMap<String, String> {
         match reword_hashes.iter().find(|hash| same_commit(hash, &name)) {
             Some(hash) => {
                 if let Ok(message) = fs::read_to_string(entry.path()) {
-                    found.insert(hash.to_string(), message.lines().next().unwrap_or("").to_string());
+                    found.insert(
+                        hash.to_string(),
+                        message.lines().next().unwrap_or("").to_string(),
+                    );
                 }
             }
             None => {
@@ -96,14 +104,17 @@ pub fn pending_for_commit(git_dir: &Path) -> Option<(PathBuf, String)> {
         return None;
     }
     let hash = words.next()?;
-    fs::read_dir(store_dir(git_dir)).ok()?.flatten().find_map(|entry| {
-        let name = entry.file_name().to_string_lossy().into_owned();
-        if !same_commit(hash, &name) {
-            return None;
-        }
-        let message = fs::read_to_string(entry.path()).ok()?;
-        Some((entry.path(), message))
-    })
+    fs::read_dir(store_dir(git_dir))
+        .ok()?
+        .flatten()
+        .find_map(|entry| {
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if !same_commit(hash, &name) {
+                return None;
+            }
+            let message = fs::read_to_string(entry.path()).ok()?;
+            Some((entry.path(), message))
+        })
 }
 
 #[cfg(test)]
@@ -112,7 +123,10 @@ mod tests {
     use tempfile::tempdir;
 
     fn map(pairs: &[(&str, &str)]) -> HashMap<String, String> {
-        pairs.iter().map(|(a, b)| (a.to_string(), b.to_string())).collect()
+        pairs
+            .iter()
+            .map(|(a, b)| (a.to_string(), b.to_string()))
+            .collect()
     }
 
     fn write_done(git_dir: &Path, content: &str) {
@@ -129,7 +143,10 @@ mod tests {
 
     #[test]
     fn replace_subject_keeps_body() {
-        assert_eq!(replace_subject(Some("c3\n\nbody 3\n"), "new"), "new\n\nbody 3\n");
+        assert_eq!(
+            replace_subject(Some("c3\n\nbody 3\n"), "new"),
+            "new\n\nbody 3\n"
+        );
         assert_eq!(replace_subject(Some("c3\n"), "new"), "new\n");
         assert_eq!(replace_subject(None, "new"), "new\n");
     }
@@ -192,7 +209,10 @@ mod tests {
         let dir = tempdir().unwrap();
         write_stored(dir.path(), "545ca5d", "new\n");
         assert!(pending_for_commit(dir.path()).is_none());
-        write_done(dir.path(), "pick 545ca5d95e7b6bbb297681be181a60d396ee8ee8 # c3\n");
+        write_done(
+            dir.path(),
+            "pick 545ca5d95e7b6bbb297681be181a60d396ee8ee8 # c3\n",
+        );
         assert!(pending_for_commit(dir.path()).is_none());
     }
 }

@@ -22,7 +22,11 @@ mod wrap;
 mod writer;
 
 #[derive(Parser, Debug)]
-#[command(name = "gitmedit", version, about = "Fast, distraction-free git editor")]
+#[command(
+    name = "gitmedit",
+    version,
+    about = "Fast, distraction-free git editor"
+)]
 struct Cli {
     /// Path to the file to edit (provided by git). Without it, gitmedit starts a commit.
     path: Option<PathBuf>,
@@ -32,7 +36,9 @@ fn main() -> anyhow::Result<()> {
     // Must precede any terminal state change.
     terminal::install_panic_hook();
 
-    let Some(path) = Cli::parse().path else { commit_without_arguments() };
+    let Some(path) = Cli::parse().path else {
+        commit_without_arguments()
+    };
 
     if !path.exists() {
         eprintln!("error: file not found: {:?}", path);
@@ -41,9 +47,17 @@ fn main() -> anyhow::Result<()> {
 
     let raw = std::fs::read_to_string(&path)?;
     let context = context::detect_context(&path);
-    let mut app = App::new(&raw, context, context::git_dir(&path, context), context::read_comment_char());
+    let mut app = App::new(
+        &raw,
+        context,
+        context::git_dir(&path, context),
+        context::read_comment_char(),
+    );
 
-    app.file_name = path.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+    app.file_name = path
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_default();
 
     let mut guard = terminal::TerminalGuard::new()?;
     loop {
@@ -56,7 +70,9 @@ fn main() -> anyhow::Result<()> {
         }
         let event = event::read()?;
         app.poll_background();
-        let Some(action) = keys::map_event(&event, &app) else { continue };
+        let Some(action) = keys::map_event(&event, &app) else {
+            continue;
+        };
 
         match app.apply(action) {
             Outcome::Continue => {}
@@ -87,7 +103,11 @@ fn commit_without_arguments() -> ! {
             process::exit(127);
         }
     };
-    match process::Command::new("git").arg("commit").env("GIT_EDITOR", editor).status() {
+    match process::Command::new("git")
+        .arg("commit")
+        .env("GIT_EDITOR", editor)
+        .status()
+    {
         // A child killed by a signal has no code of its own.
         Ok(status) => process::exit(status.code().unwrap_or(1)),
         Err(e) => {
@@ -108,8 +128,14 @@ mod tests {
 
     #[test]
     fn shell_quote_wraps_and_escapes() {
-        assert_eq!(shell_quote(Path::new("/usr/bin/gitmedit")), "'/usr/bin/gitmedit'");
-        assert_eq!(shell_quote(Path::new("/opt/my tools/gitmedit")), "'/opt/my tools/gitmedit'");
+        assert_eq!(
+            shell_quote(Path::new("/usr/bin/gitmedit")),
+            "'/usr/bin/gitmedit'"
+        );
+        assert_eq!(
+            shell_quote(Path::new("/opt/my tools/gitmedit")),
+            "'/opt/my tools/gitmedit'"
+        );
         assert_eq!(shell_quote(Path::new("/a'b")), r"'/a'\''b'");
     }
 }

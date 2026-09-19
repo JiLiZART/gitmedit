@@ -15,7 +15,10 @@ pub enum GitContext {
 impl GitContext {
     /// Commit, merge, squash, and tag files share the message layout.
     pub fn is_message(self) -> bool {
-        matches!(self, GitContext::Commit | GitContext::Merge | GitContext::Squash | GitContext::Tag)
+        matches!(
+            self,
+            GitContext::Commit | GitContext::Merge | GitContext::Squash | GitContext::Tag
+        )
     }
 }
 
@@ -67,23 +70,43 @@ mod tests {
 
     #[test]
     fn detects_each_git_file() {
-        assert_eq!(detect_context(Path::new("COMMIT_EDITMSG")), GitContext::Commit);
+        assert_eq!(
+            detect_context(Path::new("COMMIT_EDITMSG")),
+            GitContext::Commit
+        );
         assert_eq!(detect_context(Path::new("MERGE_MSG")), GitContext::Merge);
-        assert_eq!(detect_context(Path::new("git-rebase-todo")), GitContext::Rebase);
+        assert_eq!(
+            detect_context(Path::new("git-rebase-todo")),
+            GitContext::Rebase
+        );
         assert_eq!(detect_context(Path::new("SQUASH_MSG")), GitContext::Squash);
         assert_eq!(detect_context(Path::new("TAG_EDITMSG")), GitContext::Tag);
-        assert_eq!(detect_context(Path::new("unknown.txt")), GitContext::Unknown);
+        assert_eq!(
+            detect_context(Path::new("unknown.txt")),
+            GitContext::Unknown
+        );
     }
 
     #[test]
     fn only_the_filename_matters() {
-        assert_eq!(detect_context(Path::new("/tmp/.git/COMMIT_EDITMSG")), GitContext::Commit);
-        assert_eq!(detect_context(Path::new("/some/path/unknown.txt")), GitContext::Unknown);
+        assert_eq!(
+            detect_context(Path::new("/tmp/.git/COMMIT_EDITMSG")),
+            GitContext::Commit
+        );
+        assert_eq!(
+            detect_context(Path::new("/some/path/unknown.txt")),
+            GitContext::Unknown
+        );
     }
 
     #[test]
     fn message_contexts_share_the_message_layout() {
-        for ctx in [GitContext::Commit, GitContext::Merge, GitContext::Squash, GitContext::Tag] {
+        for ctx in [
+            GitContext::Commit,
+            GitContext::Merge,
+            GitContext::Squash,
+            GitContext::Tag,
+        ] {
             assert!(ctx.is_message(), "{ctx:?}");
         }
         assert!(!GitContext::Rebase.is_message());
@@ -93,18 +116,27 @@ mod tests {
     #[test]
     fn git_dir_for_message_file_in_worktree() {
         let p = Path::new("/repo/.git/worktrees/feature/COMMIT_EDITMSG");
-        assert_eq!(git_dir(p, GitContext::Commit), Some(PathBuf::from("/repo/.git/worktrees/feature")));
+        assert_eq!(
+            git_dir(p, GitContext::Commit),
+            Some(PathBuf::from("/repo/.git/worktrees/feature"))
+        );
     }
 
     #[test]
     fn git_dir_for_rebase_todo_is_parent_of_rebase_merge() {
         let p = Path::new("/repo/.git/rebase-merge/git-rebase-todo");
-        assert_eq!(git_dir(p, GitContext::Rebase), Some(PathBuf::from("/repo/.git")));
+        assert_eq!(
+            git_dir(p, GitContext::Rebase),
+            Some(PathBuf::from("/repo/.git"))
+        );
     }
 
     #[test]
     fn git_dir_for_unknown_file_is_none() {
-        assert_eq!(git_dir(Path::new("/tmp/notes.txt"), GitContext::Unknown), None);
+        assert_eq!(
+            git_dir(Path::new("/tmp/notes.txt"), GitContext::Unknown),
+            None
+        );
     }
 
     #[test]

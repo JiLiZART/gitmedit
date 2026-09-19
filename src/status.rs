@@ -64,7 +64,11 @@ impl SectionKind {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Entry {
-    File { badge: char, path: String, suffix: Option<String> },
+    File {
+        badge: char,
+        path: String,
+        suffix: Option<String>,
+    },
     Submodule(String),
     Commit(String),
     Warning(String),
@@ -80,7 +84,10 @@ pub struct Section {
 
 impl Section {
     pub fn count(&self) -> usize {
-        self.entries.iter().filter(|e| matches!(e, Entry::File { .. } | Entry::Submodule(_))).count()
+        self.entries
+            .iter()
+            .filter(|e| matches!(e, Entry::File { .. } | Entry::Submodule(_)))
+            .count()
     }
 }
 
@@ -128,7 +135,11 @@ pub fn parse(trailer: &[String], cc: char) -> Status {
     for line in trailer {
         if in_diff {
             if !line.starts_with(cc) {
-                push(&mut sections, SectionKind::Diff, Entry::DiffLine(line.clone()));
+                push(
+                    &mut sections,
+                    SectionKind::Diff,
+                    Entry::DiffLine(line.clone()),
+                );
             }
             continue;
         }
@@ -137,7 +148,9 @@ pub fn parse(trailer: &[String], cc: char) -> Status {
             in_diff = true;
             continue;
         }
-        let Some(rest) = line.strip_prefix(cc) else { continue };
+        let Some(rest) = line.strip_prefix(cc) else {
+            continue;
+        };
         let t = rest.trim();
         if t.is_empty() || is_boilerplate(t) {
             continue;
@@ -154,16 +167,27 @@ pub fn parse(trailer: &[String], cc: char) -> Status {
             current = lists_commands.then_some(kind);
         } else {
             match current {
-                Some(kind @ (SectionKind::Conflicts | SectionKind::Staged | SectionKind::Unstaged | SectionKind::Untracked)) => {
-                    push(&mut sections, kind, parse_file(t, kind))
-                }
-                Some(kind @ (SectionKind::SubmodulesStaged | SectionKind::SubmodulesNotUpdated)) => {
-                    push(&mut sections, kind, parse_submodule_line(t))
-                }
-                Some(SectionKind::Rebase) => push(&mut sections, SectionKind::Rebase, Entry::Commit(t.to_string())),
+                Some(
+                    kind @ (SectionKind::Conflicts
+                    | SectionKind::Staged
+                    | SectionKind::Unstaged
+                    | SectionKind::Untracked),
+                ) => push(&mut sections, kind, parse_file(t, kind)),
+                Some(
+                    kind @ (SectionKind::SubmodulesStaged | SectionKind::SubmodulesNotUpdated),
+                ) => push(&mut sections, kind, parse_submodule_line(t)),
+                Some(SectionKind::Rebase) => push(
+                    &mut sections,
+                    SectionKind::Rebase,
+                    Entry::Commit(t.to_string()),
+                ),
                 _ => {
                     let verbatim = rest.strip_prefix(' ').unwrap_or(rest).trim_end();
-                    push(&mut sections, SectionKind::Other, Entry::Text(verbatim.to_string()))
+                    push(
+                        &mut sections,
+                        SectionKind::Other,
+                        Entry::Text(verbatim.to_string()),
+                    )
                 }
             }
         }
@@ -173,17 +197,24 @@ pub fn parse(trailer: &[String], cc: char) -> Status {
     if summary.is_some() || !branch.extra.is_empty() {
         let s = section_mut(&mut sections, SectionKind::Branch);
         s.entries.extend(summary.map(Entry::Text));
-        s.entries.extend(branch.extra.iter().cloned().map(Entry::Text));
+        s.entries
+            .extend(branch.extra.iter().cloned().map(Entry::Text));
     }
     sections.sort_by_key(|s| s.kind);
-    Status { branch: branch.name, sections }
+    Status {
+        branch: branch.name,
+        sections,
+    }
 }
 
 fn section_mut(sections: &mut Vec<Section>, kind: SectionKind) -> &mut Section {
     let idx = match sections.iter().position(|s| s.kind == kind) {
         Some(i) => i,
         None => {
-            sections.push(Section { kind, entries: Vec::new() });
+            sections.push(Section {
+                kind,
+                entries: Vec::new(),
+            });
             sections.len() - 1
         }
     };
@@ -230,7 +261,10 @@ fn state_line_kind(t: &str) -> Option<SectionKind> {
 fn parse_branch_line(t: &str, b: &mut BranchInfo) -> bool {
     if let Some(name) = t.strip_prefix("On branch ") {
         b.name = Some(name.to_string());
-    } else if let Some(rev) = t.strip_prefix("HEAD detached at ").or_else(|| t.strip_prefix("HEAD detached from ")) {
+    } else if let Some(rev) = t
+        .strip_prefix("HEAD detached at ")
+        .or_else(|| t.strip_prefix("HEAD detached from "))
+    {
         b.name = Some(format!("detached {rev}"));
     } else if t.starts_with("Your branch is ahead of ") {
         b.upstream = quoted(t);
@@ -244,7 +278,10 @@ fn parse_branch_line(t: &str, b: &mut BranchInfo) -> bool {
     } else if t.starts_with("Your branch and ") && t.contains("have diverged") {
         b.upstream = quoted(t);
     } else if let Some(rest) = t.strip_prefix("and have ") {
-        let nums: Vec<u32> = rest.split_whitespace().filter_map(|w| w.parse().ok()).collect();
+        let nums: Vec<u32> = rest
+            .split_whitespace()
+            .filter_map(|w| w.parse().ok())
+            .collect();
         if let [ahead, behind, ..] = nums.as_slice() {
             b.ahead = Some(*ahead);
             b.behind = Some(*behind);
@@ -268,7 +305,12 @@ fn quoted(t: &str) -> Option<String> {
 }
 
 fn count_after_by(t: &str) -> Option<u32> {
-    t.split(" by ").nth(1)?.split_whitespace().next()?.parse().ok()
+    t.split(" by ")
+        .nth(1)?
+        .split_whitespace()
+        .next()?
+        .parse()
+        .ok()
 }
 
 fn branch_summary(b: &BranchInfo) -> Option<String> {
@@ -292,13 +334,24 @@ fn parse_file(t: &str, kind: SectionKind) -> Entry {
         .and_then(|(status, rest)| Some((status_badge(status)?, rest.trim())));
     let (badge, rest) = match parsed {
         Some(found) => found,
-        None => (if kind == SectionKind::Untracked { '?' } else { 'U' }, t),
+        None => (
+            if kind == SectionKind::Untracked {
+                '?'
+            } else {
+                'U'
+            },
+            t,
+        ),
     };
     let (path, suffix) = match rest.rsplit_once(" (") {
         Some((p, s)) if s.ends_with(')') => (p.to_string(), Some(format!("({s}"))),
         _ => (rest.to_string(), None),
     };
-    Entry::File { badge, path, suffix }
+    Entry::File {
+        badge,
+        path,
+        suffix,
+    }
 }
 
 fn status_badge(status: &str) -> Option<char> {
@@ -340,7 +393,9 @@ pub fn badge_style(badge: char) -> Style {
 
 /// Styled rows for the status pane, wrapped to `width` columns.
 pub fn render_lines(status: &Status, width: usize) -> Vec<Line<'static>> {
-    let header = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
+    let header = Style::default()
+        .fg(Color::Cyan)
+        .add_modifier(Modifier::BOLD);
     let mut out: Vec<Line<'static>> = Vec::new();
     for section in &status.sections {
         if !out.is_empty() {
@@ -361,12 +416,21 @@ pub fn render_lines(status: &Status, width: usize) -> Vec<Line<'static>> {
 
 fn push_entry(out: &mut Vec<Line<'static>>, entry: &Entry, width: usize) {
     match entry {
-        Entry::File { badge, path, suffix } => {
+        Entry::File {
+            badge,
+            path,
+            suffix,
+        } => {
             let rows = wrap::wrap(path, width.saturating_sub(3));
             let last = rows.len() - 1;
             for (i, row) in rows.into_iter().enumerate() {
                 let mut spans = if i == 0 {
-                    vec![Span::raw(" "), Span::styled(badge.to_string(), badge_style(*badge)), Span::raw(" "), Span::raw(row.text)]
+                    vec![
+                        Span::raw(" "),
+                        Span::styled(badge.to_string(), badge_style(*badge)),
+                        Span::raw(" "),
+                        Span::raw(row.text),
+                    ]
                 } else {
                     vec![Span::raw("   "), Span::raw(row.text)]
                 };
@@ -374,12 +438,18 @@ fn push_entry(out: &mut Vec<Line<'static>>, entry: &Entry, width: usize) {
                 if i == last
                     && let Some(suffix) = suffix
                 {
-                    spans.push(Span::styled(format!(" {suffix}"), Style::default().fg(Color::DarkGray)));
+                    spans.push(Span::styled(
+                        format!(" {suffix}"),
+                        Style::default().fg(Color::DarkGray),
+                    ));
                 }
                 out.push(Line::from(spans));
             }
         }
-        Entry::Submodule(s) => out.push(Line::from(Span::styled(format!(" * {s}"), Style::default().fg(Color::Magenta)))),
+        Entry::Submodule(s) => out.push(Line::from(Span::styled(
+            format!(" * {s}"),
+            Style::default().fg(Color::Magenta),
+        ))),
         Entry::Commit(s) => push_wrapped(out, s, "   ", width, Style::default()),
         Entry::Warning(s) => push_wrapped(out, s, "   ", width, Style::default().fg(Color::Yellow)),
         Entry::Text(s) => push_wrapped(out, s, " ", width, Style::default()),
@@ -387,9 +457,18 @@ fn push_entry(out: &mut Vec<Line<'static>>, entry: &Entry, width: usize) {
     }
 }
 
-fn push_wrapped(out: &mut Vec<Line<'static>>, text: &str, indent: &'static str, width: usize, style: Style) {
+fn push_wrapped(
+    out: &mut Vec<Line<'static>>,
+    text: &str,
+    indent: &'static str,
+    width: usize,
+    style: Style,
+) {
     for row in wrap::wrap(text, width.saturating_sub(indent.len())) {
-        out.push(Line::from(vec![Span::raw(indent), Span::styled(row.text, style)]));
+        out.push(Line::from(vec![
+            Span::raw(indent),
+            Span::styled(row.text, style),
+        ]));
     }
 }
 
@@ -435,8 +514,14 @@ mod tests {
         assert_eq!(kinds(&s), vec![SectionKind::Branch, SectionKind::Staged]);
         assert_eq!(s.branch.as_deref(), Some("EX-3211-arc-epic"));
         let branch = s.section(SectionKind::Branch).unwrap();
-        assert_eq!(branch.entries[0], Entry::Text("EX-3211-arc-epic → origin/EX-3211-arc-epic  ahead 1, behind 2".into()));
-        assert_eq!(branch.entries[1], Entry::Text("Date: Tue May 12 01:43:54 2026 +0200".into()));
+        assert_eq!(
+            branch.entries[0],
+            Entry::Text("EX-3211-arc-epic → origin/EX-3211-arc-epic  ahead 1, behind 2".into())
+        );
+        assert_eq!(
+            branch.entries[1],
+            Entry::Text("Date: Tue May 12 01:43:54 2026 +0200".into())
+        );
         assert_eq!(s.section(SectionKind::Staged).unwrap().count(), 34);
         assert!(!format!("{:?}", s.sections).contains("Please enter"));
     }
@@ -445,7 +530,12 @@ mod tests {
     fn amend_ahead_of_upstream() {
         let s = parse_fixture(include_str!("../fixtures/ammend2_fixture.txt"));
         let branch = s.section(SectionKind::Branch).unwrap();
-        assert_eq!(branch.entries[0], Entry::Text("TASK-1111-fix-stage-view → origin/TASK-1111-fix-stage-view  ahead 1".into()));
+        assert_eq!(
+            branch.entries[0],
+            Entry::Text(
+                "TASK-1111-fix-stage-view → origin/TASK-1111-fix-stage-view  ahead 1".into()
+            )
+        );
         assert_eq!(s.section(SectionKind::Staged).unwrap().count(), 6);
     }
 
@@ -468,10 +558,19 @@ mod tests {
         assert_eq!(s.section(SectionKind::Staged).unwrap().count(), 160);
         assert_eq!(s.section(SectionKind::Unstaged).unwrap().count(), 1);
         assert_eq!(s.section(SectionKind::SubmodulesStaged).unwrap().count(), 1);
-        assert_eq!(s.section(SectionKind::SubmodulesNotUpdated).unwrap().count(), 1);
+        assert_eq!(
+            s.section(SectionKind::SubmodulesNotUpdated)
+                .unwrap()
+                .count(),
+            1
+        );
         assert_eq!(
             s.section(SectionKind::Unstaged).unwrap().entries[0],
-            Entry::File { badge: 'M', path: "packages/@dev-kit".into(), suffix: Some("(new commits)".into()) }
+            Entry::File {
+                badge: 'M',
+                path: "packages/@dev-kit".into(),
+                suffix: Some("(new commits)".into())
+            }
         );
     }
 
@@ -492,15 +591,32 @@ mod tests {
             ]
         );
         let rebase = &s.section(SectionKind::Rebase).unwrap().entries;
-        assert_eq!(rebase[0], Entry::Text("interactive rebase in progress; onto c3d42a1f4".into()));
-        assert_eq!(rebase[2], Entry::Commit("pick c0ad61ef0 # Update chat message stop words".into()));
+        assert_eq!(
+            rebase[0],
+            Entry::Text("interactive rebase in progress; onto c3d42a1f4".into())
+        );
+        assert_eq!(
+            rebase[2],
+            Entry::Commit("pick c0ad61ef0 # Update chat message stop words".into())
+        );
         assert_eq!(s.section(SectionKind::Unstaged).unwrap().count(), 6);
         let not_updated = s.section(SectionKind::SubmodulesNotUpdated).unwrap();
         assert_eq!(not_updated.count(), 5);
-        assert_eq!(not_updated.entries.iter().filter(|e| matches!(e, Entry::Warning(_))).count(), 4);
+        assert_eq!(
+            not_updated
+                .entries
+                .iter()
+                .filter(|e| matches!(e, Entry::Warning(_)))
+                .count(),
+            4
+        );
         assert_eq!(
             s.section(SectionKind::Untracked).unwrap().entries,
-            vec![Entry::File { badge: '?', path: "vendor/money-tree/".into(), suffix: None }]
+            vec![Entry::File {
+                badge: '?',
+                path: "vendor/money-tree/".into(),
+                suffix: None
+            }]
         );
     }
 
@@ -510,7 +626,12 @@ mod tests {
         assert_eq!(kinds(&s), vec![SectionKind::Conflicts]);
         let conflicts = s.section(SectionKind::Conflicts).unwrap();
         assert_eq!(conflicts.count(), 6);
-        assert!(conflicts.entries.iter().all(|e| matches!(e, Entry::File { badge: 'U', .. })));
+        assert!(
+            conflicts
+                .entries
+                .iter()
+                .all(|e| matches!(e, Entry::File { badge: 'U', .. }))
+        );
     }
 
     #[test]
@@ -532,7 +653,14 @@ mod tests {
             })
             .collect();
         assert_eq!(badges, vec!['M', 'A', 'D', 'R', 'U']);
-        assert_eq!(entries[3], Entry::File { badge: 'R', path: "old.rs -> new.rs".into(), suffix: None });
+        assert_eq!(
+            entries[3],
+            Entry::File {
+                badge: 'R',
+                path: "old.rs -> new.rs".into(),
+                suffix: None
+            }
+        );
     }
 
     #[test]
@@ -544,7 +672,10 @@ mod tests {
     #[test]
     fn unrecognized_comment_lines_go_to_other() {
         let s = parse(&owned(&["# something unexpected"]), '#');
-        assert_eq!(s.section(SectionKind::Other).unwrap().entries, vec![Entry::Text("something unexpected".into())]);
+        assert_eq!(
+            s.section(SectionKind::Other).unwrap().entries,
+            vec![Entry::Text("something unexpected".into())]
+        );
     }
 
     #[test]
@@ -562,13 +693,19 @@ mod tests {
         assert_eq!(kinds(&s), vec![SectionKind::Diff]);
         assert_eq!(
             s.section(SectionKind::Diff).unwrap().entries,
-            vec![Entry::DiffLine("diff --git a/x b/x".into()), Entry::DiffLine("+added".into())]
+            vec![
+                Entry::DiffLine("diff --git a/x b/x".into()),
+                Entry::DiffLine("+added".into())
+            ]
         );
     }
 
     #[test]
     fn custom_comment_char() {
-        let s = parse(&owned(&["; Changes to be committed:", ";\tmodified:   a.rs"]), ';');
+        let s = parse(
+            &owned(&["; Changes to be committed:", ";\tmodified:   a.rs"]),
+            ';',
+        );
         assert_eq!(s.section(SectionKind::Staged).unwrap().count(), 1);
     }
 
@@ -609,20 +746,40 @@ mod tests {
         let lines = render_lines(&sample(), 80);
         assert_eq!(lines[5].spans[1].content, "D");
         assert_eq!(lines[5].spans[1].style.fg, Some(Color::Red));
-        assert_eq!(lines[4].spans.last().unwrap().style.fg, Some(Color::DarkGray));
+        assert_eq!(
+            lines[4].spans.last().unwrap().style.fg,
+            Some(Color::DarkGray)
+        );
     }
 
     #[test]
     fn long_paths_wrap_with_indent() {
-        let status = parse(&owned(&["# Changes to be committed:", "#\tmodified:   aaaa/bbbb/cccc/dddd"]), '#');
+        let status = parse(
+            &owned(&[
+                "# Changes to be committed:",
+                "#\tmodified:   aaaa/bbbb/cccc/dddd",
+            ]),
+            '#',
+        );
         // width 12 leaves 9 path columns; no spaces, so the path hard-breaks every 9 chars
         let lines: Vec<String> = render_lines(&status, 12).iter().map(line_text).collect();
-        assert_eq!(lines, vec!["Staged (1)", " M aaaa/bbbb", "   /cccc/ddd", "   d"]);
+        assert_eq!(
+            lines,
+            vec!["Staged (1)", " M aaaa/bbbb", "   /cccc/ddd", "   d"]
+        );
     }
 
     #[test]
     fn diff_lines_are_colored() {
-        let status = parse(&owned(&["# ------------------------ >8 ------------------------", "+added", "-removed", "@@ -1 +1 @@"]), '#');
+        let status = parse(
+            &owned(&[
+                "# ------------------------ >8 ------------------------",
+                "+added",
+                "-removed",
+                "@@ -1 +1 @@",
+            ]),
+            '#',
+        );
         let lines = render_lines(&status, 80);
         assert_eq!(lines[1].spans[0].style.fg, Some(Color::Green));
         assert_eq!(lines[2].spans[0].style.fg, Some(Color::Red));

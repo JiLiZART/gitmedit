@@ -17,12 +17,25 @@ pub fn is_scissors(line: &str, cc: char) -> bool {
 pub fn split(raw: &str, cc: char) -> MessageFile {
     let final_newline = raw.ends_with('\n');
     let body = raw.strip_suffix('\n').unwrap_or(raw);
-    let lines: Vec<&str> = if raw.is_empty() { Vec::new() } else { body.split('\n').collect() };
+    let lines: Vec<&str> = if raw.is_empty() {
+        Vec::new()
+    } else {
+        body.split('\n').collect()
+    };
 
-    let scissors = lines.iter().position(|l| is_scissors(l, cc)).unwrap_or(lines.len());
-    let first_comment = lines[..scissors].iter().position(|l| l.starts_with(cc)).unwrap_or(scissors);
+    let scissors = lines
+        .iter()
+        .position(|l| is_scissors(l, cc))
+        .unwrap_or(lines.len());
+    let first_comment = lines[..scissors]
+        .iter()
+        .position(|l| l.starts_with(cc))
+        .unwrap_or(scissors);
 
-    let mut message: Vec<String> = lines[..first_comment].iter().map(|l| l.to_string()).collect();
+    let mut message: Vec<String> = lines[..first_comment]
+        .iter()
+        .map(|l| l.to_string())
+        .collect();
     trim_trailing_blank(&mut message);
 
     let mut trailer = Vec::new();
@@ -42,7 +55,11 @@ pub fn split(raw: &str, cc: char) -> MessageFile {
     }
     trailer.extend(lines[scissors..].iter().map(|l| l.to_string()));
 
-    MessageFile { message, trailer, final_newline }
+    MessageFile {
+        message,
+        trailer,
+        final_newline,
+    }
 }
 
 impl MessageFile {
@@ -93,7 +110,10 @@ mod tests {
     #[test]
     fn merge_message_keeps_blank_lines_between_comment_groups_in_trailer() {
         let f = split(MERGE, '#');
-        assert_eq!(f.message, owned(&["Merge remote-tracking branch 'origin/BRANCH-NAME2' into BRANCH-NAME"]));
+        assert_eq!(
+            f.message,
+            owned(&["Merge remote-tracking branch 'origin/BRANCH-NAME2' into BRANCH-NAME"])
+        );
         assert!(f.trailer.iter().any(|l| l.is_empty()));
     }
 
@@ -124,14 +144,20 @@ mod tests {
     #[test]
     fn trailing_blank_lines_in_edited_message_collapse_to_one_separator() {
         let f = split("subject\n\n# c\n", '#');
-        assert_eq!(f.assemble(&owned(&["subject", "", "", ""])), "subject\n\n# c\n");
+        assert_eq!(
+            f.assemble(&owned(&["subject", "", "", ""])),
+            "subject\n\n# c\n"
+        );
     }
 
     #[test]
     fn interleaved_squash_messages_move_into_message() {
         let raw = "# This is a combination of 2 commits.\n# This is the 1st commit message:\n\nfeat: one\n\nbody one\n\n# This is the commit message #2:\n\nfix: two\n";
         let f = split(raw, '#');
-        assert_eq!(f.message, owned(&["feat: one", "", "body one", "", "fix: two"]));
+        assert_eq!(
+            f.message,
+            owned(&["feat: one", "", "body one", "", "fix: two"])
+        );
         assert!(f.trailer.iter().all(|l| l.starts_with('#') || l.is_empty()));
         let out = f.assemble(&f.message);
         let kept: Vec<&str> = out.lines().filter(|l| !l.starts_with('#')).collect();
@@ -169,7 +195,10 @@ mod tests {
 
     #[test]
     fn scissors_detection() {
-        assert!(is_scissors("# ------------------------ >8 ------------------------", '#'));
+        assert!(is_scissors(
+            "# ------------------------ >8 ------------------------",
+            '#'
+        ));
         assert!(!is_scissors("# ------------------------", '#'));
     }
 }

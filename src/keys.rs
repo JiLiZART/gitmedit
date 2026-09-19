@@ -1,4 +1,6 @@
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseButton, MouseEventKind};
+use crossterm::event::{
+    Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseButton, MouseEventKind,
+};
 use ratatui_textarea::Input;
 
 use crate::layout::Pane;
@@ -18,10 +20,16 @@ fn map_mouse(kind: MouseEventKind, column: u16, row: u16, app: &App) -> Option<A
     let delta = match kind {
         MouseEventKind::ScrollUp => -1,
         MouseEventKind::ScrollDown => 1,
-        MouseEventKind::Down(MouseButton::Left) if !app.show_help => return Some(Action::ClickAt { column, row }),
+        MouseEventKind::Down(MouseButton::Left) if !app.show_help => {
+            return Some(Action::ClickAt { column, row });
+        }
         _ => return None,
     };
-    Some(if app.show_help { Action::ScrollHelp(delta) } else { Action::WheelAt { column, row, delta } })
+    Some(if app.show_help {
+        Action::ScrollHelp(delta)
+    } else {
+        Action::WheelAt { column, row, delta }
+    })
 }
 
 fn map_key(key: KeyEvent, app: &App) -> Option<Action> {
@@ -103,7 +111,9 @@ fn table_key(key: KeyEvent, ctrl: bool, alt: bool) -> Option<Action> {
         KeyCode::Tab => Some(Action::CycleInstruction),
         KeyCode::Enter => Some(Action::StartInline),
         KeyCode::Char('e') if ctrl => Some(Action::ToggleRaw),
-        KeyCode::Char(c) if !ctrl && !alt => rebase::Action::from_key(c).map(Action::SetInstruction),
+        KeyCode::Char(c) if !ctrl && !alt => {
+            rebase::Action::from_key(c).map(Action::SetInstruction)
+        }
         _ => None,
     }
 }
@@ -149,17 +159,38 @@ mod tests {
     }
 
     fn mouse(kind: MouseEventKind) -> Event {
-        Event::Mouse(MouseEvent { kind, column: 7, row: 3, modifiers: KeyModifiers::NONE })
+        Event::Mouse(MouseEvent {
+            kind,
+            column: 7,
+            row: 3,
+            modifiers: KeyModifiers::NONE,
+        })
     }
 
     #[test]
     fn mouse_clicks_and_wheel() {
         let mut app = message_app();
-        assert_eq!(map_event(&mouse(MouseEventKind::Down(MouseButton::Left)), &app), Some(Action::ClickAt { column: 7, row: 3 }));
-        assert_eq!(map_event(&mouse(MouseEventKind::ScrollDown), &app), Some(Action::WheelAt { column: 7, row: 3, delta: 1 }));
+        assert_eq!(
+            map_event(&mouse(MouseEventKind::Down(MouseButton::Left)), &app),
+            Some(Action::ClickAt { column: 7, row: 3 })
+        );
+        assert_eq!(
+            map_event(&mouse(MouseEventKind::ScrollDown), &app),
+            Some(Action::WheelAt {
+                column: 7,
+                row: 3,
+                delta: 1
+            })
+        );
         app.show_help = true;
-        assert_eq!(map_event(&mouse(MouseEventKind::ScrollUp), &app), Some(Action::ScrollHelp(-1)));
-        assert_eq!(map_event(&mouse(MouseEventKind::Down(MouseButton::Left)), &app), None);
+        assert_eq!(
+            map_event(&mouse(MouseEventKind::ScrollUp), &app),
+            Some(Action::ScrollHelp(-1))
+        );
+        assert_eq!(
+            map_event(&mouse(MouseEventKind::Down(MouseButton::Left)), &app),
+            None
+        );
     }
 
     #[test]
@@ -174,22 +205,55 @@ mod tests {
         let mut app = message_app();
         app.show_help = true;
         assert_eq!(map_event(&plain(KeyCode::Char('a')), &app), None);
-        assert_eq!(map_event(&key(KeyCode::Char('s'), KeyModifiers::CONTROL), &app), None);
-        assert_eq!(map_event(&plain(KeyCode::Esc), &app), Some(Action::ToggleHelp));
-        assert_eq!(map_event(&key(KeyCode::Char('h'), KeyModifiers::CONTROL), &app), Some(Action::ToggleHelp));
-        assert_eq!(map_event(&plain(KeyCode::Down), &app), Some(Action::ScrollHelp(1)));
+        assert_eq!(
+            map_event(&key(KeyCode::Char('s'), KeyModifiers::CONTROL), &app),
+            None
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::Esc), &app),
+            Some(Action::ToggleHelp)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Char('h'), KeyModifiers::CONTROL), &app),
+            Some(Action::ToggleHelp)
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::Down), &app),
+            Some(Action::ScrollHelp(1))
+        );
     }
 
     #[test]
     fn global_and_focus_keys() {
         let app = message_app();
-        assert_eq!(map_event(&key(KeyCode::Char('s'), KeyModifiers::CONTROL), &app), Some(Action::Save));
-        assert_eq!(map_event(&key(KeyCode::Char('h'), KeyModifiers::CONTROL), &app), Some(Action::ToggleHelp));
-        assert_eq!(map_event(&key(KeyCode::Right, KeyModifiers::ALT), &app), Some(Action::FocusRight));
-        assert_eq!(map_event(&key(KeyCode::Char('f'), KeyModifiers::ALT), &app), Some(Action::FocusRight));
-        assert_eq!(map_event(&key(KeyCode::Left, KeyModifiers::ALT), &app), Some(Action::FocusLeft));
-        assert_eq!(map_event(&key(KeyCode::Char('b'), KeyModifiers::ALT), &app), Some(Action::FocusLeft));
-        assert_eq!(map_event(&key(KeyCode::Char('t'), KeyModifiers::CONTROL), &app), Some(Action::ToggleFocus));
+        assert_eq!(
+            map_event(&key(KeyCode::Char('s'), KeyModifiers::CONTROL), &app),
+            Some(Action::Save)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Char('h'), KeyModifiers::CONTROL), &app),
+            Some(Action::ToggleHelp)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Right, KeyModifiers::ALT), &app),
+            Some(Action::FocusRight)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Char('f'), KeyModifiers::ALT), &app),
+            Some(Action::FocusRight)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Left, KeyModifiers::ALT), &app),
+            Some(Action::FocusLeft)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Char('b'), KeyModifiers::ALT), &app),
+            Some(Action::FocusLeft)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Char('t'), KeyModifiers::CONTROL), &app),
+            Some(Action::ToggleFocus)
+        );
         assert_eq!(map_event(&plain(KeyCode::Esc), &app), Some(Action::Cancel));
     }
 
@@ -198,34 +262,82 @@ mod tests {
         let mut app = message_app();
         app.focus = Pane::Right;
         assert_eq!(map_event(&plain(KeyCode::Char('a')), &app), None);
-        assert_eq!(map_event(&plain(KeyCode::Esc), &app), Some(Action::FocusLeft));
-        assert_eq!(map_event(&plain(KeyCode::Up), &app), Some(Action::ScrollRight(ScrollBy::Lines(-1))));
-        assert_eq!(map_event(&plain(KeyCode::PageDown), &app), Some(Action::ScrollRight(ScrollBy::Pages(1))));
-        assert_eq!(map_event(&plain(KeyCode::Home), &app), Some(Action::ScrollRight(ScrollBy::Top)));
-        assert_eq!(map_event(&plain(KeyCode::End), &app), Some(Action::ScrollRight(ScrollBy::End)));
+        assert_eq!(
+            map_event(&plain(KeyCode::Esc), &app),
+            Some(Action::FocusLeft)
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::Up), &app),
+            Some(Action::ScrollRight(ScrollBy::Lines(-1)))
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::PageDown), &app),
+            Some(Action::ScrollRight(ScrollBy::Pages(1)))
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::Home), &app),
+            Some(Action::ScrollRight(ScrollBy::Top))
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::End), &app),
+            Some(Action::ScrollRight(ScrollBy::End))
+        );
     }
 
     #[test]
     fn message_editor_keys() {
         let app = message_app();
         assert_eq!(map_event(&plain(KeyCode::Up), &app), Some(Action::CursorUp));
-        assert_eq!(map_event(&plain(KeyCode::Down), &app), Some(Action::CursorDown));
-        assert_eq!(map_event(&key(KeyCode::Char('u'), KeyModifiers::CONTROL), &app), Some(Action::DeleteLine));
-        assert_eq!(map_event(&key(KeyCode::Char('v'), KeyModifiers::CONTROL), &app), Some(Action::Paste));
-        assert!(matches!(map_event(&plain(KeyCode::Char('a')), &app), Some(Action::Edit(_))));
+        assert_eq!(
+            map_event(&plain(KeyCode::Down), &app),
+            Some(Action::CursorDown)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Char('u'), KeyModifiers::CONTROL), &app),
+            Some(Action::DeleteLine)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Char('v'), KeyModifiers::CONTROL), &app),
+            Some(Action::Paste)
+        );
+        assert!(matches!(
+            map_event(&plain(KeyCode::Char('a')), &app),
+            Some(Action::Edit(_))
+        ));
     }
 
     #[test]
     fn rebase_table_keys() {
         let app = rebase_app();
-        assert_eq!(map_event(&plain(KeyCode::Char('f')), &app), Some(Action::SetInstruction(rebase::Action::Fixup)));
+        assert_eq!(
+            map_event(&plain(KeyCode::Char('f')), &app),
+            Some(Action::SetInstruction(rebase::Action::Fixup))
+        );
         assert_eq!(map_event(&plain(KeyCode::Char('x')), &app), None);
-        assert_eq!(map_event(&plain(KeyCode::Tab), &app), Some(Action::CycleInstruction));
-        assert_eq!(map_event(&key(KeyCode::Up, KeyModifiers::ALT), &app), Some(Action::MoveInstruction { up: true }));
-        assert_eq!(map_event(&plain(KeyCode::Down), &app), Some(Action::SelectBy(ScrollBy::Lines(1))));
-        assert_eq!(map_event(&plain(KeyCode::End), &app), Some(Action::SelectBy(ScrollBy::End)));
-        assert_eq!(map_event(&plain(KeyCode::Enter), &app), Some(Action::StartInline));
-        assert_eq!(map_event(&key(KeyCode::Char('e'), KeyModifiers::CONTROL), &app), Some(Action::ToggleRaw));
+        assert_eq!(
+            map_event(&plain(KeyCode::Tab), &app),
+            Some(Action::CycleInstruction)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Up, KeyModifiers::ALT), &app),
+            Some(Action::MoveInstruction { up: true })
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::Down), &app),
+            Some(Action::SelectBy(ScrollBy::Lines(1)))
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::End), &app),
+            Some(Action::SelectBy(ScrollBy::End))
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::Enter), &app),
+            Some(Action::StartInline)
+        );
+        assert_eq!(
+            map_event(&key(KeyCode::Char('e'), KeyModifiers::CONTROL), &app),
+            Some(Action::ToggleRaw)
+        );
         assert_eq!(map_event(&plain(KeyCode::Esc), &app), Some(Action::Cancel));
     }
 
@@ -233,18 +345,39 @@ mod tests {
     fn inline_editor_captures_keys() {
         let mut app = rebase_app();
         app.apply(Action::StartInline);
-        assert_eq!(map_event(&plain(KeyCode::Enter), &app), Some(Action::CommitInline));
-        assert_eq!(map_event(&plain(KeyCode::Esc), &app), Some(Action::CancelInline));
-        assert!(matches!(map_event(&key(KeyCode::Right, KeyModifiers::ALT), &app), Some(Action::Edit(_))));
-        assert!(matches!(map_event(&plain(KeyCode::Char('f')), &app), Some(Action::Edit(_))));
+        assert_eq!(
+            map_event(&plain(KeyCode::Enter), &app),
+            Some(Action::CommitInline)
+        );
+        assert_eq!(
+            map_event(&plain(KeyCode::Esc), &app),
+            Some(Action::CancelInline)
+        );
+        assert!(matches!(
+            map_event(&key(KeyCode::Right, KeyModifiers::ALT), &app),
+            Some(Action::Edit(_))
+        ));
+        assert!(matches!(
+            map_event(&plain(KeyCode::Char('f')), &app),
+            Some(Action::Edit(_))
+        ));
     }
 
     #[test]
     fn raw_mode_keys_edit_text_and_ctrl_e_returns() {
         let mut app = rebase_app();
         app.apply(Action::ToggleRaw);
-        assert_eq!(map_event(&key(KeyCode::Char('e'), KeyModifiers::CONTROL), &app), Some(Action::ToggleRaw));
-        assert!(matches!(map_event(&plain(KeyCode::Char('f')), &app), Some(Action::Edit(_))));
-        assert_eq!(map_event(&plain(KeyCode::Down), &app), Some(Action::CursorDown));
+        assert_eq!(
+            map_event(&key(KeyCode::Char('e'), KeyModifiers::CONTROL), &app),
+            Some(Action::ToggleRaw)
+        );
+        assert!(matches!(
+            map_event(&plain(KeyCode::Char('f')), &app),
+            Some(Action::Edit(_))
+        ));
+        assert_eq!(
+            map_event(&plain(KeyCode::Down), &app),
+            Some(Action::CursorDown)
+        );
     }
 }

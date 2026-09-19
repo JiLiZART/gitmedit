@@ -42,8 +42,15 @@ pub fn render(frame: &mut Frame, app: &mut App) {
 }
 
 fn pane_block(title: String, focused: bool) -> Block<'static> {
-    let color = if focused { Color::Cyan } else { Color::DarkGray };
-    Block::default().borders(Borders::ALL).border_style(Style::default().fg(color)).title(title)
+    let color = if focused {
+        Color::Cyan
+    } else {
+        Color::DarkGray
+    };
+    Block::default()
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(color))
+        .title(title)
 }
 
 fn render_left(frame: &mut Frame, app: &mut App, area: Rect) {
@@ -51,18 +58,44 @@ fn render_left(frame: &mut Frame, app: &mut App, area: Rect) {
     let show_cursor = focused && !app.show_help;
     let file_title = format!(" {} ", app.file_name);
     let drawn = match &app.body {
-        Body::Message(m) => draw_editor(frame, area, pane_block(file_title, focused), &m.editor, app.editor_top, show_cursor),
-        Body::Plain(editor) => draw_editor(frame, area, pane_block(file_title, focused), editor, app.editor_top, show_cursor),
+        Body::Message(m) => draw_editor(
+            frame,
+            area,
+            pane_block(file_title, focused),
+            &m.editor,
+            app.editor_top,
+            show_cursor,
+        ),
+        Body::Plain(editor) => draw_editor(
+            frame,
+            area,
+            pane_block(file_title, focused),
+            editor,
+            app.editor_top,
+            show_cursor,
+        ),
         Body::Rebase(r) => match &r.raw {
-            Some(raw) => {
-                draw_editor(frame, area, pane_block(" Rebase todo (raw) ".into(), focused), raw, app.editor_top, show_cursor)
-            }
+            Some(raw) => draw_editor(
+                frame,
+                area,
+                pane_block(" Rebase todo (raw) ".into(), focused),
+                raw,
+                app.editor_top,
+                show_cursor,
+            ),
             None => {
                 let title = match r.todo.range(app.comment_char) {
                     Some(range) => format!(" Rebase {range} "),
                     None => " Rebase ".to_string(),
                 };
-                draw_table(frame, area, pane_block(title, focused), r, app.table_top, show_cursor)
+                draw_table(
+                    frame,
+                    area,
+                    pane_block(title, focused),
+                    r,
+                    app.table_top,
+                    show_cursor,
+                )
             }
         },
     };
@@ -104,7 +137,11 @@ fn draw_editor(
         } else {
             Style::default()
         };
-        rows.extend(segments.iter().map(|seg| segment_line(seg, index, selection, base)));
+        rows.extend(
+            segments
+                .iter()
+                .map(|seg| segment_line(seg, index, selection, base)),
+        );
     }
 
     let mut top = top;
@@ -125,13 +162,23 @@ fn draw_editor(
     Drawn::Editor { top, width }
 }
 
-fn segment_line(seg: &wrap::Segment, line: usize, selection: Selection, base: Style) -> Line<'static> {
+fn segment_line(
+    seg: &wrap::Segment,
+    line: usize,
+    selection: Selection,
+    base: Style,
+) -> Line<'static> {
     let chars: Vec<char> = seg.text.chars().collect();
     let (from, to) = match selection {
-        Some(((start_row, start_col), (end_row, end_col))) if start_row <= line && line <= end_row => {
+        Some(((start_row, start_col), (end_row, end_col)))
+            if start_row <= line && line <= end_row =>
+        {
             let start = if start_row == line { start_col } else { 0 };
             let end = if end_row == line { end_col } else { usize::MAX };
-            (start.saturating_sub(seg.start).min(chars.len()), end.saturating_sub(seg.start).min(chars.len()))
+            (
+                start.saturating_sub(seg.start).min(chars.len()),
+                end.saturating_sub(seg.start).min(chars.len()),
+            )
         }
         _ => (0, 0),
     };
@@ -163,7 +210,10 @@ struct TableRow {
 }
 
 fn wrapped(text: &str, width: usize) -> Vec<String> {
-    wrap::wrap(text, width).into_iter().map(|s| s.text).collect()
+    wrap::wrap(text, width)
+        .into_iter()
+        .map(|s| s.text)
+        .collect()
 }
 
 fn action_style(action: rebase::Action) -> Style {
@@ -178,7 +228,14 @@ fn action_style(action: rebase::Action) -> Style {
     Style::default().fg(color)
 }
 
-fn draw_table(frame: &mut Frame, area: Rect, block: Block<'static>, r: &RebaseBody, top: usize, show_cursor: bool) -> Drawn {
+fn draw_table(
+    frame: &mut Frame,
+    area: Rect,
+    block: Block<'static>,
+    r: &RebaseBody,
+    top: usize,
+    show_cursor: bool,
+) -> Drawn {
     let inner = block.inner(area);
     frame.render_widget(block, area);
     let subject_w = inner.width.saturating_sub(ACTION_W + HASH_W + 2) as usize;
@@ -207,7 +264,10 @@ fn draw_table(frame: &mut Frame, area: Rect, block: Block<'static>, r: &RebaseBo
                 })
             }
             TodoLine::Other(s) => {
-                let (word, rest) = s.trim_start().split_once(' ').unwrap_or((s.trim_start(), ""));
+                let (word, rest) = s
+                    .trim_start()
+                    .split_once(' ')
+                    .unwrap_or((s.trim_start(), ""));
                 Some(TableRow {
                     line,
                     action: word.to_string(),
@@ -235,7 +295,13 @@ fn draw_table(frame: &mut Frame, area: Rect, block: Block<'static>, r: &RebaseBo
         if s < top {
             top = s;
         }
-        while top < s && rows[top..=s].iter().map(|row| row.subject.len()).sum::<usize>() > height {
+        while top < s
+            && rows[top..=s]
+                .iter()
+                .map(|row| row.subject.len())
+                .sum::<usize>()
+                > height
+        {
             top += 1;
         }
     }
@@ -249,7 +315,11 @@ fn draw_table(frame: &mut Frame, area: Rect, block: Block<'static>, r: &RebaseBo
                 (Some(editor), true) => vec![editor.lines().join(" ")],
                 _ => row.subject.clone(),
             };
-            let mut style = if row.dim { Style::default().fg(Color::DarkGray) } else { Style::default() };
+            let mut style = if row.dim {
+                Style::default().fg(Color::DarkGray)
+            } else {
+                Style::default()
+            };
             if selected {
                 style = style.bg(Color::DarkGray).add_modifier(Modifier::BOLD);
             }
@@ -262,7 +332,11 @@ fn draw_table(frame: &mut Frame, area: Rect, block: Block<'static>, r: &RebaseBo
             .style(style)
         })
         .collect();
-    let widths = [Constraint::Length(ACTION_W), Constraint::Length(HASH_W), Constraint::Min(0)];
+    let widths = [
+        Constraint::Length(ACTION_W),
+        Constraint::Length(HASH_W),
+        Constraint::Min(0),
+    ];
     frame.render_widget(Table::new(table_rows, widths), inner);
 
     if let (Some(editor), Some(s), true) = (&r.inline, selected_row, show_cursor) {
@@ -292,7 +366,9 @@ fn render_right(frame: &mut Frame, app: &mut App, area: Rect) {
     let top = app.right_scroll;
     let block = if lines.len() > height {
         let bottom = (top + height).min(lines.len());
-        block.title_bottom(Line::from(format!(" {}-{}/{} ", top + 1, bottom, lines.len())).right_aligned())
+        block.title_bottom(
+            Line::from(format!(" {}-{}/{} ", top + 1, bottom, lines.len())).right_aligned(),
+        )
     } else {
         block
     };
@@ -308,7 +384,10 @@ fn details_lines(r: &RebaseBody, width: usize) -> Vec<Line<'static>> {
             format!("{} → {} commits", s.total, s.result),
             Style::default().add_modifier(Modifier::BOLD),
         )),
-        Line::from(format!("{} squash/fixup · {} drop · {} reword", s.squash_fixup, s.drop, s.reword)),
+        Line::from(format!(
+            "{} squash/fixup · {} drop · {} reword",
+            s.squash_fixup, s.drop, s.reword
+        )),
     ];
     if s.first_is_squash {
         out.push(Line::from(Span::styled(
@@ -317,12 +396,16 @@ fn details_lines(r: &RebaseBody, width: usize) -> Vec<Line<'static>> {
         )));
     }
     out.push(Line::default());
-    let Some(line) = r.selected_line() else { return out };
+    let Some(line) = r.selected_line() else {
+        return out;
+    };
     match &r.todo.lines[line] {
         TodoLine::Commit(c) => {
             out.push(Line::from(Span::styled(
                 c.hash.clone(),
-                Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+                Style::default()
+                    .fg(Color::Yellow)
+                    .add_modifier(Modifier::BOLD),
             )));
             match r.details.get(&c.hash) {
                 None => out.push(Line::from(Span::styled("loading…", dim))),
@@ -360,7 +443,13 @@ fn key_bar_entries(app: &App) -> Vec<(&'static str, &'static str)> {
         return keys;
     }
     if app.focus == Pane::Right {
-        keys.extend([("Esc", "Back"), ("^H", "Help"), ("↑↓", "Scroll"), ("PgUp/PgDn", "Page"), ("Home/End", "Top/End")]);
+        keys.extend([
+            ("Esc", "Back"),
+            ("^H", "Help"),
+            ("↑↓", "Scroll"),
+            ("PgUp/PgDn", "Page"),
+            ("Home/End", "Top/End"),
+        ]);
         return keys;
     }
     keys.extend([("Esc", "Cancel"), ("^H", "Help")]);
@@ -389,7 +478,10 @@ fn key_bar_line(entries: &[(&str, &str)], width: usize) -> Line<'static> {
         if used + len > width {
             break;
         }
-        spans.push(Span::styled(key.to_string(), Style::default().add_modifier(Modifier::BOLD)));
+        spans.push(Span::styled(
+            key.to_string(),
+            Style::default().add_modifier(Modifier::BOLD),
+        ));
         spans.push(Span::raw(format!(" {label}  ")));
         used += len;
     }
@@ -457,7 +549,11 @@ fn render_help(frame: &mut Frame, app: &mut App) {
     let visible: Vec<Line<'static>> = lines.into_iter().skip(app.help_scroll).collect();
     frame.render_widget(Clear, area);
     frame.render_widget(
-        Paragraph::new(visible).block(Block::default().borders(Borders::ALL).title(" Help (Esc to close) ")),
+        Paragraph::new(visible).block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(" Help (Esc to close) "),
+        ),
         area,
     );
 }
@@ -465,7 +561,12 @@ fn render_help(frame: &mut Frame, app: &mut App) {
 fn centered(area: Rect, percent_x: u16, percent_y: u16) -> Rect {
     let width = (area.width as u32 * percent_x as u32 / 100) as u16;
     let height = (area.height as u32 * percent_y as u32 / 100) as u16;
-    Rect::new(area.x + (area.width - width) / 2, area.y + (area.height - height) / 2, width, height)
+    Rect::new(
+        area.x + (area.width - width) / 2,
+        area.y + (area.height - height) / 2,
+        width,
+        height,
+    )
 }
 
 #[cfg(test)]
@@ -485,13 +586,26 @@ mod tests {
         terminal.draw(|frame| render(frame, app)).unwrap();
         let buffer = terminal.backend().buffer();
         (0..height)
-            .map(|y| (0..width).map(|x| buffer[(x, y)].symbol()).collect::<String>())
+            .map(|y| {
+                (0..width)
+                    .map(|x| buffer[(x, y)].symbol())
+                    .collect::<String>()
+            })
             .collect::<Vec<_>>()
             .join("\n")
     }
 
     fn text(lines: &[Line]) -> String {
-        lines.iter().map(|l| l.spans.iter().map(|s| s.content.as_ref()).collect::<String>()).collect::<Vec<_>>().join("\n")
+        lines
+            .iter()
+            .map(|l| {
+                l.spans
+                    .iter()
+                    .map(|s| s.content.as_ref())
+                    .collect::<String>()
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 
     fn commit_app(raw: &str) -> App {
@@ -522,7 +636,10 @@ mod tests {
 
     #[test]
     fn soft_wrap_shows_the_whole_long_line() {
-        let long: String = (0..40).map(|i| format!("word{i}")).collect::<Vec<_>>().join(" ");
+        let long: String = (0..40)
+            .map(|i| format!("word{i}"))
+            .collect::<Vec<_>>()
+            .join(" ");
         let mut app = App::new(&format!("{long}\n"), GitContext::Unknown, None, '#');
         let screen = draw(&mut app, 60, 20);
         assert!(screen.contains("word0") && screen.contains("word39"));
@@ -561,7 +678,12 @@ mod tests {
 
     #[test]
     fn key_bar_drops_entries_that_do_not_fit() {
-        let entries = [("^S", "Save"), ("Esc", "Cancel"), ("^H", "Help"), ("Tab", "Cycle")];
+        let entries = [
+            ("^S", "Save"),
+            ("Esc", "Cancel"),
+            ("^H", "Help"),
+            ("Tab", "Cycle"),
+        ];
         let line = text(&[key_bar_line(&entries, 30)]);
         assert!(line.contains("Help") && !line.contains("Cycle"));
     }

@@ -16,8 +16,7 @@ impl FileWriter {
         let tmp_path = path.with_extension("tmp");
         std::fs::write(&tmp_path, content.as_bytes())
             .with_context(|| format!("writing temporary file {:?}", tmp_path))?;
-        std::fs::rename(&tmp_path, path)
-            .with_context(|| format!("writing {:?}", path))?;
+        std::fs::rename(&tmp_path, path).with_context(|| format!("writing {:?}", path))?;
         Ok(())
     }
 }
@@ -33,8 +32,7 @@ mod tests {
         let dir = tempdir().expect("failed to create tempdir");
         let target = dir.path().join("COMMIT_EDITMSG");
 
-        FileWriter::write_atomic("hello\n", &target)
-            .expect("write_atomic should succeed");
+        FileWriter::write_atomic("hello\n", &target).expect("write_atomic should succeed");
 
         let actual = fs::read_to_string(&target).expect("should be able to read file");
         assert_eq!(actual, "hello\n");
@@ -45,11 +43,13 @@ mod tests {
         let dir = tempdir().expect("failed to create tempdir");
         let target = dir.path().join("COMMIT_EDITMSG");
 
-        FileWriter::write_atomic("hello\n", &target)
-            .expect("write_atomic should succeed");
+        FileWriter::write_atomic("hello\n", &target).expect("write_atomic should succeed");
 
         let tmp = target.with_extension("tmp");
-        assert!(!tmp.exists(), ".tmp file should not exist after successful write");
+        assert!(
+            !tmp.exists(),
+            ".tmp file should not exist after successful write"
+        );
     }
 
     #[test]
@@ -58,8 +58,7 @@ mod tests {
         let target = dir.path().join("COMMIT_EDITMSG");
         let content = "line1\nline2\nline3\n";
 
-        FileWriter::write_atomic(content, &target)
-            .expect("write_atomic should succeed");
+        FileWriter::write_atomic(content, &target).expect("write_atomic should succeed");
 
         let bytes = fs::read(&target).expect("should be able to read file");
         // Verify no CRLF sequences were introduced
