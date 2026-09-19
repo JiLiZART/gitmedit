@@ -1,18 +1,4 @@
-# help-overlay Specification
-
-## Purpose
-Makes the editor's shortcuts discoverable from inside the editor, showing the set that applies to the
-current layout, along with the reference information that no longer appears in the editing pane.
-
-## Requirements
-
-### Requirement: Shortcut reference on demand
-The editor SHALL display a shortcut reference over the whole layout when the user presses Ctrl+H,
-whichever pane has focus.
-
-#### Scenario: Opening the reference
-- **WHEN** the user presses Ctrl+H
-- **THEN** a shortcut reference is displayed over both panes
+## ADDED Requirements
 
 ### Requirement: Reference is scoped to the current layout
 The shortcut reference SHALL list the actions available in the current layout, grouped into global
@@ -38,6 +24,16 @@ keys, left-pane keys, and right-pane keys.
 - **WHEN** the reference is opened in the rebase layout
 - **THEN** it states that inline reword needs gitmedit as git's message editor as well
 
+## MODIFIED Requirements
+
+### Requirement: Shortcut reference on demand
+The editor SHALL display a shortcut reference over the whole layout when the user presses Ctrl+H,
+whichever pane has focus.
+
+#### Scenario: Opening the reference
+- **WHEN** the user presses Ctrl+H
+- **THEN** a shortcut reference is displayed over both panes
+
 ### Requirement: Reference does not interfere with editing
 While the shortcut reference is visible, the editor SHALL NOT apply keystrokes or mouse events to
 either pane, so that reading the reference can never change what the user has written.
@@ -62,3 +58,10 @@ the same pane focused.
 #### Scenario: Dismiss with the same shortcut
 - **WHEN** the user presses Ctrl+H while the reference is visible
 - **THEN** the reference closes and editing resumes
+
+## REMOVED Requirements
+
+### Requirement: Reference is scoped to the current operation
+**Reason**: Protected lines no longer exist, so there are no restrictions to state; keys are now
+grouped by layout and pane.
+**Migration**: See "Reference is scoped to the current layout".

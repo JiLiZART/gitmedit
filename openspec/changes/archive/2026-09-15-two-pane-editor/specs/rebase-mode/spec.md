@@ -1,64 +1,4 @@
-# rebase-mode Specification
-
-## Purpose
-Presents an interactive rebase todo as a table of instructions in the left pane and the selected
-commit's details in the right pane. The user can change actions, reorder commits, and reword subjects
-without hand-editing a file that git will refuse if it is malformed, and can drop to raw text for
-anything the table does not express.
-
-## Requirements
-
-### Requirement: Todo file is parsed into typed lines
-The editor SHALL parse a rebase todo into typed lines:
-
-- **commit instructions**: an action (pick, reword, edit, squash, fixup, drop, in long or one-letter
-  form), optional action flags such as `fixup -C`, a commit reference, and the rest of the line
-- **other instructions**: exec, break, label, reset, merge, and update-ref, each with the rest of its
-  line kept verbatim
-- **comment lines**, **blank lines**, and **unrecognized lines**
-
-#### Scenario: Instruction line
-- **WHEN** a line reads `pick 54763e6 # docs(state): record phase 8 context session`
-- **THEN** it is parsed as a pick of `54763e6` with the rest of the line recorded as its subject
-
-#### Scenario: Abbreviated actions
-- **WHEN** an instruction uses git's one-letter abbreviation
-- **THEN** it is parsed as the same action as the long form
-
-#### Scenario: Comment line
-- **WHEN** a line begins with the configured comment character
-- **THEN** it is preserved as a comment and not treated as an instruction
-
-#### Scenario: Subject containing spaces
-- **WHEN** a commit subject contains spaces
-- **THEN** the whole subject is captured, not just its first word
-
-#### Scenario: Fixup with a flag
-- **WHEN** a line reads `fixup -C 7314ba6 subject`
-- **THEN** it is parsed as a fixup carrying the `-C` flag
-
-#### Scenario: Unrecognized line
-- **WHEN** a line matches none of the forms
-- **THEN** it is kept unchanged rather than discarded or reinterpreted
-
-#### Scenario: Empty todo
-- **WHEN** the todo file contains no instructions
-- **THEN** the editor opens without error and writes back an equivalent file
-
-### Requirement: Todo is presented as a structured table
-The left pane SHALL show one row per instruction, with columns for action, commit reference, and
-subject. Rows SHALL be colored by action. Comment and blank lines SHALL NOT be shown in the table;
-git's command legend is available in the shortcut reference instead. Unrecognized lines SHALL be shown
-as dimmed, non-selectable rows in their original positions.
-
-#### Scenario: Table display
-- **WHEN** `fixtures/squash_fixture.txt` is opened
-- **THEN** the table shows 14 rows, each with its action, commit reference, and subject
-- **AND** the pane title shows the rebase range `36d7eda..aa619f8`
-
-#### Scenario: Rows are visually differentiated by action
-- **WHEN** instructions with different actions are displayed
-- **THEN** each action has its own color
+## ADDED Requirements
 
 ### Requirement: Long subjects wrap and rows size to fit
 Subjects wider than the subject column SHALL wrap at word boundaries, breaking mid-word only when a
@@ -230,6 +170,60 @@ The pane scrolls as the status pane does.
 - **WHEN** git cannot be run or does not know the commit
 - **THEN** the details area reads "details unavailable" and the editor keeps working
 
+## MODIFIED Requirements
+
+### Requirement: Todo file is parsed into typed lines
+The editor SHALL parse a rebase todo into typed lines:
+
+- **commit instructions**: an action (pick, reword, edit, squash, fixup, drop, in long or one-letter
+  form), optional action flags such as `fixup -C`, a commit reference, and the rest of the line
+- **other instructions**: exec, break, label, reset, merge, and update-ref, each with the rest of its
+  line kept verbatim
+- **comment lines**, **blank lines**, and **unrecognized lines**
+
+#### Scenario: Instruction line
+- **WHEN** a line reads `pick 54763e6 # docs(state): record phase 8 context session`
+- **THEN** it is parsed as a pick of `54763e6` with the rest of the line recorded as its subject
+
+#### Scenario: Abbreviated actions
+- **WHEN** an instruction uses git's one-letter abbreviation
+- **THEN** it is parsed as the same action as the long form
+
+#### Scenario: Comment line
+- **WHEN** a line begins with the configured comment character
+- **THEN** it is preserved as a comment and not treated as an instruction
+
+#### Scenario: Subject containing spaces
+- **WHEN** a commit subject contains spaces
+- **THEN** the whole subject is captured, not just its first word
+
+#### Scenario: Fixup with a flag
+- **WHEN** a line reads `fixup -C 7314ba6 subject`
+- **THEN** it is parsed as a fixup carrying the `-C` flag
+
+#### Scenario: Unrecognized line
+- **WHEN** a line matches none of the forms
+- **THEN** it is kept unchanged rather than discarded or reinterpreted
+
+#### Scenario: Empty todo
+- **WHEN** the todo file contains no instructions
+- **THEN** the editor opens without error and writes back an equivalent file
+
+### Requirement: Todo is presented as a structured table
+The left pane SHALL show one row per instruction, with columns for action, commit reference, and
+subject. Rows SHALL be colored by action. Comment and blank lines SHALL NOT be shown in the table;
+git's command legend is available in the shortcut reference instead. Unrecognized lines SHALL be shown
+as dimmed, non-selectable rows in their original positions.
+
+#### Scenario: Table display
+- **WHEN** `fixtures/squash_fixture.txt` is opened
+- **THEN** the table shows 14 rows, each with its action, commit reference, and subject
+- **AND** the pane title shows the rebase range `36d7eda..aa619f8`
+
+#### Scenario: Rows are visually differentiated by action
+- **WHEN** instructions with different actions are displayed
+- **THEN** each action has its own color
+
 ### Requirement: Todo is written back in git's format
 On save the editor SHALL write the todo in exactly the format git parses, preserving comment lines,
 blank lines, unrecognized lines, each instruction's text after its commit reference, and action flags.
@@ -246,3 +240,21 @@ When the file is saved without changes, the output SHALL match the input.
 #### Scenario: Abbreviated actions round-trip
 - **WHEN** a todo written with abbreviated actions is saved after changing a different line
 - **THEN** the unchanged lines keep their abbreviations
+
+## REMOVED Requirements
+
+### Requirement: Action cycling
+**Reason**: Replaced by letter keys plus a Tab cycle that also handles reword and edit.
+**Migration**: See "Actions are set by letter or cycled".
+
+### Requirement: Row navigation skips comments
+**Reason**: Comments are no longer shown in the table; selection covers instructions only.
+**Migration**: See "Selection moves between instructions".
+
+### Requirement: Long subjects wrap in the table
+**Reason**: Merged with row sizing into one requirement.
+**Migration**: See "Long subjects wrap and rows size to fit".
+
+### Requirement: Rows take the height their content needs
+**Reason**: Merged with subject wrapping into one requirement.
+**Migration**: See "Long subjects wrap and rows size to fit".

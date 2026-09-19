@@ -1,25 +1,26 @@
 ## 1. macOS
 
-- [ ] 1.1 Verify commit mode in Terminal.app and iTerm2
-- [ ] 1.2 Verify merge mode in both
-- [ ] 1.3 Verify rebase mode in both, including wrapped subjects and row alignment
-- [ ] 1.4 Verify squash mode in both
-- [ ] 1.5 Verify standalone commit mode in both
-- [ ] 1.6 Verify redraw after a terminal resize
+- [ ] 1.1 Verify the message layout (commit, amend, merge, squash) in Terminal.app and iTerm2
+- [ ] 1.2 Verify the rebase layout in both, including wrapped subjects, row alignment, and commit details
+- [ ] 1.3 Verify running `gitmedit` with no arguments (commit without arguments) in both
+- [ ] 1.4 Verify redraw after a terminal resize, including crossing the narrow-terminal threshold
+- [ ] 1.5 Verify the previous terminal content is back after exit
 
 ## 2. Windows
 
-- [ ] 2.1 Verify each mode renders correctly in Windows Terminal
-- [ ] 2.2 Verify colors and box-drawing render as intended
-- [ ] 2.3 Verify cursor placement matches the edited position
+- [ ] 2.1 Verify both layouts render correctly in Windows Terminal
+- [ ] 2.2 Verify colors, badges, and box-drawing borders render as intended
+- [ ] 2.3 Verify cursor placement matches the edited position, including in soft-wrapped lines
 
-## 3. Key event handling
+## 3. Key and mouse event handling
 
 - [ ] 3.1 Confirm the press-event filter is sufficient on a real Windows console
 - [ ] 3.2 Verify Tab cycles exactly one step per press
 - [ ] 3.3 Verify Esc dismisses the shortcut reference without exiting
 - [ ] 3.4 Verify a typed character is inserted exactly once
-- [ ] 3.5 Verify the Alt-modified reordering keys are delivered as expected, or record a fallback
+- [ ] 3.5 Verify Alt+Left/Right switch focus, including the `ESC b`/`ESC f` form macOS terminals send
+- [ ] 3.6 Verify Alt+Up/Down reorder rebase instructions, or record a fallback
+- [ ] 3.7 Verify click-to-focus and wheel scrolling over each pane
 
 ## 4. Follow-up
 

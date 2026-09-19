@@ -1,11 +1,4 @@
-# text-editing Specification
-
-## Purpose
-The message editor in the left pane: the part of a commit, merge, tag, or squash message file that the
-user writes. It covers how the file is split into the user's message and git's comment trailer, how
-the file is reassembled on save, and the editing behavior of the text area itself.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Message files are split into message and trailer
 When a message file is opened (commit, merge, tag, or squash), the editor SHALL split it into the
@@ -68,6 +61,50 @@ file's final-newline state SHALL be preserved.
 - **WHEN** the editor is invoked on a file that is not a known git message file
 - **THEN** the whole file is shown in the editor, comment lines included, and saved exactly as edited
 
+### Requirement: Long lines soft-wrap
+Lines wider than the message pane SHALL be wrapped for display at the pane width, breaking at word
+boundaries where possible. Wrapping SHALL be display only: it never inserts line breaks into the
+message, and the cursor moves through wrapped lines by display row.
+
+#### Scenario: Long body line
+- **WHEN** a message line is wider than the pane
+- **THEN** it is displayed across as many rows as it needs, with no text hidden and no horizontal
+  scrolling
+
+#### Scenario: Wrapping does not change the file
+- **WHEN** a wrapped line is saved without editing
+- **THEN** it is written back as a single line
+
+#### Scenario: Cursor moves by display row
+- **WHEN** the cursor is on the first display row of a wrapped line and the user presses Down
+- **THEN** the cursor moves to the next display row of the same line
+
+#### Scenario: Word wider than the pane
+- **WHEN** a single word is wider than the pane
+- **THEN** it is broken at the pane width
+
+### Requirement: Conflict markers are highlighted
+Lines in the message that begin with a run of six or seven `<`, `=`, or `>` characters SHALL be
+displayed in a style clearly distinct from ordinary text. They SHALL remain ordinary editable lines.
+
+#### Scenario: Marker lines styled
+- **WHEN** a message containing `<<<<<<<`, `=======`, and `>>>>>>>` lines is opened
+- **THEN** those lines are rendered in the conflict-marker style
+
+#### Scenario: Markers can be removed
+- **WHEN** the user deletes the marker lines and saves
+- **THEN** the file written back no longer contains them
+
+### Requirement: No content-derived feedback while typing
+The message editor SHALL NOT show counters, warnings, or other feedback computed from the message
+text. The key bar shows keys only.
+
+#### Scenario: Typing a long subject
+- **WHEN** the user types a subject line longer than 72 characters
+- **THEN** no counter or warning appears
+
+## MODIFIED Requirements
+
 ### Requirement: Full text editing
 The editor SHALL support the ordinary text editing operations: inserting and deleting characters at
 any position, moving the cursor with the arrow keys, jumping to the start and end of a line, and
@@ -114,60 +151,32 @@ deleting a word, and undoing or redoing an edit.
 - **THEN** that edit is reverted
 - **AND** pressing Ctrl+Y reapplies it
 
-### Requirement: System clipboard
-The editor SHALL copy, cut, and paste through the system clipboard, and SHALL continue working
-without error where no system clipboard is available, such as over SSH or on a headless machine.
+## REMOVED Requirements
 
-#### Scenario: Copy and paste
-- **WHEN** the user selects text and presses Ctrl+C, then presses Ctrl+V elsewhere
-- **THEN** the copied text is inserted at the new cursor position
+### Requirement: Line classification
+**Reason**: Comment lines no longer enter the editor; the message/trailer split replaces per-line
+classification.
+**Migration**: See "Message files are split into message and trailer"; conflict-marker styling is in
+"Conflict markers are highlighted".
 
-#### Scenario: Cut
-- **WHEN** the user selects text and presses Ctrl+X
-- **THEN** the text is removed from the message and placed on the system clipboard
+### Requirement: Protected lines are not editable
+**Reason**: Git-owned lines are kept out of the editor entirely, so there is nothing to protect.
+**Migration**: Comment lines are shown in the status pane (`status-pane`) and written back verbatim.
 
-#### Scenario: No clipboard available
-- **WHEN** a clipboard operation is attempted and the system provides no clipboard
-- **THEN** the operation does nothing and the editor keeps running without an error
+### Requirement: Protected lines are preserved byte for byte
+**Reason**: Superseded by trailer reassembly.
+**Migration**: See "Save reassembles the file".
 
-### Requirement: Long lines soft-wrap
-Lines wider than the message pane SHALL be wrapped for display at the pane width, breaking at word
-boundaries where possible. Wrapping SHALL be display only: it never inserts line breaks into the
-message, and the cursor moves through wrapped lines by display row.
+### Requirement: Long lines scroll horizontally
+**Reason**: Replaced by display-only soft wrap.
+**Migration**: See "Long lines soft-wrap"; stored line structure is still never changed by display.
 
-#### Scenario: Long body line
-- **WHEN** a message line is wider than the pane
-- **THEN** it is displayed across as many rows as it needs, with no text hidden and no horizontal
-  scrolling
+### Requirement: Editing mode follows the git operation
+**Reason**: Merge and squash modes are removed; every message file uses the same message layout.
+**Migration**: Layout selection lives in `git-context-detection` "Detected operation selects the
+layout".
 
-#### Scenario: Wrapping does not change the file
-- **WHEN** a wrapped line is saved without editing
-- **THEN** it is written back as a single line
-
-#### Scenario: Cursor moves by display row
-- **WHEN** the cursor is on the first display row of a wrapped line and the user presses Down
-- **THEN** the cursor moves to the next display row of the same line
-
-#### Scenario: Word wider than the pane
-- **WHEN** a single word is wider than the pane
-- **THEN** it is broken at the pane width
-
-### Requirement: Conflict markers are highlighted
-Lines in the message that begin with a run of six or seven `<`, `=`, or `>` characters SHALL be
-displayed in a style clearly distinct from ordinary text. They SHALL remain ordinary editable lines.
-
-#### Scenario: Marker lines styled
-- **WHEN** a message containing `<<<<<<<`, `=======`, and `>>>>>>>` lines is opened
-- **THEN** those lines are rendered in the conflict-marker style
-
-#### Scenario: Markers can be removed
-- **WHEN** the user deletes the marker lines and saves
-- **THEN** the file written back no longer contains them
-
-### Requirement: No content-derived feedback while typing
-The message editor SHALL NOT show counters, warnings, or other feedback computed from the message
-text. The key bar shows keys only.
-
-#### Scenario: Typing a long subject
-- **WHEN** the user types a subject line longer than 72 characters
-- **THEN** no counter or warning appears
+### Requirement: Editing uses the text area's default behavior
+**Reason**: Up and Down now move by display row across soft-wrapped lines, which the text area does
+not do by default.
+**Migration**: See "Long lines soft-wrap" and "No content-derived feedback while typing".

@@ -18,8 +18,9 @@ context: |
   Hard constraints:
   - Must respect git's file formats exactly. Corrupting a rebase todo or dropping a comment
     line is the worst failure mode this tool has; roundtrip fidelity beats every other concern.
-  - Must render inline, without the alternate screen, so prior terminal output stays visible
-    (nano behavior). This is currently violated in the tree.
+  - Full-screen two-pane layout on the alternate screen with mouse capture: editing pane on the
+    left (message editor or rebase table), context pane on the right (parsed status block or
+    selected commit details). Comment lines live in the right pane, never in the editor.
   - Startup must stay well under 100ms; it competes with vim/nano on launch feel.
   - Terminal must always be restored, including on panic.
   - Cross-platform target: Linux and macOS, with Windows as a stretch goal.
@@ -31,4 +32,5 @@ context: |
     traceability back to `.planning/`, which is a frozen archive.
 
   Deliberately out of scope: vim/emacs keybindings, plugin system, graphical UI, interactive
-  staging, git2/gix crate integration (subprocess is enough for one call), syntax highlighting.
+  staging, git2/gix crate integration (subprocess calls are enough), syntax highlighting,
+  actions in the status pane beyond scrolling.

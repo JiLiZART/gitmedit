@@ -1,11 +1,10 @@
 [package]
 name = "gitmedit"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 description = "Fast, distraction-free git editor with nano-style shortcuts and context-aware modes for commits, merges, and interactive rebase"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/jilizart/gitmedit"
-readme = "README.md"
 keywords = ["git", "editor", "tui", "commit", "rebase"]
 categories = ["command-line-utilities", "development-tools"]
 

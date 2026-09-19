@@ -1,30 +1,4 @@
-# distribution Specification
-
-## Purpose
-Covers getting the editor onto a machine and wired into git, including working correctly under both
-of the editor settings git distinguishes.
-
-## Requirements
-
-### Requirement: Installable with a single command
-The editor SHALL be installable with a single cargo command, both from a source checkout and from
-the package registry.
-
-#### Scenario: Installing from a checkout
-- **WHEN** the user runs `cargo install --path .` in a clone of the repository
-- **THEN** the editor is built and installed
-
-#### Scenario: Installing from the registry
-- **WHEN** the user runs `cargo install gitmedit`
-- **THEN** the published crate is built and installed
-
-### Requirement: Available on the path
-After installation the editor SHALL be invocable by name, without a path prefix, so that git can
-launch it from a configuration value that names only the binary.
-
-#### Scenario: Invoking by name
-- **WHEN** the user runs `gitmedit` after installation
-- **THEN** the installed binary runs
+## MODIFIED Requirements
 
 ### Requirement: Configurable as git's editor
 The editor SHALL work when configured as git's message editor and as git's sequence editor, and the

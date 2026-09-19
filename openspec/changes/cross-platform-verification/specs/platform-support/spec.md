@@ -6,12 +6,13 @@ in each, so that platform-specific breakage is a specified failure rather than a
 ## ADDED Requirements
 
 ### Requirement: Renders correctly on macOS terminals
-Every mode SHALL render without visual artifacts on the standard macOS terminals, including
+Both layouts SHALL render without visual artifacts on the standard macOS terminals, including
 Terminal.app and iTerm2.
 
-#### Scenario: All modes on macOS
-- **WHEN** commit, merge, rebase, squash, and standalone commit modes are opened on a macOS terminal
-- **THEN** each renders with correct layout, colors, and cursor placement, and no stray escape
+#### Scenario: All layouts on macOS
+- **WHEN** the message layout, the rebase layout, and a commit started without arguments are opened on a macOS
+  terminal
+- **THEN** each renders with correct pane layout, colors, and cursor placement, and no stray escape
   sequences appear as visible text
 
 #### Scenario: Resizing on macOS
@@ -19,11 +20,12 @@ Terminal.app and iTerm2.
 - **THEN** the editor redraws to the new size without corrupting the display
 
 ### Requirement: Renders correctly on Windows Terminal
-Every mode SHALL render without visual artifacts on Windows Terminal.
+Both layouts SHALL render without visual artifacts on Windows Terminal.
 
-#### Scenario: All modes on Windows
-- **WHEN** commit, merge, rebase, squash, and standalone commit modes are opened on Windows Terminal
-- **THEN** each renders with correct layout, colors, and cursor placement
+#### Scenario: All layouts on Windows
+- **WHEN** the message layout, the rebase layout, and a commit started without arguments are opened on Windows
+  Terminal
+- **THEN** each renders with correct pane layout, colors, and cursor placement
 
 ### Requirement: One keypress produces one action
 Each keypress SHALL produce exactly one action on every supported platform, including consoles that
@@ -40,3 +42,15 @@ report key press and key release as separate events.
 #### Scenario: Typing on Windows
 - **WHEN** the user types a character once
 - **THEN** exactly one character is inserted
+
+### Requirement: Mouse and Alt keys work on every supported terminal
+Click-to-focus, wheel scrolling, and the Alt-modified focus and reorder keys SHALL work on every
+supported terminal, or the terminal-specific form they arrive in SHALL be recognized.
+
+#### Scenario: Wheel over the status pane
+- **WHEN** the user scrolls the wheel over the status pane on any supported terminal
+- **THEN** the status pane scrolls
+
+#### Scenario: Focus keys on macOS
+- **WHEN** the user presses Alt+Right in Terminal.app or iTerm2 with default settings
+- **THEN** focus moves to the right pane
