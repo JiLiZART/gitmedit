@@ -13,20 +13,20 @@
 
 ## 3. CI and release workflows
 
-- [ ] 3.1 Add `.github/workflows/ci.yaml` running `cargo fmt --check`, `cargo clippy -- -D warnings`, and `cargo test` on pull requests and pushes to `main`; verify the run passes on the change's own pull request
-- [ ] 3.2 Add `.github/workflows/prepare_release.yaml` (push to `main`, skip-guard on the prepare-release commit message, full-history checkout with the PAT, git identity, `knope-dev/action`, `knope prepare-release --verbose`) and verify the file parses by pushing the branch and seeing the workflow registered
-- [ ] 3.3 Add `.github/workflows/release.yaml` (on `pull_request` `closed`, guarded on `merged == true` and head branch `release`, `knope release --verbose` with `GITHUB_TOKEN` and `CARGO_REGISTRY_TOKEN`) and verify it appears in the repository's workflow list
+- [x] 3.1 Add `.github/workflows/ci.yaml` running `cargo fmt --check`, `cargo clippy -- -D warnings`, and `cargo test` on pull requests and pushes to `main`; verify the run passes on the change's own pull request
+- [x] 3.2 Add `.github/workflows/prepare_release.yaml` (push to `main`, skip-guard on the prepare-release commit message, full-history checkout with the PAT, git identity, `knope-dev/action`, `knope prepare-release --verbose`) and verify the file parses by pushing the branch and seeing the workflow registered
+- [x] 3.3 Add `.github/workflows/release.yaml` (on `pull_request` `closed`, guarded on `merged == true` and head branch `release`, `knope release --verbose` with `GITHUB_TOKEN` and `CARGO_REGISTRY_TOKEN`) and verify it appears in the repository's workflow list
 - [x] 3.4 Confirm the skip-guard string in `prepare_release.yaml` matches the commit message template in `knope.toml` exactly
 
 ## 4. Repository configuration (maintainer actions)
 
-- [ ] 4.1 Create a fine-grained personal access token limited to this repository with contents and pull-requests write, store it as a repository secret, and verify the secret is listed in repository settings
+- [x] 4.1 Create a fine-grained personal access token limited to this repository with contents and pull-requests write, store it as a repository secret, and verify the secret is listed in repository settings
 - [ ] 4.2 Verify `CARGO_REGISTRY_TOKEN` is present and valid by confirming `cargo publish --dry-run` authenticates (or re-issue the token if it fails)
-- [ ] 4.3 Enable branch protection on `main` requiring the CI checks, and verify a failing check blocks merge on a test pull request
+- [x] 4.3 Enable branch protection on `main` requiring the CI checks, and verify a failing check blocks merge on a test pull request
 
 ## 5. First release
 
-- [ ] 5.1 Merge this change to `main`, tag the resulting commit `v1.0.0`, push the tag, and verify `git tag --list "v1.0.0"` resolves on the remote
+- [x] 5.1 Merge this change to `main`, tag the resulting commit `v1.0.0`, push the tag, and verify `git tag --list "v1.0.0"` resolves on the remote
 - [ ] 5.2 Publish 1.0.0 manually (`cargo publish --locked`) and verify the crate page exists on crates.io with the README rendered
 - [ ] 5.3 Verify `cargo install gitmedit` in a clean environment installs a working `gitmedit` binary (`gitmedit --version`)
 
@@ -34,7 +34,7 @@
 
 - [ ] 6.1 Merge any conventional-commit change to `main` and verify a release pull request appears with the expected next version and changelog entry
 - [ ] 6.2 Merge the release pull request and verify the workflow publishes the new version to crates.io, tags it, and creates a GitHub Release whose notes match the changelog section
-- [ ] 6.3 Push a `chore:`-only change to `main` and verify no release pull request is created and the workflow still reports success
+- [x] 6.3 Push a `chore:`-only change to `main` and verify no release pull request is created and the workflow still reports success
 
 ## 7. Documentation
 
