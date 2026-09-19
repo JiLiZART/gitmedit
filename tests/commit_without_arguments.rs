@@ -28,7 +28,9 @@ fn gitmedit(dir: &Path) -> Option<std::process::Output> {
 #[test]
 fn nothing_staged_reports_what_git_reports() {
     let dir = tempfile::tempdir().expect("temp dir");
-    let Some(init) = git(dir.path(), &["init", "-q"]) else { return };
+    let Some(init) = git(dir.path(), &["init", "-q"]) else {
+        return;
+    };
     if !init.status.success() {
         return;
     }
@@ -38,21 +40,33 @@ fn nothing_staged_reports_what_git_reports() {
     let expected = git(dir.path(), &["commit"]).expect("git commit");
     let actual = gitmedit(dir.path()).expect("gitmedit");
 
-    assert_eq!(actual.status.code(), expected.status.code(), "exit code should be git's");
+    assert_eq!(
+        actual.status.code(),
+        expected.status.code(),
+        "exit code should be git's"
+    );
     let text = format!(
         "{}{}",
         String::from_utf8_lossy(&actual.stdout),
         String::from_utf8_lossy(&actual.stderr)
     );
-    assert!(text.contains("nothing to commit"), "expected git's report, got: {text}");
+    assert!(
+        text.contains("nothing to commit"),
+        "expected git's report, got: {text}"
+    );
 }
 
 #[test]
 fn outside_a_repository_reports_gits_error() {
     let dir = tempfile::tempdir().expect("temp dir");
-    let Some(out) = gitmedit(dir.path()) else { return };
+    let Some(out) = gitmedit(dir.path()) else {
+        return;
+    };
 
     assert!(!out.status.success(), "should fail outside a repository");
     let text = String::from_utf8_lossy(&out.stderr).to_lowercase();
-    assert!(text.contains("not a git repository"), "expected git's error, got: {text}");
+    assert!(
+        text.contains("not a git repository"),
+        "expected git's error, got: {text}"
+    );
 }

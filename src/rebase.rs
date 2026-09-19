@@ -111,13 +111,28 @@ impl TodoLine {
     fn serialize(&self) -> String {
         match self {
             TodoLine::Commit(c) => c.serialize(),
-            TodoLine::Other(s) | TodoLine::Comment(s) | TodoLine::Blank(s) | TodoLine::Unknown(s) => s.clone(),
+            TodoLine::Other(s)
+            | TodoLine::Comment(s)
+            | TodoLine::Blank(s)
+            | TodoLine::Unknown(s) => s.clone(),
         }
     }
 }
 
 const OTHER_COMMANDS: &[&str] = &[
-    "exec", "x", "break", "b", "label", "l", "reset", "t", "merge", "m", "update-ref", "u", "noop",
+    "exec",
+    "x",
+    "break",
+    "b",
+    "label",
+    "l",
+    "reset",
+    "t",
+    "merge",
+    "m",
+    "update-ref",
+    "u",
+    "noop",
 ];
 
 #[derive(Debug, Clone, PartialEq)]
@@ -144,7 +159,10 @@ pub fn parse(raw: &str, cc: char) -> Todo {
     } else {
         body.split('\n').map(|l| parse_line(l, cc)).collect()
     };
-    Todo { lines, final_newline }
+    Todo {
+        lines,
+        final_newline,
+    }
 }
 
 fn parse_line(line: &str, cc: char) -> TodoLine {
@@ -158,7 +176,9 @@ fn parse_line(line: &str, cc: char) -> TodoLine {
     let (word, after) = split_word(t);
     if let Some(action) = Action::parse(word) {
         let (flag, after) = match after.split_at_checked(3) {
-            Some((f @ ("-C " | "-c "), rest)) if action == Action::Fixup => (Some(f.trim_end().to_string()), rest.trim_start()),
+            Some((f @ ("-C " | "-c "), rest)) if action == Action::Fixup => {
+                (Some(f.trim_end().to_string()), rest.trim_start())
+            }
             _ => (None, after),
         };
         let (hash, rest) = split_word(after);
@@ -191,7 +211,12 @@ fn split_word(s: &str) -> (&str, &str) {
 
 impl Todo {
     pub fn serialize(&self) -> String {
-        let mut s = self.lines.iter().map(TodoLine::serialize).collect::<Vec<_>>().join("\n");
+        let mut s = self
+            .lines
+            .iter()
+            .map(TodoLine::serialize)
+            .collect::<Vec<_>>()
+            .join("\n");
         if self.final_newline {
             s.push('\n');
         }
@@ -215,7 +240,12 @@ impl Todo {
 
     /// Indices into `lines` of instructions (commit and other commands), in file order.
     pub fn instruction_indices(&self) -> Vec<usize> {
-        self.lines.iter().enumerate().filter(|(_, l)| l.is_instruction()).map(|(i, _)| i).collect()
+        self.lines
+            .iter()
+            .enumerate()
+            .filter(|(_, l)| l.is_instruction())
+            .map(|(i, _)| i)
+            .collect()
     }
 
     pub fn commit(&self, line: usize) -> Option<&CommitLine> {
@@ -237,7 +267,11 @@ impl Todo {
     pub fn move_instruction(&mut self, line: usize, up: bool) -> Option<usize> {
         let instructions = self.instruction_indices();
         let pos = instructions.iter().position(|&i| i == line)?;
-        let target = if up { *instructions.get(pos.checked_sub(1)?)? } else { *instructions.get(pos + 1)? };
+        let target = if up {
+            *instructions.get(pos.checked_sub(1)?)?
+        } else {
+            *instructions.get(pos + 1)?
+        };
         self.lines.swap(line, target);
         Some(target)
     }
@@ -258,7 +292,9 @@ impl Todo {
             squash_fixup: count(|a| matches!(a, Action::Squash | Action::Fixup)),
             drop: count(|a| a == Action::Drop),
             reword: count(|a| a == Action::Reword),
-            first_is_squash: commits.first().is_some_and(|c| matches!(c.action, Action::Squash | Action::Fixup)),
+            first_is_squash: commits
+                .first()
+                .is_some_and(|c| matches!(c.action, Action::Squash | Action::Fixup)),
         }
     }
 }
@@ -303,7 +339,10 @@ mod tests {
 
     #[test]
     fn classifies_comments_blanks_other_and_unknown() {
-        let todo = parse("pick abc Fix\n\n# comment\nexec cargo test\nbreak\ngarbage line\n", '#');
+        let todo = parse(
+            "pick abc Fix\n\n# comment\nexec cargo test\nbreak\ngarbage line\n",
+            '#',
+        );
         assert!(matches!(todo.lines[1], TodoLine::Blank(_)));
         assert!(matches!(todo.lines[2], TodoLine::Comment(_)));
         assert_eq!(todo.lines[3], TodoLine::Other("exec cargo test".into()));
@@ -334,8 +373,18 @@ mod tests {
         let mut todo = parse(TODO, '#');
         todo.commit_mut(1).unwrap().set_action(Action::Fixup);
         let out = todo.serialize();
-        let diff: Vec<(&str, &str)> = TODO.lines().zip(out.lines()).filter(|(a, b)| a != b).collect();
-        assert_eq!(diff, vec![("pick 45f8bcd # docs(08): create phase plan", "fixup 45f8bcd # docs(08): create phase plan")]);
+        let diff: Vec<(&str, &str)> = TODO
+            .lines()
+            .zip(out.lines())
+            .filter(|(a, b)| a != b)
+            .collect();
+        assert_eq!(
+            diff,
+            vec![(
+                "pick 45f8bcd # docs(08): create phase plan",
+                "fixup 45f8bcd # docs(08): create phase plan"
+            )]
+        );
     }
 
     #[test]
@@ -354,7 +403,10 @@ mod tests {
 
     #[test]
     fn range_comes_from_rebase_comment() {
-        assert_eq!(parse(TODO, '#').range('#').as_deref(), Some("36d7eda..aa619f8"));
+        assert_eq!(
+            parse(TODO, '#').range('#').as_deref(),
+            Some("36d7eda..aa619f8")
+        );
         assert_eq!(parse("pick abc x\n", '#').range('#'), None);
     }
 
@@ -416,7 +468,10 @@ mod tests {
         todo.commit_mut(3).unwrap().set_action(Action::Drop);
         todo.commit_mut(4).unwrap().set_action(Action::Reword);
         let s = todo.summary();
-        assert_eq!((s.total, s.result, s.squash_fixup, s.drop, s.reword), (14, 11, 2, 1, 1));
+        assert_eq!(
+            (s.total, s.result, s.squash_fixup, s.drop, s.reword),
+            (14, 11, 2, 1, 1)
+        );
         assert!(!s.first_is_squash);
     }
 

@@ -104,11 +104,25 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(raw: &str, context: GitContext, git_dir: Option<PathBuf>, comment_char: char) -> Self {
+    pub fn new(
+        raw: &str,
+        context: GitContext,
+        git_dir: Option<PathBuf>,
+        comment_char: char,
+    ) -> Self {
         let body = if context == GitContext::Rebase {
-            Body::Rebase(Box::new(RebaseBody::new(raw, git_dir.as_deref(), comment_char)))
+            Body::Rebase(Box::new(RebaseBody::new(
+                raw,
+                git_dir.as_deref(),
+                comment_char,
+            )))
         } else if context.is_message() {
-            Body::Message(new_message_body(raw, context, git_dir.as_deref(), comment_char))
+            Body::Message(new_message_body(
+                raw,
+                context,
+                git_dir.as_deref(),
+                comment_char,
+            ))
         } else {
             Body::Plain(TextArea::new(raw.lines().map(str::to_string).collect()))
         };
@@ -154,7 +168,9 @@ impl App {
                 self.show_help = !self.show_help;
                 self.help_scroll = 0;
             }
-            Action::ScrollHelp(delta) => self.help_scroll = self.help_scroll.saturating_add_signed(delta),
+            Action::ScrollHelp(delta) => {
+                self.help_scroll = self.help_scroll.saturating_add_signed(delta)
+            }
             Action::FocusLeft => self.focus = Pane::Left,
             Action::FocusRight => {
                 if self.has_right() {
@@ -172,11 +188,13 @@ impl App {
                     self.focus = pane;
                 }
             }
-            Action::WheelAt { column, row, delta } => match layout::pane_at(&self.rects, column, row) {
-                Some(Pane::Right) => self.scroll_right(ScrollBy::Lines(delta)),
-                Some(Pane::Left) => self.wheel_left(delta),
-                None => {}
-            },
+            Action::WheelAt { column, row, delta } => {
+                match layout::pane_at(&self.rects, column, row) {
+                    Some(Pane::Right) => self.scroll_right(ScrollBy::Lines(delta)),
+                    Some(Pane::Left) => self.wheel_left(delta),
+                    None => {}
+                }
+            }
             Action::ScrollRight(by) => self.scroll_right(by),
             Action::CursorUp => self.move_cursor_row(false),
             Action::CursorDown => self.move_cursor_row(true),
@@ -319,7 +337,9 @@ impl App {
     }
 
     fn copy_selection(&mut self, cut: bool) {
-        let Some(editor) = self.active_editor_mut() else { return };
+        let Some(editor) = self.active_editor_mut() else {
+            return;
+        };
         if cut {
             editor.cut();
         } else {
@@ -332,7 +352,10 @@ impl App {
     }
 
     fn paste(&mut self) {
-        let Some(text) = arboard::Clipboard::new().ok().and_then(|mut c| c.get_text().ok()) else {
+        let Some(text) = arboard::Clipboard::new()
+            .ok()
+            .and_then(|mut c| c.get_text().ok())
+        else {
             return;
         };
         if let Some(editor) = self.active_editor_mut() {
@@ -341,7 +364,12 @@ impl App {
     }
 }
 
-fn new_message_body(raw: &str, context: GitContext, git_dir: Option<&Path>, cc: char) -> MessageBody {
+fn new_message_body(
+    raw: &str,
+    context: GitContext,
+    git_dir: Option<&Path>,
+    cc: char,
+) -> MessageBody {
     let mut file = message::split(raw, cc);
     let mut reword_file = None;
     if context == GitContext::Commit
@@ -352,7 +380,12 @@ fn new_message_body(raw: &str, context: GitContext, git_dir: Option<&Path>, cc: 
     }
     let status = status::parse(&file.trailer, cc);
     let editor = TextArea::new(file.message.clone());
-    MessageBody { file, editor, status, reword_file }
+    MessageBody {
+        file,
+        editor,
+        status,
+        reword_file,
+    }
 }
 
 impl RebaseBody {
@@ -364,7 +397,9 @@ impl RebaseBody {
                     .lines
                     .iter()
                     .filter_map(|l| match l {
-                        TodoLine::Commit(c) if c.action == rebase::Action::Reword => Some(c.hash.as_str()),
+                        TodoLine::Commit(c) if c.action == rebase::Action::Reword => {
+                            Some(c.hash.as_str())
+                        }
                         _ => None,
                     })
                     .collect();
@@ -390,11 +425,17 @@ impl RebaseBody {
 
     /// Subject shown for a commit: its pending reword, or the todo's own subject.
     pub fn display_subject<'a>(&'a self, commit: &'a rebase::CommitLine) -> &'a str {
-        self.rewords.get(&commit.hash).map(String::as_str).unwrap_or(commit.subject())
+        self.rewords
+            .get(&commit.hash)
+            .map(String::as_str)
+            .unwrap_or(commit.subject())
     }
 
     fn request_selected_details(&mut self) {
-        let hash = self.selected_line().and_then(|l| self.todo.commit(l)).map(|c| c.hash.clone());
+        let hash = self
+            .selected_line()
+            .and_then(|l| self.todo.commit(l))
+            .map(|c| c.hash.clone());
         if let Some(hash) = hash {
             self.details.request(&hash);
         }
@@ -416,8 +457,12 @@ impl RebaseBody {
     }
 
     fn set_action(&mut self, action: rebase::Action) {
-        let Some(line) = self.selected_line() else { return };
-        let Some(commit) = self.todo.commit_mut(line) else { return };
+        let Some(line) = self.selected_line() else {
+            return;
+        };
+        let Some(commit) = self.todo.commit_mut(line) else {
+            return;
+        };
         commit.set_action(action);
         if action != rebase::Action::Reword {
             let hash = commit.hash.clone();
@@ -426,31 +471,48 @@ impl RebaseBody {
     }
 
     fn cycle_action(&mut self) {
-        let next = self.selected_line().and_then(|l| self.todo.commit(l)).map(|c| c.action.cycled());
+        let next = self
+            .selected_line()
+            .and_then(|l| self.todo.commit(l))
+            .map(|c| c.action.cycled());
         if let Some(action) = next {
             self.set_action(action);
         }
     }
 
     fn move_instruction(&mut self, up: bool) {
-        let Some(line) = self.selected_line() else { return };
+        let Some(line) = self.selected_line() else {
+            return;
+        };
         if self.todo.move_instruction(line, up).is_some() {
-            self.selected = if up { self.selected - 1 } else { self.selected + 1 };
+            self.selected = if up {
+                self.selected - 1
+            } else {
+                self.selected + 1
+            };
         }
     }
 
     fn start_inline(&mut self) {
-        let Some(commit) = self.selected_line().and_then(|l| self.todo.commit(l)) else { return };
+        let Some(commit) = self.selected_line().and_then(|l| self.todo.commit(l)) else {
+            return;
+        };
         let mut editor = TextArea::new(vec![self.display_subject(commit).to_string()]);
         editor.move_cursor(CursorMove::End);
         self.inline = Some(editor);
     }
 
     fn commit_inline(&mut self) {
-        let Some(editor) = self.inline.take() else { return };
+        let Some(editor) = self.inline.take() else {
+            return;
+        };
         let text = editor.lines().join(" ").trim().to_string();
-        let Some(line) = self.selected_line() else { return };
-        let Some(commit) = self.todo.commit_mut(line) else { return };
+        let Some(line) = self.selected_line() else {
+            return;
+        };
+        let Some(commit) = self.todo.commit_mut(line) else {
+            return;
+        };
         let hash = commit.hash.clone();
         if text.is_empty() || text == commit.subject() {
             self.rewords.remove(&hash);
@@ -496,7 +558,10 @@ fn move_display_row(editor: &mut TextArea<'static>, width: usize, down: bool) {
     let row_len = |s: &wrap::Segment| s.text.chars().count();
     let (new_row, new_col) = if down {
         if r + 1 < segments.len() {
-            (row, segments[r + 1].start + c.min(row_len(&segments[r + 1])))
+            (
+                row,
+                segments[r + 1].start + c.min(row_len(&segments[r + 1])),
+            )
         } else if row + 1 < lines.len() {
             let next = wrap::wrap(&lines[row + 1], width);
             (row + 1, c.min(row_len(&next[0])))
@@ -504,7 +569,10 @@ fn move_display_row(editor: &mut TextArea<'static>, width: usize, down: bool) {
             return;
         }
     } else if r > 0 {
-        (row, segments[r - 1].start + c.min(row_len(&segments[r - 1])))
+        (
+            row,
+            segments[r - 1].start + c.min(row_len(&segments[r - 1])),
+        )
     } else if row > 0 {
         let prev = wrap::wrap(&lines[row - 1], width);
         let last = &prev[prev.len() - 1];
@@ -615,7 +683,10 @@ mod tests {
         let editor = app.active_editor_mut().unwrap();
         editor.move_cursor(CursorMove::End);
         editor.insert_str(" now");
-        assert!(app.serialized_content().starts_with("fix: release volume now\n\n# Please enter"));
+        assert!(
+            app.serialized_content()
+                .starts_with("fix: release volume now\n\n# Please enter")
+        );
     }
 
     #[test]
@@ -641,7 +712,10 @@ mod tests {
     fn click_focuses_pane_under_pointer() {
         let mut app = message_app();
         app.rects = layout::compute(Rect::new(0, 0, 120, 30), true, Pane::Left);
-        app.apply(Action::ClickAt { column: 100, row: 5 });
+        app.apply(Action::ClickAt {
+            column: 100,
+            row: 5,
+        });
         assert_eq!(app.focus, Pane::Right);
         app.apply(Action::ClickAt { column: 5, row: 5 });
         assert_eq!(app.focus, Pane::Left);
@@ -668,7 +742,11 @@ mod tests {
     fn wheel_over_right_pane_scrolls_without_focusing_it() {
         let mut app = message_app();
         app.rects = layout::compute(Rect::new(0, 0, 120, 30), true, Pane::Left);
-        app.apply(Action::WheelAt { column: 100, row: 5, delta: 1 });
+        app.apply(Action::WheelAt {
+            column: 100,
+            row: 5,
+            delta: 1,
+        });
         assert_eq!((app.right_scroll, app.focus), (1, Pane::Left));
     }
 
@@ -708,7 +786,11 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let rebase_merge = dir.path().join("rebase-merge");
         std::fs::create_dir_all(&rebase_merge).unwrap();
-        std::fs::write(rebase_merge.join("done"), "reword 545ca5d95e7b6bbb297681be181a60d396ee8ee8 # c3\n").unwrap();
+        std::fs::write(
+            rebase_merge.join("done"),
+            "reword 545ca5d95e7b6bbb297681be181a60d396ee8ee8 # c3\n",
+        )
+        .unwrap();
         let store = reword::store_dir(dir.path());
         std::fs::create_dir_all(&store).unwrap();
         std::fs::write(store.join("545ca5d"), "new subject\n\nbody 3\n").unwrap();
@@ -716,7 +798,10 @@ mod tests {
         let raw = "c3\n\nbody 3\n\n# Please enter the commit message\n#\n";
         let app = App::new(raw, GitContext::Commit, Some(dir.path().to_path_buf()), '#');
         assert_eq!(editor_lines(&app), vec!["new subject", "", "body 3"]);
-        assert_eq!(app.serialized_content(), "new subject\n\nbody 3\n\n# Please enter the commit message\n#\n");
+        assert_eq!(
+            app.serialized_content(),
+            "new subject\n\nbody 3\n\n# Please enter the commit message\n#\n"
+        );
         app.finish_save().unwrap();
         assert!(!store.join("545ca5d").exists());
     }
@@ -742,10 +827,16 @@ mod tests {
     fn actions_change_the_selected_instruction() {
         let mut app = rebase_app();
         app.apply(Action::SetInstruction(rebase::Action::Fixup));
-        assert_eq!(first_line(&app), "fixup 54763e6 # docs(state): record phase 8 context session");
+        assert_eq!(
+            first_line(&app),
+            "fixup 54763e6 # docs(state): record phase 8 context session"
+        );
         app.apply(Action::SetInstruction(rebase::Action::Pick));
         app.apply(Action::CycleInstruction);
-        assert_eq!(first_line(&app), "squash 54763e6 # docs(state): record phase 8 context session");
+        assert_eq!(
+            first_line(&app),
+            "squash 54763e6 # docs(state): record phase 8 context session"
+        );
     }
 
     #[test]
@@ -758,15 +849,24 @@ mod tests {
         let out = app.serialized_content();
         let lines: Vec<&str> = out.lines().collect();
         assert_eq!(lines[0], "pick 45f8bcd # docs(08): create phase plan");
-        assert_eq!(lines[1], "pick 54763e6 # docs(state): record phase 8 context session");
+        assert_eq!(
+            lines[1],
+            "pick 54763e6 # docs(state): record phase 8 context session"
+        );
     }
 
     #[test]
     fn inline_reword_marks_row_and_keeps_subject_text() {
         let mut app = rebase_app();
         reword_first(&mut app, "new subject");
-        assert_eq!(rebase(&mut app).rewords.get("54763e6").map(String::as_str), Some("new subject"));
-        assert_eq!(first_line(&app), "reword 54763e6 # docs(state): record phase 8 context session");
+        assert_eq!(
+            rebase(&mut app).rewords.get("54763e6").map(String::as_str),
+            Some("new subject")
+        );
+        assert_eq!(
+            first_line(&app),
+            "reword 54763e6 # docs(state): record phase 8 context session"
+        );
         app.apply(Action::SetInstruction(rebase::Action::Pick));
         assert!(rebase(&mut app).rewords.is_empty());
     }
@@ -775,7 +875,11 @@ mod tests {
     fn cancelled_inline_edit_changes_nothing() {
         let mut app = rebase_app();
         app.apply(Action::StartInline);
-        rebase(&mut app).inline.as_mut().unwrap().insert_str(" changed");
+        rebase(&mut app)
+            .inline
+            .as_mut()
+            .unwrap()
+            .insert_str(" changed");
         app.apply(Action::CancelInline);
         let r = rebase(&mut app);
         assert!(r.rewords.is_empty() && r.inline.is_none());
@@ -799,7 +903,10 @@ mod tests {
         let r = rebase(&mut app);
         let instructions = r.todo.instruction_indices();
         assert_eq!(instructions.len(), 15);
-        assert!(matches!(r.todo.lines[*instructions.last().unwrap()], TodoLine::Other(_)));
+        assert!(matches!(
+            r.todo.lines[*instructions.last().unwrap()],
+            TodoLine::Other(_)
+        ));
     }
 
     #[test]
@@ -820,7 +927,10 @@ mod tests {
         editor.delete_line_by_head();
         editor.insert_str("saved subject");
         assert_eq!(app.apply(Action::Save), Outcome::Save);
-        assert_eq!(rebase(&mut app).rewords.get("54763e6").map(String::as_str), Some("saved subject"));
+        assert_eq!(
+            rebase(&mut app).rewords.get("54763e6").map(String::as_str),
+            Some("saved subject")
+        );
     }
 
     #[test]
@@ -832,13 +942,24 @@ mod tests {
         std::fs::write(store.join("deadbeef"), "stale\n").unwrap();
 
         let todo = TODO.replacen("pick 54763e6", "reword 54763e6", 1);
-        let mut app = App::new(&todo, GitContext::Rebase, Some(dir.path().to_path_buf()), '#');
-        assert_eq!(rebase(&mut app).rewords.get("54763e6").map(String::as_str), Some("stored subject"));
+        let mut app = App::new(
+            &todo,
+            GitContext::Rebase,
+            Some(dir.path().to_path_buf()),
+            '#',
+        );
+        assert_eq!(
+            rebase(&mut app).rewords.get("54763e6").map(String::as_str),
+            Some("stored subject")
+        );
         assert!(!store.join("deadbeef").exists());
 
         reword_first(&mut app, "new subject");
         app.finish_save().unwrap();
-        assert_eq!(std::fs::read_to_string(store.join("54763e6")).unwrap(), "new subject\n");
+        assert_eq!(
+            std::fs::read_to_string(store.join("54763e6")).unwrap(),
+            "new subject\n"
+        );
     }
 
     #[test]

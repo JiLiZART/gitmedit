@@ -47,7 +47,12 @@ impl DetailsLoader {
                 }
             }
         });
-        Self { requests, results, cache: HashMap::new(), requested: HashSet::new() }
+        Self {
+            requests,
+            results,
+            cache: HashMap::new(),
+            requested: HashSet::new(),
+        }
     }
 
     /// Ask for a commit's details; repeated requests for the same hash are ignored.
@@ -79,12 +84,21 @@ fn fetch(git_dir: Option<&Path>, hash: &str) -> Option<CommitDetails> {
         cmd.arg("--git-dir").arg(dir);
     }
     let out = cmd
-        .args(["show", "--no-color", "--format=%B%x00", "--name-status", "--end-of-options", hash])
+        .args([
+            "show",
+            "--no-color",
+            "--format=%B%x00",
+            "--name-status",
+            "--end-of-options",
+            hash,
+        ])
         .stdin(Stdio::null())
         .stderr(Stdio::null())
         .output()
         .ok()?;
-    out.status.success().then(|| parse_show(&String::from_utf8_lossy(&out.stdout)))
+    out.status
+        .success()
+        .then(|| parse_show(&String::from_utf8_lossy(&out.stdout)))
 }
 
 #[cfg(test)]
@@ -98,7 +112,11 @@ mod tests {
         assert_eq!(d.message, vec!["subject", "", "body"]);
         assert_eq!(
             d.files,
-            vec![('A', "a.txt".into()), ('M', "src/b.rs".into()), ('R', "old.rs -> new.rs".into())]
+            vec![
+                ('A', "a.txt".into()),
+                ('M', "src/b.rs".into()),
+                ('R', "old.rs -> new.rs".into())
+            ]
         );
     }
 
@@ -125,25 +143,46 @@ mod tests {
     fn loader_fetches_details_from_git() {
         let dir = tempfile::tempdir().unwrap();
         let git = |args: &[&str]| {
-            Command::new("git").current_dir(dir.path()).args(args).stdin(Stdio::null()).output()
+            Command::new("git")
+                .current_dir(dir.path())
+                .args(args)
+                .stdin(Stdio::null())
+                .output()
         };
-        let Ok(init) = git(&["init", "-q"]) else { return };
+        let Ok(init) = git(&["init", "-q"]) else {
+            return;
+        };
         if !init.status.success() {
             return;
         }
         std::fs::write(dir.path().join("a.txt"), "a").unwrap();
         git(&["add", "a.txt"]).unwrap();
         let commit = git(&[
-            "-c", "commit.gpgsign=false", "-c", "user.email=t@t", "-c", "user.name=t",
-            "commit", "-qm", "subject", "-m", "body",
+            "-c",
+            "commit.gpgsign=false",
+            "-c",
+            "user.email=t@t",
+            "-c",
+            "user.name=t",
+            "commit",
+            "-qm",
+            "subject",
+            "-m",
+            "body",
         ])
         .unwrap();
-        assert!(commit.status.success(), "{}", String::from_utf8_lossy(&commit.stderr));
+        assert!(
+            commit.status.success(),
+            "{}",
+            String::from_utf8_lossy(&commit.stderr)
+        );
 
         let mut loader = DetailsLoader::spawn(Some(dir.path().join(".git")));
         loader.request("HEAD");
         loader.request("0000000");
-        let details = wait_for(&mut loader, "HEAD").flatten().expect("details loaded");
+        let details = wait_for(&mut loader, "HEAD")
+            .flatten()
+            .expect("details loaded");
         assert_eq!(details.message, vec!["subject", "", "body"]);
         assert_eq!(details.files, vec![('A', "a.txt".to_string())]);
         assert_eq!(wait_for(&mut loader, "0000000"), Some(None));

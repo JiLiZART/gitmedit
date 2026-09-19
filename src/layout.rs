@@ -21,17 +21,33 @@ pub struct PaneRects {
 pub fn compute(area: Rect, has_right: bool, focus: Pane) -> PaneRects {
     let [body, key_bar] = Layout::vertical([Constraint::Min(0), Constraint::Length(1)]).areas(area);
     if !has_right {
-        return PaneRects { left: Some(body), right: None, key_bar };
+        return PaneRects {
+            left: Some(body),
+            right: None,
+            key_bar,
+        };
     }
     if area.width < NARROW_WIDTH {
         return match focus {
-            Pane::Left => PaneRects { left: Some(body), right: None, key_bar },
-            Pane::Right => PaneRects { left: None, right: Some(body), key_bar },
+            Pane::Left => PaneRects {
+                left: Some(body),
+                right: None,
+                key_bar,
+            },
+            Pane::Right => PaneRects {
+                left: None,
+                right: Some(body),
+                key_bar,
+            },
         };
     }
     let [left, right] =
         Layout::horizontal([Constraint::Percentage(60), Constraint::Percentage(40)]).areas(body);
-    PaneRects { left: Some(left), right: Some(right), key_bar }
+    PaneRects {
+        left: Some(left),
+        right: Some(right),
+        key_bar,
+    }
 }
 
 /// The pane containing a terminal cell, if any.
