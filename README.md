@@ -109,6 +109,32 @@ gitmedit takes over the mouse while it runs. To select terminal text with the mo
 - Linux and macOS, with Windows as a stretch goal
 - Uses crossterm for cross-platform terminal handling
 
+## Releases
+
+Releases are automated with [knope](https://knope.tech). Nothing is published by hand.
+
+- **Commit messages decide the version.** Use [conventional commits](https://www.conventionalcommits.org):
+  `feat:` raises the minor version, `fix:` the patch, and `!` or a `BREAKING CHANGE:` footer the
+  major. A `chore:` or `docs:` commit releases nothing.
+- **Every push to `main` refreshes a release pull request** titled `chore: prepare release <version>`.
+  It shows the next version, the updated `Cargo.toml`/`Cargo.lock`, and the `CHANGELOG.md` entry that
+  would be published.
+- **Merging that pull request is the release.** It publishes the crate to crates.io, tags the commit,
+  and creates a GitHub Release with the changelog entry as its notes.
+- **The `release` branch belongs to the automation** and is force-pushed on every run. Never branch
+  from it or commit to it.
+- Edit `CHANGELOG.md` only for older entries; new sections are written by the release tool.
+
+### Required repository secrets
+
+| Secret | Used by | Scope |
+|--------|---------|-------|
+| `RELEASE_PAT` | `prepare_release.yaml` | Fine-grained token for this repository with **contents: write** and **pull requests: write**. A pull request opened with the default `GITHUB_TOKEN` would not trigger the release workflow when it merges, which is why this one exists. |
+| `CARGO_REGISTRY_TOKEN` | `release.yaml` | A crates.io API token with publish rights for `gitmedit`. |
+
+`release.yaml` uses the default `GITHUB_TOKEN` for the tag and release; no extra secret is needed
+there.
+
 ## License
 
 Licensed under MIT OR Apache-2.0

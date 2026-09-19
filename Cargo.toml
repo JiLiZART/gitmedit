@@ -4,9 +4,11 @@ version = "1.0.0"
 edition = "2024"
 description = "Fast, distraction-free git editor with nano-style shortcuts and context-aware modes for commits, merges, and interactive rebase"
 license = "MIT OR Apache-2.0"
+readme = "README.md"
 repository = "https://github.com/jilizart/gitmedit"
 keywords = ["git", "editor", "tui", "commit", "rebase"]
 categories = ["command-line-utilities", "development-tools"]
+exclude = [".idea", ".claude", ".planning", "openspec", "fixtures", ".github"]
 
 [dependencies]
 ratatui = "0.30"

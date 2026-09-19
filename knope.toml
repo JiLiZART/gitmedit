@@ -1,0 +1,51 @@
+[package]
+versioned_files = ["Cargo.toml", "Cargo.lock"]
+changelog = "CHANGELOG.md"
+
+[github]
+owner = "JiLiZART"
+repo = "gitmedit"
+
+# Runs on every push to main: refreshes the release preview pull request.
+# The commit message below is also the skip guard in .github/workflows/prepare_release.yaml.
+# Change one and you must change the other.
+[[workflows]]
+name = "prepare-release"
+
+[[workflows.steps]]
+type = "Command"
+command = "git switch -c release"
+
+[[workflows.steps]]
+type = "PrepareRelease"
+
+[[workflows.steps]]
+type = "Command"
+command = "git commit -m \"chore: prepare release $version\""
+
+[[workflows.steps]]
+type = "Command"
+command = "git push --force --set-upstream origin release"
+
+[[workflows.steps]]
+type = "CreatePullRequest"
+base = "main"
+
+[workflows.steps.title]
+template = "chore: prepare release $version"
+
+[workflows.steps.body]
+template = "This PR was created by Knope. Merging it will create a new release\n\n$changelog"
+
+# Runs when the release pull request merges. Publishing comes first: a failed
+# publish must stop the run before a tag and a GitHub Release announce a version
+# that is not on the registry.
+[[workflows]]
+name = "release"
+
+[[workflows.steps]]
+type = "Command"
+command = "cargo publish --locked"
+
+[[workflows.steps]]
+type = "Release"

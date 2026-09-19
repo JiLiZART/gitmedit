@@ -1,0 +1,29 @@
+name: Create Release PR
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  prepare-release:
+    # Skips the merge commit of a release PR. This string must stay in sync with the
+    # `git commit -m` template in the prepare-release workflow in knope.toml.
+    if: "!contains(github.event.head_commit.message, 'chore: prepare release')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PAT }}
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email github-actions@github.com
+      - uses: knope-dev/action@v2.1.2
+        with:
+          version: 0.23.0
+      # Runs on every push to main, so it must not fail when there is nothing to release.
+      - run: knope prepare-release --verbose
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+        continue-on-error: true
