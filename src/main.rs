@@ -33,13 +33,16 @@ fn main() -> anyhow::Result<()> {
     terminal::install_panic_hook();
 
     let Some(path) = Cli::parse().path else { commit_without_arguments() };
+
     if !path.exists() {
         eprintln!("error: file not found: {:?}", path);
         process::exit(1);
     }
+
     let raw = std::fs::read_to_string(&path)?;
     let context = context::detect_context(&path);
     let mut app = App::new(&raw, context, context::git_dir(&path, context), context::read_comment_char());
+
     app.file_name = path.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
 
     let mut guard = terminal::TerminalGuard::new()?;
