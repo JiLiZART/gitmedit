@@ -7,6 +7,12 @@ key binding or command-line behavior.
 This file is maintained by [knope](https://knope.tech) from conventional commit messages — new
 sections are added when a release is prepared, not by hand.
 
+## 1.2.0 (2026-09-20)
+
+### Features
+
+- rework readme, remove old gsd folders
+
 ## 1.1.0 (2026-09-20)
 
 ### Features
