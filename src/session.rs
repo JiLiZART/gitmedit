@@ -613,11 +613,11 @@ mod tests {
     use super::*;
     use ratatui::layout::Rect;
 
-    const AMMEND2: &str = include_str!("../fixtures/ammend2_fixture.txt");
-    const TODO: &str = include_str!("../fixtures/squash_fixture.txt");
+    const AMEND1: &str = include_str!("../fixtures/amend1/COMMIT_EDITMSG");
+    const TODO: &str = include_str!("../fixtures/rebase1/rebase-merge/git-rebase-todo");
 
     fn message_app() -> App {
-        App::new(AMMEND2, GitContext::Commit, None, '#')
+        App::new(AMEND1, GitContext::Commit, None, '#')
     }
 
     fn rebase_app() -> App {
@@ -659,9 +659,12 @@ mod tests {
     #[test]
     fn message_file_opens_with_message_only() {
         let app = message_app();
-        assert_eq!(editor_lines(&app), vec!["fix: release volume"]);
+        assert_eq!(
+            editor_lines(&app),
+            vec!["fix: hello here is a demo of gitmedit edit features for all git situations"]
+        );
         assert!(app.has_right());
-        assert_eq!(app.serialized_content(), AMMEND2);
+        assert_eq!(app.serialized_content(), AMEND1);
     }
 
     #[test]
@@ -685,7 +688,7 @@ mod tests {
         editor.insert_str(" now");
         assert!(
             app.serialized_content()
-                .starts_with("fix: release volume now\n\n# Please enter")
+                .starts_with("fix: hello here is a demo of gitmedit edit features for all git situations now\n\n# Please enter")
         );
     }
 

@@ -577,9 +577,9 @@ mod tests {
     use ratatui::Terminal;
     use ratatui::backend::TestBackend;
 
-    const AMMEND2: &str = include_str!("../fixtures/ammend2_fixture.txt");
-    const MERGE2: &str = include_str!("../fixtures/merge_fixture2.txt");
-    const TODO: &str = include_str!("../fixtures/squash_fixture.txt");
+    const AMEND1: &str = include_str!("../fixtures/amend1/COMMIT_EDITMSG");
+    const MERGE2: &str = include_str!("../fixtures/merge2/MERGE_MSG");
+    const TODO: &str = include_str!("../fixtures/rebase1/rebase-merge/git-rebase-todo");
 
     fn draw(app: &mut App, width: u16, height: u16) -> String {
         let mut terminal = Terminal::new(TestBackend::new(width, height)).unwrap();
@@ -616,8 +616,8 @@ mod tests {
 
     #[test]
     fn message_layout_shows_message_and_status() {
-        let screen = draw(&mut commit_app(AMMEND2), 120, 30);
-        assert!(screen.contains("fix: release volume"));
+        let screen = draw(&mut commit_app(AMEND1), 120, 30);
+        assert!(screen.contains("fix: hello here is a demo"));
         assert!(screen.contains("Staged (6)"));
         assert!(screen.contains("COMMIT_EDITMSG"));
         assert!(screen.contains("TASK-1111-fix-stage-view"));
@@ -626,12 +626,12 @@ mod tests {
 
     #[test]
     fn narrow_terminal_shows_one_pane_and_toggle_swaps() {
-        let mut app = commit_app(AMMEND2);
+        let mut app = commit_app(AMEND1);
         let screen = draw(&mut app, 80, 30);
-        assert!(screen.contains("fix: release volume") && !screen.contains("Staged"));
+        assert!(screen.contains("fix: hello here is a demo") && !screen.contains("Staged"));
         app.apply(Action::ToggleFocus);
         let screen = draw(&mut app, 80, 30);
-        assert!(screen.contains("Staged (6)") && !screen.contains("fix: release volume"));
+        assert!(screen.contains("Staged (6)") && !screen.contains("fix: hello here is a demo"));
     }
 
     #[test]
@@ -692,7 +692,7 @@ mod tests {
     fn help_lists_keys_for_the_layout() {
         let rebase_help = text(&help_lines(&App::new(TODO, GitContext::Rebase, None, '#')));
         assert!(rebase_help.contains("update-ref") && rebase_help.contains("Ctrl+E"));
-        let message_help = text(&help_lines(&commit_app(AMMEND2)));
+        let message_help = text(&help_lines(&commit_app(AMEND1)));
         assert!(message_help.contains("Ctrl+C") && !message_help.contains("update-ref"));
     }
 }

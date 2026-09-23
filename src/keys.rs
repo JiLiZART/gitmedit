@@ -139,11 +139,11 @@ mod tests {
     use crate::context::GitContext;
     use crossterm::event::MouseEvent;
 
-    const AMMEND2: &str = include_str!("../fixtures/ammend2_fixture.txt");
-    const TODO: &str = include_str!("../fixtures/squash_fixture.txt");
+    const AMEND1: &str = include_str!("../fixtures/amend1/COMMIT_EDITMSG");
+    const TODO: &str = include_str!("../fixtures/rebase1/rebase-merge/git-rebase-todo");
 
     fn message_app() -> App {
-        App::new(AMMEND2, GitContext::Commit, None, '#')
+        App::new(AMEND1, GitContext::Commit, None, '#')
     }
 
     fn rebase_app() -> App {

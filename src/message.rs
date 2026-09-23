@@ -89,12 +89,12 @@ fn trim_trailing_blank(lines: &mut Vec<String>) {
 mod tests {
     use super::*;
 
-    const AMMEND: &str = include_str!("../fixtures/ammend_fixture.txt");
-    const AMMEND2: &str = include_str!("../fixtures/ammend2_fixture.txt");
-    const MERGE: &str = include_str!("../fixtures/merge_fixture.txt");
-    const MERGE2: &str = include_str!("../fixtures/merge_fixture2.txt");
-    const REBASE_MSG: &str = include_str!("../fixtures/rebase_fixture.txt");
-    const PULL_REBASE: &str = include_str!("../fixtures/pull_rebase_fixture.txt");
+    const AMEND2: &str = include_str!("../fixtures/amend2/COMMIT_EDITMSG");
+    const AMEND1: &str = include_str!("../fixtures/amend1/COMMIT_EDITMSG");
+    const MERGE: &str = include_str!("../fixtures/merge1/MERGE_MSG");
+    const MERGE2: &str = include_str!("../fixtures/merge2/MERGE_MSG");
+    const REBASE_MSG: &str = include_str!("../fixtures/rebase2/COMMIT_EDITMSG");
+    const PULL_REBASE: &str = include_str!("../fixtures/rebase3/MERGE_MSG");
 
     fn owned(v: &[&str]) -> Vec<String> {
         v.iter().map(|s| s.to_string()).collect()
@@ -102,8 +102,11 @@ mod tests {
 
     #[test]
     fn commit_message_is_split_from_comments() {
-        let f = split(AMMEND2, '#');
-        assert_eq!(f.message, owned(&["fix: release volume"]));
+        let f = split(AMEND1, '#');
+        assert_eq!(
+            f.message,
+            owned(&["fix: hello here is a demo of gitmedit edit features for all git situations"])
+        );
         assert!(f.trailer.iter().all(|l| l.starts_with('#') || l.is_empty()));
     }
 
@@ -112,14 +115,14 @@ mod tests {
         let f = split(MERGE, '#');
         assert_eq!(
             f.message,
-            owned(&["Merge remote-tracking branch 'origin/BRANCH-NAME2' into BRANCH-NAME"])
+            owned(&["Merge remote-tracking branch 'origin/BRANCH-NAME2' into 'BRANCH_NAME'"])
         );
         assert!(f.trailer.iter().any(|l| l.is_empty()));
     }
 
     #[test]
     fn untouched_fixtures_round_trip_byte_for_byte() {
-        for raw in [AMMEND, AMMEND2, MERGE, MERGE2, REBASE_MSG, PULL_REBASE] {
+        for raw in [AMEND2, AMEND1, MERGE, MERGE2, REBASE_MSG, PULL_REBASE] {
             let f = split(raw, '#');
             assert_eq!(f.assemble(&f.message), raw);
         }
@@ -135,7 +138,7 @@ mod tests {
 
     #[test]
     fn edited_message_keeps_trailer() {
-        let f = split(AMMEND2, '#');
+        let f = split(AMEND1, '#');
         let out = f.assemble(&owned(&["feat: new subject", "", "body"]));
         assert!(out.starts_with("feat: new subject\n\nbody\n\n# Please enter the commit message"));
         assert!(out.ends_with("#\tmodified:   packages/@project/components/contract-form/elements/EscrowDetails.tsx\n#\n"));
