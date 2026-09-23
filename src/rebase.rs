@@ -303,7 +303,7 @@ impl Todo {
 mod tests {
     use super::*;
 
-    const TODO: &str = include_str!("../fixtures/squash_fixture.txt");
+    const TODO: &str = include_str!("../fixtures/rebase1/rebase-merge/git-rebase-todo");
 
     fn commit(todo: &Todo, i: usize) -> &CommitLine {
         match &todo.lines[i] {

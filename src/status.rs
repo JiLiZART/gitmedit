@@ -510,7 +510,7 @@ mod tests {
 
     #[test]
     fn amend_with_diverged_branch_and_staged_files() {
-        let s = parse_fixture(include_str!("../fixtures/ammend_fixture.txt"));
+        let s = parse_fixture(include_str!("../fixtures/amend2/COMMIT_EDITMSG"));
         assert_eq!(kinds(&s), vec![SectionKind::Branch, SectionKind::Staged]);
         assert_eq!(s.branch.as_deref(), Some("EX-3211-arc-epic"));
         let branch = s.section(SectionKind::Branch).unwrap();
@@ -528,7 +528,7 @@ mod tests {
 
     #[test]
     fn amend_ahead_of_upstream() {
-        let s = parse_fixture(include_str!("../fixtures/ammend2_fixture.txt"));
+        let s = parse_fixture(include_str!("../fixtures/amend1/COMMIT_EDITMSG"));
         let branch = s.section(SectionKind::Branch).unwrap();
         assert_eq!(
             branch.entries[0],
@@ -541,7 +541,7 @@ mod tests {
 
     #[test]
     fn merge_with_conflicts_many_deletions_and_submodules() {
-        let s = parse_fixture(include_str!("../fixtures/merge_fixture2.txt"));
+        let s = parse_fixture(include_str!("../fixtures/merge2/MERGE_MSG"));
         assert_eq!(
             kinds(&s),
             vec![
@@ -555,7 +555,7 @@ mod tests {
             ]
         );
         assert_eq!(s.section(SectionKind::Conflicts).unwrap().count(), 4);
-        assert_eq!(s.section(SectionKind::Staged).unwrap().count(), 160);
+        assert_eq!(s.section(SectionKind::Staged).unwrap().count(), 153);
         assert_eq!(s.section(SectionKind::Unstaged).unwrap().count(), 1);
         assert_eq!(s.section(SectionKind::SubmodulesStaged).unwrap().count(), 1);
         assert_eq!(
@@ -568,7 +568,7 @@ mod tests {
             s.section(SectionKind::Unstaged).unwrap().entries[0],
             Entry::File {
                 badge: 'M',
-                path: "packages/@dev-kit".into(),
+                path: "packages/@ui-kit".into(),
                 suffix: Some("(new commits)".into())
             }
         );
@@ -576,7 +576,7 @@ mod tests {
 
     #[test]
     fn rebase_in_progress() {
-        let s = parse_fixture(include_str!("../fixtures/rebase_fixture.txt"));
+        let s = parse_fixture(include_str!("../fixtures/rebase2/COMMIT_EDITMSG"));
         assert_eq!(
             kinds(&s),
             vec![
@@ -622,7 +622,7 @@ mod tests {
 
     #[test]
     fn conflicts_only() {
-        let s = parse_fixture(include_str!("../fixtures/pull_rebase_fixture.txt"));
+        let s = parse_fixture(include_str!("../fixtures/rebase3/MERGE_MSG"));
         assert_eq!(kinds(&s), vec![SectionKind::Conflicts]);
         let conflicts = s.section(SectionKind::Conflicts).unwrap();
         assert_eq!(conflicts.count(), 6);

@@ -44,6 +44,8 @@ None. No requirement changes; `skip_specs: true` is set in this change's `.opens
 
 - `fixtures/` — directories renamed and restructured, three fixtures added, `README.md` added.
 - `.gitignore` — one entry for the reword store written under a rebase fixture directory.
-- No source changes. `Cargo.toml` already excludes `fixtures` from the published crate, so the
+- `Cargo.toml` already excludes `fixtures` from the published crate, so the
   package contents are unaffected.
-- Nothing in `tests/` reads `fixtures/`, so no test needs updating.
+- `src/{keys,message,session,ui,rebase,status}.rs` — the unit-test modules `include_str!` the
+  fixtures by path, so every moved fixture breaks the build until its path is updated. Assertions
+  that hardcode fixture text must follow any content edits made during the move.

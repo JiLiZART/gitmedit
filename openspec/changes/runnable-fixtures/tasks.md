@@ -12,10 +12,16 @@
 - [ ] 2.2 Write `fixtures/tag1/TAG_EDITMSG` with git's annotated-tag template — a subject line plus the `# Write a message for tag:` comment block; verify `cargo run -- ./fixtures/tag1/TAG_EDITMSG` opens the message layout and the comment block renders in the right pane, not the editor
 - [ ] 2.3 Write `fixtures/plain1/notes.txt` with a few lines of ordinary prose including at least one `#`-prefixed line; verify `cargo run -- ./fixtures/plain1/notes.txt` opens a full-width plain editor with no right pane and the `#` line stays in the editor
 
+## 2b. Repoint the tests at the moved fixtures
+
+- [x] 2b.1 Update every `include_str!("../fixtures/...")` in `src/{keys,message,session,ui,rebase,status}.rs` to the new paths; verify `cargo build --tests` compiles
+- [x] 2b.2 Update assertions that hardcode fixture text to match the content edited during the move — `amend1` subject, quoted merge branch names, `i18n/views.*`→`i18n/*`, `@dev-kit`→`@ui-kit`, staged count 160→153; verify `cargo test` passes
+- [x] 2b.3 Rename the misspelled `AMMEND`/`AMMEND2` constants to `AMEND2`/`AMEND1` so each matches the directory it loads; verify `cargo test` still passes
+
 ## 3. Keep the working tree clean
 
 - [ ] 3.1 Add `fixtures/*/gitmedit/` to `.gitignore`; verify by opening `fixtures/rebase1/rebase-merge/git-rebase-todo`, marking a line `reword`, saving, and confirming `git status --short` reports nothing under `fixtures/rebase1/gitmedit/`
-- [ ] 3.2 Reset any fixture content edited during verification with `git checkout fixtures/`; verify `git status --short fixtures/` shows only the intended renames and additions
+- [ ] 3.2 Reset only fixture files dirtied during verification, by explicit path (`git checkout -- fixtures/<file>`); verify `git status --short fixtures/` is clean. Do NOT blanket-checkout `fixtures/` — it would discard intentional content edits
 
 ## 4. Document the fixtures
 
