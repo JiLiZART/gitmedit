@@ -1,10 +1,10 @@
-Merge remote-tracking branch 'origin/develop' into feat/TASK-2222-web-integration
+Merge remote-tracking branch 'origin/develop' into 'feat/TASK-2222-web-integration'
 
 # Conflicts:
-#	i18n/views.en.json
-#	i18n/views.es.json
-#	i18n/views.pt.json
-#	i18n/views.ru.json
+#	i18n/en.json
+#	i18n/es.json
+#	i18n/pt.json
+#	i18n/ru.json
 #
 # It looks like you may be committing a merge.
 # If this is not correct, please run
@@ -25,8 +25,6 @@ Merge remote-tracking branch 'origin/develop' into feat/TASK-2222-web-integratio
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-app-pages-offers-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-amount-filter-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-apr-filter-default-1-snap.png
-#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-crypto-network-default-1-snap.png
-#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-crypto-token-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-currencies-filter-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-footer-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-playwright-project-components-loan-period-filter-default-1-snap.png
@@ -68,8 +66,6 @@ Merge remote-tracking branch 'origin/develop' into feat/TASK-2222-web-integratio
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-app-pages-offers-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-amount-filter-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-apr-filter-default-1-snap.png
-#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-crypto-network-default-1-snap.png
-#	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-crypto-token-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-currencies-filter-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-footer-default-1-snap.png
 #	deleted:    __tests__/__image_snapshots__/storyshots-tsx-storyshots-project-components-home-guest-section-default-1-snap.png
@@ -117,10 +113,10 @@ Merge remote-tracking branch 'origin/develop' into feat/TASK-2222-web-integratio
 #	deleted:    __tests__/pages/index.test.tsx
 #	deleted:    __tests__/storyshots.tsx
 #	modified:   dip.yml
-#	modified:   i18n/views.en.json
-#	modified:   i18n/views.es.json
-#	modified:   i18n/views.pt.json
-#	modified:   i18n/views.ru.json
+#	modified:   i18n/en.json
+#	modified:   i18n/es.json
+#	modified:   i18n/pt.json
+#	modified:   i18n/ru.json
 #	new file:   mail-templates/build/disabling-ru-offers.html
 #	modified:   mail-templates/build/discontinuation-of-support.html
 #	modified:   mail-templates/build/fee-adjustment-power-user.html
@@ -148,8 +144,7 @@ Merge remote-tracking branch 'origin/develop' into feat/TASK-2222-web-integratio
 #	modified:   mail-templates/mails/welcome.mjml
 #	modified:   mail-templates/shared/footer/footer.mjml
 #	modified:   mail-templates/shared/header/header.mjml
-#	modified:   packages/@dev-kit
-#	modified:   packages/@project/app/api/chain/hooks.ts
+#	modified:   packages/@ui-kit
 #	modified:   packages/@project/app/api/contracts/hooks/releaseContract.ts
 #	modified:   packages/@project/app/api/contracts/types.ts
 #	modified:   packages/@project/app/containers/AppFooter.tsx
@@ -177,21 +172,19 @@ Merge remote-tracking branch 'origin/develop' into feat/TASK-2222-web-integratio
 #	modified:   packages/@project/components/create-payment-password/CreatePaymentPassword.tsx
 #	modified:   packages/@project/components/create-payment-password/CreatePaymentPasswordForm.tsx
 #	modified:   packages/@some/client/__fixtures__/releaseTransaction.ts
-#	modified:   packages/@some/client/crypto.test.ts
-#	modified:   packages/@some/client/multisig.js
 #	deleted:    pages/tos.tsx
 #	modified:   tsconfig.json
 #
 # Changes not staged for commit:
-#	modified:   packages/@dev-kit (new commits)
+#	modified:   packages/@ui-kit (new commits)
 #
 # Submodule changes to be committed:
 #
-# * packages/@dev-kit 2ce1d422...9a4f2cf9 (3):
+# * packages/@ui-kit 2ce1d422...9a4f2cf9 (3):
 #   > feat(TICKET-1419): replaced TryBanner with CalloutBanner, adopt for About page
 #
 # Submodules changed but not updated:
 #
-# * packages/@dev-kit 9a4f2cf9...0303ce14 (4):
+# * packages/@ui-kit 9a4f2cf9...0303ce14 (4):
 #   > Merge branch 'sync-ui' into master
 #

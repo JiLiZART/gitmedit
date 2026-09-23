@@ -1,4 +1,4 @@
-Merge remote-tracking branch 'origin/BRANCH-NAME2' into BRANCH-NAME
+Merge remote-tracking branch 'origin/BRANCH-NAME2' into 'BRANCH_NAME'
 
 # Conflicts:
 #	dev-server.config.js
